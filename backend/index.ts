@@ -1,50 +1,23 @@
-import { ApolloServer, gql } from 'apollo-server'
+import { ApolloServer } from 'apollo-server'
+import { typeDefs } from './gqlTypes'
+import { resolvers } from './resolvers'
+import mongoose from 'mongoose'
+import { MONGODB } from './config'
+import cors from 'cors'
 
-
-const user = {
-  username: 'test',
-  password: 'test',
-  id: 1
-}
-
-
-const typeDefs = gql`
-  type User {
-    username: String!
-    password: String!,
-    id: ID!
-  }
-  type Query {
-    getUser: User
-  }
-  type Mutation {
-    login(
-      username: String!
-      password: String!
-    ): String!
-  }
-`
-
-const resolvers = {
-  Mutation: {
-    login: (root: any, args: any) => {
-      console.log(args)
-      if (args.username === user.username && args.password === user.password) {
-        return user.username
-      } else {
-        return 'no'
-      }
-    }
-  },
-  Query: {
-    getUser: () => user
-  }
-}
+mongoose.connect(MONGODB)
+  .then( () => {
+    console.log('Connected succesfully')
+  })
+  .catch(() => {
+    console.log('error connecting')
+  })
 
 const server = new ApolloServer({
   typeDefs,
   resolvers
 })
+server.applyMiddleware(cors())
 
 server.listen()
   .then(({ url }) => {
