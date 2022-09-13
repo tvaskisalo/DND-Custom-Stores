@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react'
-import { LOGIN } from '../queries'
+import { ADDUSER } from '../queries'
 import { useField } from '../utils/utils'
 import { useMutation } from '@apollo/client'
 
 
 
-const Login = () => {
+const AddUser = () => {
   const username = useField('text')
   const password = useField('password')
-  const [ login, result ] = useMutation(LOGIN)
+  const [ addUser, result ] = useMutation(ADDUSER)
 
   useEffect(() => {
     console.log(result.data)
@@ -17,7 +17,7 @@ const Login = () => {
   const submit = async (event: React.SyntheticEvent) => {
     event.preventDefault()
     try {
-      await login({
+      await addUser({
         variables: {
           username: username.value,
           password: password.value
@@ -39,4 +39,4 @@ const Login = () => {
 }
 
 
-export default Login
+export default AddUser

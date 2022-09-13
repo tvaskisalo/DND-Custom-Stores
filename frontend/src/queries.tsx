@@ -5,6 +5,20 @@ export const LOGIN = gql`
     login(
       username: $username,
       password: $password
-    )
+    ) {
+      value
+    }
   }
   `
+
+export const ADDUSER = gql`
+  mutation addUser ($username: String!, $password: String!) {
+    addUser(
+      username: $username,
+      password: $password
+    ) {
+      value
+    }
+  }
+
+`

@@ -3,21 +3,24 @@ import { typeDefs } from './gqlTypes'
 import { resolvers } from './resolvers'
 import mongoose from 'mongoose'
 import { MONGODB } from './config'
-import cors from 'cors'
+import { errorHandling } from './errorHandling'
+//import cors from 'cors'
 
 mongoose.connect(MONGODB)
   .then( () => {
     console.log('Connected succesfully')
   })
-  .catch(() => {
+  .catch((e: Error) => {
+    console.log(e.message)
     console.log('error connecting')
   })
 
 const server = new ApolloServer({
   typeDefs,
-  resolvers
+  resolvers,
+  formatError: errorHandling,
 })
-server.applyMiddleware(cors())
+
 
 server.listen()
   .then(({ url }) => {

@@ -8,4 +8,4 @@ export const MONGODB = process.env.NODE_ENV === 'test'
 
 export const PORT = process.env.PORT as number | undefined
 
-export const SECRET = process.env.JWT_SECRET as string
+export const SECRET = process.env.SECRET as string
