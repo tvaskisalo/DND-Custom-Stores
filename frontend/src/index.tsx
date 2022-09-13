@@ -8,15 +8,13 @@ import {
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  link: new HttpLink({
-    uri: 'http://localhost:4000',
-  })
+  link: new HttpLink()
 })
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <ApolloProvider client={client}>
-    <Router>
+  <Router>
+    <ApolloProvider client={client}>
       <App />
-    </Router>
-  </ApolloProvider>
+    </ApolloProvider>
+  </Router>
 )

@@ -1,10 +1,13 @@
-import { ApolloServer } from 'apollo-server'
+import { ApolloServer } from 'apollo-server-express'
 import { typeDefs } from './gqlTypes'
 import { resolvers } from './resolvers'
 import mongoose from 'mongoose'
 import { MONGODB } from './config'
 import { errorHandling } from './errorHandling'
-//import cors from 'cors'
+import express from 'express'
+import cors from 'cors'
+import http from 'http'
+import path from 'path'
 
 mongoose.connect(MONGODB)
   .then( () => {
@@ -18,12 +21,28 @@ mongoose.connect(MONGODB)
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  csrfPrevention: true,
   formatError: errorHandling,
 })
 
+const app = express()
 
-server.listen()
-  .then(({ url }) => {
-    console.log(`Server ready at ${url}`)
+app.use(cors())
+app.use(express.static('build'))
+app.use('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build/index.html'))
+})
+
+const httpServer = http.createServer(app)
+
+server.start()
+  .then(_s => {
+    server.applyMiddleware({ app })
+    try {
+      httpServer.listen({ port: 4000 })
+      console.log('listening on port: 4000')
+    } catch (err) {
+      console.log('failed to start')
+    }
   })
-  .catch(() => console.log('Failed to start'))
+  .catch(() => console.log('error starting server'))

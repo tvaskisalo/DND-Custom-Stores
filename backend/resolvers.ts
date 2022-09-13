@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt'
 import { toLoginRequest } from './utils'
 import { User } from './schemas/user'
-import { AuthenticationError, UserInputError } from 'apollo-server'
+import { AuthenticationError, UserInputError } from 'apollo-server-express'
 import jwt from 'jsonwebtoken'
 import { SECRET } from './config'
 
