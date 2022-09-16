@@ -1,5 +1,5 @@
 import { ApolloServer } from 'apollo-server-express'
-import { typeDefs } from './utils/gqlTypes'
+import { typeDefs } from './GraphQL/gqlTypes'
 import mongoose from 'mongoose'
 import { MONGODB } from './utils/config'
 import { errorHandling } from './utils/errorHandling'
@@ -9,6 +9,7 @@ import http from 'http'
 import path from 'path'
 import { Mutation } from './GraphQL/mutations'
 import { Query } from './GraphQL/quaries'
+import { context } from './GraphQL/context'
 
 const resolvers = {
   Mutation,
@@ -23,10 +24,13 @@ mongoose.connect(MONGODB)
       resolvers,
       csrfPrevention: true,
       formatError: errorHandling,
+      context
     })
+    // Using express to serve static content
     const app = express()
     app.use(cors())
     app.use(express.static('build'))
+    //Gives built frontend, index.html is given to fix a current bug with react router
     app.get('/*', function(req,res) {
       res.sendFile(path.join(__dirname, 'build', 'index.html'))
     })

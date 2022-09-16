@@ -12,10 +12,15 @@ type Token {
 type Username {
   value: String!
 }
+type Game {
+  name: String!,
+  id: ID!
+}
 
 type Query {
-  getUser: User
+  getGames: [Game]
 }
+
 type Mutation {
   login(
     username: String!
