@@ -1,8 +1,8 @@
 // Disabling no explicit any due to this being type check and avoding code with unknown type
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
-import { Document } from 'mongoose'
-import { LoginRequest, Token } from './types'
+import { AuthenticationError } from 'apollo-server-express'
+import { User } from '../schemas/user'
+import { LoginRequest, NewGameRequest, NewItemRequest, NewStoreRequest, Token } from './types'
 
 const isString = (str: unknown): str is string => {
   return typeof str === 'string' || str instanceof String
@@ -14,11 +14,6 @@ const parseString = (str: unknown): string => {
   }
   return str
 }
-
-const isDocument = (doc: unknown): doc is Document => {
-  return doc instanceof Document
-}
-
 
 export const toLoginRequest = (reqData: any): LoginRequest => {
   const loginRequest: LoginRequest = {
@@ -36,17 +31,31 @@ export const toToken = (reqData: any): Token => {
   return token
 }
 
-export const getCurrentUser = (reqData: any): Document| undefined => {
-  if (reqData) {
-    return parseDocument(reqData)
-  } else {
-    return undefined
+export const toNewGameRequest = (reqData: any): NewGameRequest => {
+  const newGameRequest: NewGameRequest = {
+    name: parseString(reqData.name)
   }
+  return newGameRequest
 }
 
-export const parseDocument = (doc: unknown): Document => {
-  if (!doc || !isDocument(doc)) {
-    throw new Error('Invalid or missing document object' + doc)
+export const toNewItemRequest = (reqData: any): NewItemRequest => {
+  const newItemRequest: NewItemRequest = {
+    name: parseString(reqData.name)
   }
-  return doc
+  return newItemRequest
+}
+
+export const toNewStoreRequest = (reqData: any): NewStoreRequest => {
+  const newStoreRequest: NewStoreRequest = {
+    name: parseString(reqData.name)
+  }
+  return newStoreRequest
+}
+
+export const getUser = async (context: unknown) => {
+  const token = toToken(context)
+  if (!token) {
+    throw new AuthenticationError('Invalid token')
+  }
+  return await User.findOne({ id: token.id })
 }

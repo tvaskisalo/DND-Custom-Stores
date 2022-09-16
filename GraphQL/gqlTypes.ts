@@ -16,11 +16,19 @@ type Game {
   name: String!,
   id: ID!
 }
-
-type Query {
-  getGames: [Game]
+type Store {
+  name: String!,
+  id: ID!
 }
-
+type Item {
+  name: String!,
+  id: ID!
+}
+type Query {
+  getGames: [Game],
+  getStores(game: String): [Store],
+  getItems(store: String): [Item]
+}
 type Mutation {
   login(
     username: String!
@@ -29,6 +37,15 @@ type Mutation {
   addUser(
     username: String!
     password: String!
-  ): Username
+  ): Username,
+  addGame(
+    name: String!
+  ): Game,
+  addStore(
+    name: String!
+  ): Store,
+  addItem(
+    name: String!
+  ): Item
 }
 `
