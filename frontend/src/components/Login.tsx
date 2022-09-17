@@ -2,16 +2,20 @@ import React, { useEffect } from 'react'
 import { LOGIN } from '../queries'
 import { useField } from '../utils/utils'
 import { useMutation } from '@apollo/client'
+import PropTypes from 'prop-types'
 
 
-
-const Login = () => {
+const Login = ({ setToken }) => {
   const username = useField('text')
   const password = useField('password')
   const [ login, result ] = useMutation(LOGIN)
 
   useEffect(() => {
-    console.log(result.data)
+    if (result.data) {
+      const token = result.data.login.value
+      setToken(token)
+      localStorage.setItem('DnD-user-token', token)
+    }
   }, [result.data])
 
   const submit = async (event: React.SyntheticEvent) => {
@@ -23,7 +27,7 @@ const Login = () => {
           password: password.value
         }
       })
-    } catch (err: any) {
+    } catch (err) {
       console.log(err)
     }
   }
@@ -38,5 +42,8 @@ const Login = () => {
   )
 }
 
+Login.propTypes = {
+  setToken: PropTypes.func.isRequired
+}
 
 export default Login

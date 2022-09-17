@@ -6,10 +6,22 @@ import {
   ApolloClient, ApolloProvider, HttpLink, InMemoryCache
 } from '@apollo/client'
 import './index.css'
+import { setContext } from '@apollo/client/link/context'
+
+const authLink = setContext((_, { headers }) => {
+  //If token is found in browser storage, automatically use it
+  const token = localStorage.getItem('DnD-user-token')
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `bearer ${token}` : null
+    }
+  }
+})
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  link: new HttpLink()
+  link: authLink.concat(new HttpLink())
 })
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
