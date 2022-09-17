@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { ADDGAME } from '../queries'
+import { ADDGAME } from '../mutations'
 import { useField } from '../utils/utils'
 import { useMutation } from '@apollo/client'
 

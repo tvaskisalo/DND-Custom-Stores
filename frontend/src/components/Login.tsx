@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { LOGIN } from '../queries'
+import { LOGIN } from '../mutations'
 import { useField } from '../utils/utils'
 import { useMutation } from '@apollo/client'
 import PropTypes from 'prop-types'
@@ -13,6 +13,7 @@ const Login = ({ setToken }) => {
   useEffect(() => {
     if (result.data) {
       const token = result.data.login.value
+      console.log(token)
       setToken(token)
       localStorage.setItem('DnD-user-token', token)
     }
@@ -43,7 +44,7 @@ const Login = ({ setToken }) => {
 }
 
 Login.propTypes = {
-  setToken: PropTypes.func.isRequired
+  setToken: PropTypes.func
 }
 
 export default Login

@@ -8,7 +8,7 @@ import cors from 'cors'
 import http from 'http'
 import path from 'path'
 import { Mutation } from './GraphQL/mutations'
-import { Query } from './GraphQL/quaries'
+import { Query } from './GraphQL/queries'
 import { context } from './GraphQL/context'
 
 const resolvers = {

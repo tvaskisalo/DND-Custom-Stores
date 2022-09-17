@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { ADDUSER } from '../queries'
+import { ADDUSER } from '../mutations'
 import { useField } from '../utils/utils'
 import { useMutation } from '@apollo/client'
 
