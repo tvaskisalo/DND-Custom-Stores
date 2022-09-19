@@ -26,7 +26,7 @@ export const Mutation = {
     const { username, password } = toLoginRequest(args)
     const user = await User.findOne({ username })
     if (!user) {
-      throw new AuthenticationError('Incorrect username')
+      throw new AuthenticationError('Invalid username')
     }
     const correctPassword = user === null
       ? false
