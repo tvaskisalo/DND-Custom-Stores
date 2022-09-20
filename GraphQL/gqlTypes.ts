@@ -16,13 +16,35 @@ type Game {
   name: String!,
   id: ID!
 }
+type ItemTypeProbability {
+  rarity: String!,
+  probability: Int!
+}
+input StorePoolInput {
+  name: String
+}
+input ItemTypeProbabilityInput {
+  rarity: String!,
+  probability: Int!
+}
 type Store {
   name: String!,
-  id: ID!
+  id: ID!,
+  itemPool: [Item],
+  itemTypeProbabilities: [ItemTypeProbability]
 }
 type Item {
   name: String!,
-  id: ID!
+  id: ID!,
+  storePool: [String]
+  material: String,
+  baseCost: Int,
+  weight: Int,
+  properties: String,
+  damage: String,
+  damageType: String,
+  baseItem: Boolean!,
+  unique: Boolean!
 }
 type Query {
   getGames: [Game],
@@ -42,10 +64,20 @@ type Mutation {
     name: String!
   ): Game,
   addStore(
-    name: String!
+    name: String!,
+    itemTypeProbabilities: [ItemTypeProbabilityInput]
   ): Store,
   addItem(
-    name: String!
+    name: String!,
+    storePool: [StorePoolInput]
+    material: String,
+    baseCose: Int,
+    weight: Int,
+    properties: String,
+    damage: String,
+    damageType: String,
+    baseItem: Boolean!,
+    unique: Boolean!
   ): Item
 }
 `

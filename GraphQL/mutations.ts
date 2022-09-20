@@ -54,7 +54,7 @@ export const Mutation = {
   addStore: async (_root:unknown, args: unknown, context: unknown) => {
     const newStore = toNewStoreRequest(args)
     const user = await getUser(context)
-    const store = new Store({ name: newStore.name, user })
+    const store = new Store({ ...newStore, user })
     try {
       const savedStore = await store.save()
       return savedStore
@@ -65,7 +65,7 @@ export const Mutation = {
   addItem: async (_root:unknown, args: unknown, context: unknown) => {
     const newItem = toNewItemRequest(args)
     const user = await getUser(context)
-    const item = new Item({ name: newItem.name, user })
+    const item = new Item({ ...newItem , user })
     try {
       const savedItem = await item.save()
       return savedItem

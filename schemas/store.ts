@@ -1,21 +1,29 @@
 import mongoose from 'mongoose'
+import uniqueValidator from 'mongoose-unique-validator'
 
 const storeSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
-  itemPool: [
+  itemTypeProbabilities: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Item'
+      rarity: {
+        type: String
+      },
+      probability: {
+        type: Number
+      }
     }
   ]
 })
+
+storeSchema.plugin(uniqueValidator)
 
 storeSchema.set('toJSON', {
   transform: (_document, returnedObject) => {

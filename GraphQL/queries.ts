@@ -15,6 +15,7 @@ export const Query = {
     return stores
   },
   getItems: async (_root: unknown, _args: unknown, context: unknown) => {
+    //This needs to be fixed, currently works incorrectly
     const user = await getUser(context)
     const items = await Item.find({ user: user })
     return items

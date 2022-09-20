@@ -13,3 +13,4 @@
 17.9.2022 | 1.5 | Added user authentication to the frontend, added mutations for stores, games and items. Started UI.
 17.9.2022 | 1.5 | Added navigationbar to the frontend, added UI for listing all games. Made some refactoring and bug fixing.
 19.9.2022 | 2 | Configured Jest to work with typescript and added tests to the backend for adding users and login.
+20.9.2022 | 2 | Started modelling the item and store data, updated the types for items and stores. 

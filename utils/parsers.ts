@@ -2,10 +2,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AuthenticationError } from 'apollo-server-express'
 import { User } from '../schemas/user'
-import { LoginRequest, NewGameRequest, NewItemRequest, NewStoreRequest, Token } from './types'
+import { ItemTypeProbability, LoginRequest, NewGameRequest, NewItemRequest, NewStoreRequest, Token } from './types'
 
 const isString = (str: unknown): str is string => {
   return typeof str === 'string' || str instanceof String
+}
+
+const isNumber = (num: unknown): num is number => {
+  return typeof num === 'number'
+}
+
+const isBoolean = (bool: unknown): bool is boolean => {
+  return typeof bool === 'boolean'
+}
+
+const parseBoolean = (bool: unknown): boolean => {
+  if (!bool || !isBoolean(bool)) {
+    throw new Error(`Invalid boolean value: ${bool}`)
+  }
+  return bool
 }
 
 const parseString = (str: unknown): string => {
@@ -13,6 +28,13 @@ const parseString = (str: unknown): string => {
     throw new Error('Invalid or missing string' + str)
   }
   return str
+}
+
+const parseNumber = (num: unknown): number => {
+  if (num === undefined || !isNumber(num)) {
+    throw new Error('Invalid or missing number' + num)
+  }
+  return num
 }
 
 export const toLoginRequest = (reqData: any): LoginRequest => {
@@ -38,18 +60,74 @@ export const toNewGameRequest = (reqData: any): NewGameRequest => {
   return newGameRequest
 }
 
+const parseStringArray = (strArr: unknown): [string] => {
+  if (!strArr || !Array.isArray(strArr)) {
+    throw new Error('Incorrect or missing string array ' +strArr)
+  }
+  let returnValue: [string] | undefined
+  // Disabling unsafe call for any, since we know that data is array and we are now checking the elements
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  strArr.forEach((element: unknown) => {
+    if (returnValue) {
+      returnValue.push(parseString(element))
+    }
+  })
+  if (!returnValue) {
+    throw new Error('Incorrect or missing string array '+strArr)
+  }
+  return returnValue
+}
+
 export const toNewItemRequest = (reqData: any): NewItemRequest => {
   const newItemRequest: NewItemRequest = {
-    name: parseString(reqData.name)
+    name: parseString(reqData.name),
+    storePool: reqData.storePool ? parseStringArray(reqData.storePool) : undefined,
+    material: reqData.material ? parseString(reqData.material) : undefined,
+    baseCost: reqData.baseCost ? parseNumber(reqData.baseCost) : undefined,
+    weight: reqData.weight ? parseNumber(reqData.weight) : undefined,
+    properties: reqData.properties ? parseString(reqData.properties) : undefined,
+    damage: reqData.damage ? parseString(reqData.damage) : undefined,
+    damageType: reqData.damageType ? parseString(reqData.damageType) : undefined,
+    baseItem: parseBoolean(reqData.baseItem),
+    unique: parseBoolean(reqData.unique)
   }
   return newItemRequest
 }
 
 export const toNewStoreRequest = (reqData: any): NewStoreRequest => {
   const newStoreRequest: NewStoreRequest = {
-    name: parseString(reqData.name)
+    name: parseString(reqData.name),
+    itemTypeProbabilities: parseItemTypeProbabilities(reqData.itemTypeProbabilities)
   }
   return newStoreRequest
+}
+
+export const parseItemTypeProbabilities = (data: any): [ItemTypeProbability] => {
+  if (!data && !Array.isArray(data)) {
+    throw new Error('Incorrect or missing ItemTypeProbabilities '+data)
+  }
+  let returnValue: [ItemTypeProbability] | undefined
+  // Disabling unsafe call for any, since we know that data is array and we are now checking the elements
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  data.forEach((element: unknown) => {
+    if (returnValue) {
+      returnValue.push(parseItemTypeProbability(element))
+    }
+  })
+  if (!returnValue) {
+    throw new Error('Incorrect or missing ItemTypeProbabilities '+data)
+  }
+  return returnValue
+}
+
+export const parseItemTypeProbability = (reqData: any): ItemTypeProbability => {
+  if (!reqData && !reqData.rarity && !isString(reqData.rarity) && !reqData.probability && !isNumber(reqData.probability)) {
+    throw new Error('Incorrect or missing ItemTypeProbability '+reqData)
+  }
+  return {
+    rarity: parseString(reqData.rarity),
+    probability: parseNumber(reqData.probability)
+  }
 }
 
 export const getUser = async (context: unknown) => {

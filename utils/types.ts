@@ -10,8 +10,22 @@ export type NewGameRequest = {
   name: string
 }
 export type NewStoreRequest = {
-  name: string
+  name: string,
+  itemTypeProbabilities: [ItemTypeProbability]
 }
 export type NewItemRequest = {
-  name: string
+  name: string,
+  storePool?: [string],
+  material?: string,
+  baseCost?: number,
+  weight?: number,
+  properties?: string,
+  damage?: string,
+  damageType?: string,
+  baseItem: boolean,
+  unique: boolean
+}
+export type ItemTypeProbability = {
+  rarity: string,
+  probability: number
 }
