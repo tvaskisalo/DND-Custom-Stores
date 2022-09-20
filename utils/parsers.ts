@@ -17,7 +17,7 @@ const isBoolean = (bool: unknown): bool is boolean => {
 }
 
 const parseBoolean = (bool: unknown): boolean => {
-  if (!bool || !isBoolean(bool)) {
+  if (bool === undefined || !isBoolean(bool)) {
     throw new Error(`Invalid boolean value: ${bool}`)
   }
   return bool
@@ -25,7 +25,7 @@ const parseBoolean = (bool: unknown): boolean => {
 
 const parseString = (str: unknown): string => {
   if (!str || !isString(str)) {
-    throw new Error('Invalid or missing string' + str)
+    throw new Error('Invalid or missing string ' + str)
   }
   return str
 }
@@ -60,18 +60,11 @@ export const toNewGameRequest = (reqData: any): NewGameRequest => {
   return newGameRequest
 }
 
-const parseStringArray = (strArr: unknown): [string] => {
+const parseStringArray = (strArr: unknown): string[] => {
   if (!strArr || !Array.isArray(strArr)) {
     throw new Error('Incorrect or missing string array ' +strArr)
   }
-  let returnValue: [string] | undefined
-  // Disabling unsafe call for any, since we know that data is array and we are now checking the elements
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  strArr.forEach((element: unknown) => {
-    if (returnValue) {
-      returnValue.push(parseString(element))
-    }
-  })
+  const returnValue: string[] = strArr.map((str) => parseString(str))
   if (!returnValue) {
     throw new Error('Incorrect or missing string array '+strArr)
   }
@@ -87,7 +80,7 @@ export const toNewItemRequest = (reqData: any): NewItemRequest => {
     weight: reqData.weight ? parseNumber(reqData.weight) : undefined,
     properties: reqData.properties ? parseString(reqData.properties) : undefined,
     damage: reqData.damage ? parseString(reqData.damage) : undefined,
-    damageType: reqData.damageType ? parseString(reqData.damageType) : undefined,
+    damageTypes: reqData.damageTypes ? parseStringArray(reqData.damageTypes) : undefined,
     baseItem: parseBoolean(reqData.baseItem),
     unique: parseBoolean(reqData.unique)
   }

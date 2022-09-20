@@ -15,13 +15,13 @@ export type NewStoreRequest = {
 }
 export type NewItemRequest = {
   name: string,
-  storePool?: [string],
+  storePool?: string[],
   material?: string,
   baseCost?: number,
   weight?: number,
   properties?: string,
   damage?: string,
-  damageType?: string,
+  damageTypes?: string[],
   baseItem: boolean,
   unique: boolean
 }

@@ -20,9 +20,6 @@ type ItemTypeProbability {
   rarity: String!,
   probability: Int!
 }
-input StorePoolInput {
-  name: String
-}
 input ItemTypeProbabilityInput {
   rarity: String!,
   probability: Int!
@@ -42,7 +39,7 @@ type Item {
   weight: Int,
   properties: String,
   damage: String,
-  damageType: String,
+  damageTypes: [String],
   baseItem: Boolean!,
   unique: Boolean!
 }
@@ -69,13 +66,13 @@ type Mutation {
   ): Store,
   addItem(
     name: String!,
-    storePool: [StorePoolInput]
+    storePool: [String]
     material: String,
-    baseCose: Int,
+    baseCost: Int,
     weight: Int,
     properties: String,
     damage: String,
-    damageType: String,
+    damageTypes: [String],
     baseItem: Boolean!,
     unique: Boolean!
   ): Item

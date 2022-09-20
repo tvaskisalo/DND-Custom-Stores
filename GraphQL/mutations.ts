@@ -70,6 +70,7 @@ export const Mutation = {
       const savedItem = await item.save()
       return savedItem
     } catch(e) {
+      console.log(e)
       throw new UserInputError('Invalid Item Information')
     }
   }
