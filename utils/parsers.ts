@@ -74,7 +74,7 @@ const parseStringArray = (strArr: unknown): string[] => {
 export const toNewItemRequest = (reqData: any): NewItemRequest => {
   const newItemRequest: NewItemRequest = {
     name: parseString(reqData.name),
-    storePool: reqData.storePool ? parseStringArray(reqData.storePool) : undefined,
+    storepool: reqData.storepool ? parseStringArray(reqData.storepool) : undefined,
     material: reqData.material ? parseString(reqData.material) : undefined,
     baseCost: reqData.baseCost ? parseNumber(reqData.baseCost) : undefined,
     weight: reqData.weight ? parseNumber(reqData.weight) : undefined,
@@ -95,20 +95,20 @@ export const toNewStoreRequest = (reqData: any): NewStoreRequest => {
   return newStoreRequest
 }
 
-export const parseItemTypeProbabilities = (data: any): [ItemTypeProbability] => {
-  if (!data && !Array.isArray(data)) {
+export const parseItemTypeProbabilities = (data: unknown): ItemTypeProbability[] => {
+  if (!data || !Array.isArray(data)) {
     throw new Error('Incorrect or missing ItemTypeProbabilities '+data)
   }
-  let returnValue: [ItemTypeProbability] | undefined
-  // Disabling unsafe call for any, since we know that data is array and we are now checking the elements
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  data.forEach((element: unknown) => {
-    if (returnValue) {
-      returnValue.push(parseItemTypeProbability(element))
-    }
-  })
+  const returnValue: ItemTypeProbability[] = data.map((itemT: unknown) => parseItemTypeProbability(itemT))
   if (!returnValue) {
     throw new Error('Incorrect or missing ItemTypeProbabilities '+data)
+  }
+  let sum = 0
+  returnValue.forEach(({ probability }) => {
+    sum += probability
+  })
+  if (sum !== 100) {
+    throw new Error('The sum of probablities is incorrect ' + sum)
   }
   return returnValue
 }

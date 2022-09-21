@@ -27,13 +27,13 @@ input ItemTypeProbabilityInput {
 type Store {
   name: String!,
   id: ID!,
-  itemPool: [Item],
+  itempool: [Item],
   itemTypeProbabilities: [ItemTypeProbability]
 }
 type Item {
   name: String!,
   id: ID!,
-  storePool: [String]
+  storepool: [String]
   material: String,
   baseCost: Int,
   weight: Int,
@@ -66,7 +66,7 @@ type Mutation {
   ): Store,
   addItem(
     name: String!,
-    storePool: [String]
+    storepool: [String]
     material: String,
     baseCost: Int,
     weight: Int,

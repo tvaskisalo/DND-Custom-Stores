@@ -15,4 +15,5 @@
 19.9.2022 | 2 | Configured Jest to work with typescript and added tests to the backend for adding users and login.
 20.9.2022 | 2 | Started modelling the item and store data, updated the types for items and stores. 
 20.9.2022 | 3 | Started item testing. Most of the time was used to find a way to test GraphQL with token in headers/context. After 2 hours of trial and error I did not find any way. 
-Total time | 24 | updated 20.2.2022
+21.9.2022 | 2 | Added more validation for stores. Added tests for stores and items.
+Total time | 26 | updated 20.2.2022

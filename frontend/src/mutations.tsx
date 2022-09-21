@@ -34,23 +34,50 @@ export const ADDGAME = gql`
 `
 
 export const ADDSTORE = gql`
-  mutation addStore ($name: String!){
+  mutation addStore ($name: String!, $itemTypeProbabilities: [ItemTypeProbabilityInput]){
     addStore(
-      name: $name
+      name: $name,
+      itemTypeProbabilities: $itemTypeProbabilities
     ){
       name,
-      id
+      id,
+      itemTypeProbabilities
     }
   }
 `
 
-export const ADDITEM = gql`
-  mutation addItem ($name: String!){
-    addItem(
-      name: $name
-    ){
+export const ADDITEM = gql`mutation addItem(
+  $name: String!, 
+  $storePool: [String], 
+  $material: String, 
+  $baseCost: Int, 
+  $weight: Int, 
+  $properties: String, 
+  $damage: String, 
+  $damageTypes: [String], 
+  $baseItem: Boolean!, 
+  $unique: Boolean!) { 
+    addItem (
+      name: $name, 
+      storePool: $storePool, 
+      material: $material, 
+      baseCost: $baseCost, 
+      weight: $weight, 
+      properties: $properties, 
+      damage: $damage, 
+      damageTypes: $damageTypes, 
+      baseItem: $baseItem, 
+      unique: $unique
+    ) {
       name,
-      id
+      storePool,
+      material,
+      baseCost,
+      weight,
+      properties,
+      damage,
+      damageTypes,
+      baseItem,
+      unique
     }
-  }
-`
+  }`

@@ -10,7 +10,7 @@ import { Item } from '../schemas/item'
 
 const addItemQuery = `mutation addItem(
   $name: String!, 
-  $storePool: [String], 
+  $storepool: [String], 
   $material: String, 
   $baseCost: Int, 
   $weight: Int, 
@@ -21,7 +21,7 @@ const addItemQuery = `mutation addItem(
   $unique: Boolean!) { 
     addItem (
       name: $name, 
-      storePool: $storePool, 
+      storepool: $storepool, 
       material: $material, 
       baseCost: $baseCost, 
       weight: $weight, 
@@ -32,7 +32,7 @@ const addItemQuery = `mutation addItem(
       unique: $unique
     ) {
       name,
-      storePool,
+      storepool,
       material,
       baseCost,
       weight,
@@ -79,14 +79,15 @@ beforeAll( async () => {
   }
 },100000)
 
-describe('Test for item addition', () => {
+describe('Item addition', () => {
   beforeEach(async () => {
     await Item.deleteMany()
   })
+
   test('Valid item can be added', async () => {
+    //Valid storepools are tested elsewhere
     const item = {
       name: 'testName',
-      storePool: ['testStore'],
       material: 'testMaterial',
       baseCost: 100,
       weight: 10,
@@ -103,5 +104,103 @@ describe('Test for item addition', () => {
       }
     )
     expect(result.errors).toBeUndefined()
+    expect(result.data).toBeDefined()
+    expect(result.data?.addItem).toBeDefined()
+  })
+
+  test('Some fields can be empty', async () => {
+    const item = {
+      name: 'testName',
+      baseItem: false,
+      unique: true
+    }
+    const result = await testServer.executeOperation(
+      {
+        query: addItemQuery,
+        variables: { ...item }
+      }
+    )
+    expect(result.errors).toBeUndefined()
+    expect(result.data).toBeDefined()
+    expect(result.data?.addItem).toBeDefined()
+  })
+
+  test('Name can not be empty', async () => {
+    const item = {
+      name: '',
+      baseItem: false,
+      unique: true
+    }
+    const result = await testServer.executeOperation(
+      {
+        query: addItemQuery,
+        variables: { ...item }
+      }
+    )
+    expect(result.errors).toBeDefined()
+    expect(result.data?.addItem).toEqual(null)
+  })
+
+  test('Field name must be defined', async () => {
+    const item = {
+      baseItem: false,
+      unique: true
+    }
+    const result = await testServer.executeOperation(
+      {
+        query: addItemQuery,
+        variables: { ...item }
+      }
+    )
+    expect(result.errors).toBeDefined()
+  })
+
+  test('Field baseItem must be defined', async () => {
+    const item = {
+      name: 'testName',
+      unique: true
+    }
+    const result = await testServer.executeOperation(
+      {
+        query: addItemQuery,
+        variables: { ...item }
+      }
+    )
+    expect(result.errors).toBeDefined()
+    expect(result.data?.addItem).toBeUndefined()
+  })
+
+  test('Field unique must be defined', async () => {
+    const item = {
+      name: 'testName',
+      baseItem: false
+    }
+    const result = await testServer.executeOperation(
+      {
+        query: addItemQuery,
+        variables: { ...item }
+      }
+    )
+    expect(result.errors).toBeDefined()
+    expect(result.data?.addItem).toBeUndefined()
+  })
+
+  test('Name must be unique', async () => {
+    const item = {
+      name: 'testName',
+      baseItem: false,
+      unique: true
+    }
+    const user = await User.findOne({ username: 'testName' })
+    const newItem = new Item({ ...item, user })
+    await newItem.save()
+
+    const result = await testServer.executeOperation(
+      {
+        query: addItemQuery,
+        variables: { ...item }
+      }
+    )
+    expect(result.errors).toBeDefined()
   })
 })

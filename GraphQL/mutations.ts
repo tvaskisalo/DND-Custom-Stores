@@ -64,13 +64,20 @@ export const Mutation = {
   },
   addItem: async (_root:unknown, args: unknown, context: unknown) => {
     const newItem = toNewItemRequest(args)
+    const storepool = newItem.storepool
+    //Checking if all the given stores in storepool exist, this will be refactored later on
+    if (storepool) {
+      const stores = await Store.find({ name: { $in: storepool } })
+      if (stores.length !== storepool.length) {
+        throw new UserInputError('Invalid storepool')
+      }
+    }
     const user = await getUser(context)
     const item = new Item({ ...newItem , user })
     try {
       const savedItem = await item.save()
       return savedItem
     } catch(e) {
-      console.log(e)
       throw new UserInputError('Invalid Item Information')
     }
   }
