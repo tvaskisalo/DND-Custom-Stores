@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AuthenticationError } from 'apollo-server-express'
 import { User } from '../schemas/user'
-import { ItemTypeProbability, LoginRequest, NewGameRequest, NewItemRequest, NewStoreRequest, Token } from './types'
+import { GetItemsParams, GetStoresParams, ItemTypeProbability, LoginRequest, NewGameRequest, NewItemRequest, NewStoreRequest, Token } from './types'
 
 const isString = (str: unknown): str is string => {
   return typeof str === 'string' || str instanceof String
@@ -71,6 +71,25 @@ const parseStringArray = (strArr: unknown): string[] => {
   return returnValue
 }
 
+export const toStringArray = (reqData: any): string[] => {
+  const strArr = parseStringArray(reqData)
+  return strArr
+}
+
+export const toGetStoresParams = (reqData: any): GetStoresParams => {
+  const params: GetStoresParams = {
+    game: parseString(reqData.game)
+  }
+  return params
+}
+
+export const toGetItemsParams = (reqData: any): GetItemsParams => {
+  const params: GetItemsParams = {
+    name: parseString(reqData.store)
+  }
+  return params
+}
+
 export const toNewItemRequest = (reqData: any): NewItemRequest => {
   const newItemRequest: NewItemRequest = {
     name: parseString(reqData.name),
@@ -90,7 +109,8 @@ export const toNewItemRequest = (reqData: any): NewItemRequest => {
 export const toNewStoreRequest = (reqData: any): NewStoreRequest => {
   const newStoreRequest: NewStoreRequest = {
     name: parseString(reqData.name),
-    itemTypeProbabilities: parseItemTypeProbabilities(reqData.itemTypeProbabilities)
+    itemTypeProbabilities: parseItemTypeProbabilities(reqData.itemTypeProbabilities),
+    game: reqData.game ? parseString(reqData.game) : undefined
   }
   return newStoreRequest
 }

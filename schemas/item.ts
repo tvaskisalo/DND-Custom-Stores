@@ -19,7 +19,8 @@ const itemSchema = new mongoose.Schema({
     type: String
   }],
   material: {
-    type: String
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Store'
   },
   baseCost: {
     type: Number

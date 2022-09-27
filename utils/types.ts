@@ -11,7 +11,14 @@ export type NewGameRequest = {
 }
 export type NewStoreRequest = {
   name: string,
-  itemTypeProbabilities: ItemTypeProbability[]
+  itemTypeProbabilities: ItemTypeProbability[],
+  game?: string
+}
+export type GetStoresParams = {
+  game: string
+}
+export type GetItemsParams = {
+  name: string
 }
 export type NewItemRequest = {
   name: string,

@@ -11,6 +11,10 @@ const storeSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
+  games: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Game'
+  }],
   itemTypeProbabilities: [
     {
       rarity: {

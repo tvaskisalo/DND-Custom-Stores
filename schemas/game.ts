@@ -5,12 +5,6 @@ const gameSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  stores: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Store'
-    }
-  ],
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
