@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt'
-import { toLoginRequest, toNewGameRequest, toNewStoreRequest, toNewItemRequest, getUser } from '../utils/parsers'
+import { toLoginRequest, toNewGameRequest, toNewStoreRequest, toNewItemRequest, getUser, toName } from '../utils/parsers'
 import { User } from '../schemas/user'
 import { AuthenticationError, UserInputError } from 'apollo-server-express'
 import jwt from 'jsonwebtoken'
@@ -93,5 +93,36 @@ export const Mutation = {
     } catch(e) {
       throw new UserInputError('Invalid Item Information')
     }
+  },
+  removeGame: async (_root:unknown, args: unknown, context: unknown) => {
+    //TODO: Remove refrences from stores to deleted game
+    const user = await getUser(context)
+    const name = toName(args)
+    const game = await Game.findOneAndRemove({ $and: [
+      { $match: { user } },
+      { $match: { name } }
+    ] })
+    return game
+  },
+  removeStore: async (_root: unknown, args: unknown, context: unknown) => {
+    //TODO: Remove refrences from items to deleted store
+    const user = await getUser(context)
+    const name = toName(args)
+    const store = await Store.findOneAndRemove({ $and: [
+      { $match: { user } },
+      { $match: { name } }
+    ] })
+    return store
+  },
+  removeItem: async (_root: unknown, args: unknown, context: unknown) => {
+    const user = await getUser(context)
+    console.log(`user is ${user}`)
+    const name = toName(args)
+    console.log(`name is ${name}`)
+    const item = await Item.findOneAndRemove({ $and: [
+      { $match: { user } },
+      { $match: { name } }
+    ] })
+    return item
   }
 }

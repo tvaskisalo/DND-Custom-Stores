@@ -45,8 +45,11 @@ type Item {
 }
 type Query {
   getGames: [Game],
+  getGameInfo(name: String!): Game,
   getStores(game: String): [Store],
+  getStoreInfo(name: String!): Store
   getItems(store: String): [Item]
+  getItemInfo(name: String!): Item
 }
 type Mutation {
   login(
@@ -75,6 +78,15 @@ type Mutation {
     damageTypes: [String],
     baseItem: Boolean!,
     unique: Boolean!
+  ): Item,
+  removeGame(
+    name: String!
+  ): Game,
+  removeStore(
+    name: String!
+  ): Store,
+  removeItem(
+    name: String!
   ): Item
 }
 `

@@ -44,6 +44,15 @@ const addItemQuery = `mutation addItem(
     }
   }`
 
+const removeItemQuery = `mutation removeItem(
+  $name: String!) {
+    removeItem(
+      name: $name
+    ) {
+      name
+    }
+  }`
+
 const resolvers = {
   Mutation,
   Query
@@ -202,5 +211,43 @@ describe('Item addition', () => {
       }
     )
     expect(result.errors).toBeDefined()
+  })
+})
+
+describe('Item deletion', () => {
+  beforeEach(async () => {
+    await Item.deleteMany()
+    const item1 = {
+      name: 'testName1',
+      baseItem: false,
+      unique: true
+    }
+    const item2= {
+      name: 'testName2',
+      baseItem: true,
+      unique: true
+    }
+    const user = await User.findOne({ username: 'testName' })
+    const newItem1 = new Item({ ...item1, user })
+    await newItem1.save()
+    const newItem2 = new Item({ ...item2, user })
+    await newItem2.save()
+  })
+
+  test('Correct item gets deleted', async () => {
+    const result = await testServer.executeOperation(
+      {
+        query: removeItemQuery,
+        variables: { name: 'testName1' }
+      }
+    )
+    expect(result.errors).toBeUndefined()
+    const items = await Item.find({})
+    console.log(items)
+    console.log(result.data)
+    expect(items.length).toEqual(1)
+    if (items && items[0] && items[0].name) {
+      expect(items[0].name).toEqual('testName2')
+    }
   })
 })
