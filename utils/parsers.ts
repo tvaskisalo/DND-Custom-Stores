@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AuthenticationError } from 'apollo-server-express'
 import { User } from '../schemas/user'
-import { GetItemsParams, GetStoresParams, ItemTypeProbability, LoginRequest, NewGameRequest, NewItemRequest, NewStoreRequest, Token } from './types'
+import { GetItemsParams, GetStoresParams, ItemTypeProbability, UpdateGameParams, UpdateItemParams, UpdateStoreParams, LoginRequest, NewGameRequest, NewItemRequest, NewStoreRequest, Token } from './types'
 
 const isString = (str: unknown): str is string => {
   return typeof str === 'string' || str instanceof String
@@ -53,6 +53,40 @@ export const toToken = (reqData: any): Token => {
   return token
 }
 
+export const toUpdateGameParams = (reqData: any): UpdateGameParams => {
+  const updateRequest: UpdateGameParams =  {
+    id: parseString(reqData.id),
+    name: reqData.name ? parseString(reqData.name): undefined,
+  }
+  return updateRequest
+}
+
+export const toUpdateStoreParams = (reqData: any): UpdateStoreParams => {
+  const updateRequest: UpdateStoreParams = {
+    id: parseString(reqData.id),
+    name: reqData.name ? parseString(reqData.name): undefined,
+    itemTypeProbabilities: reqData.itemTypeProbabilities ? parseItemTypeProbabilities(reqData.itemTypeProbabilities) : undefined
+  }
+  return updateRequest
+}
+
+export const toUpdateItemParams = (reqData: any): UpdateItemParams => {
+  const updateRequest: UpdateItemParams = {
+    id: parseString(reqData.id),
+    name: reqData.name ? parseString(reqData.name) : undefined,
+    storepool: reqData.storepool ? parseStringArray(reqData.storepool) : undefined,
+    material: reqData.material ? parseString(reqData.material) : undefined,
+    baseCost: reqData.baseCost ? parseNumber(reqData.baseCost) : undefined,
+    weight: reqData.weight ? parseNumber(reqData.weight) : undefined,
+    properties: reqData.properties ? parseString(reqData.properties) : undefined,
+    damage: reqData.damage ? parseString(reqData.damage) : undefined,
+    damageTypes: reqData.damageTypes ? parseStringArray(reqData.damageTypes) : undefined,
+    baseItem: reqData.baseItem !== undefined ? parseBoolean(reqData.baseItem) : undefined,
+    unique: reqData.unique !== undefined ? parseBoolean(reqData.unique) : undefined
+  }
+  return updateRequest
+}
+
 export const toNewGameRequest = (reqData: any): NewGameRequest => {
   const newGameRequest: NewGameRequest = {
     name: parseString(reqData.name)
@@ -93,6 +127,8 @@ export const toGetItemsParams = (reqData: any): GetItemsParams => {
 export const toName = (reqData: any): string => {
   return parseString(reqData.name)
 }
+
+
 
 export const toNewItemRequest = (reqData: any): NewItemRequest => {
   const newItemRequest: NewItemRequest = {

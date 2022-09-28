@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt'
-import { toLoginRequest, toNewGameRequest, toNewStoreRequest, toNewItemRequest, getUser, toName } from '../utils/parsers'
+import { toLoginRequest, toNewGameRequest, toNewStoreRequest, toNewItemRequest, getUser, toName, toUpdateItemParams, toUpdateGameParams, toUpdateStoreParams } from '../utils/parsers'
 import { User } from '../schemas/user'
 import { AuthenticationError, UserInputError } from 'apollo-server-express'
 import jwt from 'jsonwebtoken'
@@ -119,9 +119,7 @@ export const Mutation = {
   },
   removeItem: async (_root: unknown, args: unknown, context: unknown) => {
     const user = await getUser(context)
-    console.log(`user is ${user}`)
     const name = toName(args)
-    console.log(`name is ${name}`)
     const item = await Item.findOneAndRemove({
       user: user?.id as string,
       name
@@ -130,5 +128,43 @@ export const Mutation = {
       throw new UserInputError('No item found')
     }
     return item
-  }
+  },
+  updateItem: async (_root: unknown, args: unknown, context: unknown) => {
+    // TODO: Checking if updated storepool stores exist
+    const user = await getUser(context)
+    const params = toUpdateItemParams(args)
+    const item = await Item.findOneAndUpdate({
+      id: params.id,
+      user: user?.id as string
+    }, {
+      ...params,
+      id:undefined
+    }, { new: true })
+    return item
+  },
+  updateStore: async (_root: unknown, args: unknown, context: unknown) => {
+    // TODO: Check if the games exist
+    const user = await getUser(context)
+    const params = toUpdateStoreParams(args)
+    const item = await Store.findOneAndUpdate({
+      id: params.id,
+      user: user?.id as string
+    }, {
+      ...params,
+      id:undefined
+    }, { new: true })
+    return item
+  },
+  updateGame: async (_root: unknown, args: unknown, context: unknown) => {
+    const user = await getUser(context)
+    const params = toUpdateGameParams(args)
+    const item = await Game.findOneAndUpdate({
+      id: params.id,
+      user: user?.id as string
+    }, {
+      ...params,
+      id:undefined
+    }, { new: true })
+    return item
+  },
 }

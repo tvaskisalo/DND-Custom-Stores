@@ -87,6 +87,28 @@ type Mutation {
   ): Store,
   removeItem(
     name: String!
+  ): Item,
+  updateGame(
+    id: String!,
+    name: String
+  ): Game,
+  updateStore(
+    id: String!,
+    name: String,
+    itemTypeProbabilities: [ItemTypeProbabilityInput]
+  ): Store,
+  updateItem(
+    id: String!,
+    name: String!,
+    storepool: [String]
+    material: String,
+    baseCost: Int,
+    weight: Int,
+    properties: String,
+    damage: String,
+    damageTypes: [String],
+    baseItem: Boolean!,
+    unique: Boolean!
   ): Item
 }
 `

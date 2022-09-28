@@ -8,6 +8,8 @@ import mongoose from 'mongoose'
 import bcrypt  from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { toToken } from '../utils/parsers'
+import { Item } from '../schemas/item'
+import { Store } from '../schemas/store'
 
 const resolvers = {
   Mutation,
@@ -202,4 +204,12 @@ describe('Tests for logging in', () => {
       expect(result.errors[0].message).toContain('Invalid or missing string')
     }
   })
+})
+
+afterAll(async () => {
+  //I found some undefined behavior and this should fix it
+  await testServer.stop()
+  await User.deleteMany()
+  await Store.deleteMany()
+  await Item.deleteMany()
 })

@@ -7,6 +7,7 @@ import { MONGODB } from '../utils/config'
 import mongoose from 'mongoose'
 import { User } from '../schemas/user'
 import { Item } from '../schemas/item'
+import { Store } from '../schemas/store'
 
 const addItemMutation = `mutation addItem(
   $name: String!, 
@@ -277,4 +278,20 @@ describe('Item deletion', () => {
     const items = await Item.find({})
     expect(items.length).toEqual(3)
   })
+})
+
+
+afterAll(async () => {
+  //I found some undefined behavior and this should fix it
+  await testServer.stop()
+  await User.deleteMany()
+  await Store.deleteMany()
+  await Item.deleteMany()
+})
+afterAll(async () => {
+  //I found some undefined behavior and this should fix it
+  await testServer.stop()
+  await User.deleteMany()
+  await Store.deleteMany()
+  await Item.deleteMany()
 })
