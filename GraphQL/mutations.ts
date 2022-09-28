@@ -43,7 +43,7 @@ export const Mutation = {
   addGame: async (_root:unknown, args: unknown, context: unknown) => {
     const newGame = toNewGameRequest(args)
     const user = await getUser(context)
-    const game = new Game({ name: newGame.name, user })
+    const game = new Game({ name: newGame.name, user: user?._id })
     try {
       const savedGame = await game.save()
       return(savedGame)
@@ -61,9 +61,9 @@ export const Mutation = {
       if (games.length !== gamepool.length) {
         throw new UserInputError('Invalid gamepool')
       }
-      store = new Store({ ...newStore, user, games: gamepool })
+      store = new Store({ ...newStore, user: user?.id as string, games: gamepool })
     } else {
-      store = new Store({ ...newStore, user })
+      store = new Store({ ...newStore, user: user?.id as string })
     }
     try {
       const savedStore = await store.save()
@@ -83,9 +83,9 @@ export const Mutation = {
       if (stores.length !== storepool.length) {
         throw new UserInputError('Invalid storepool')
       }
-      item = new Item({ ...newItem, user, storepool: stores })
+      item = new Item({ ...newItem, user: user?.id as string, storepool: stores })
     } else {
-      item = new Item({ ...newItem , user })
+      item = new Item({ ...newItem , user: user?.id as string })
     }
     try {
       const savedItem = await item.save()
@@ -98,20 +98,23 @@ export const Mutation = {
     //TODO: Remove refrences from stores to deleted game
     const user = await getUser(context)
     const name = toName(args)
-    const game = await Game.findOneAndRemove({ $and: [
-      { $match: { user } },
-      { $match: { name } }
-    ] })
+    const game = await Game.findOneAndRemove({
+      user: user?.id as string,
+      name
+    })
     return game
   },
   removeStore: async (_root: unknown, args: unknown, context: unknown) => {
     //TODO: Remove refrences from items to deleted store
     const user = await getUser(context)
     const name = toName(args)
-    const store = await Store.findOneAndRemove({ $and: [
-      { $match: { user } },
-      { $match: { name } }
-    ] })
+    const store = await Store.findOneAndRemove({
+      user: user?.id as string,
+      name
+    })
+    if (!store) {
+      throw new UserInputError('No store found')
+    }
     return store
   },
   removeItem: async (_root: unknown, args: unknown, context: unknown) => {
@@ -119,10 +122,13 @@ export const Mutation = {
     console.log(`user is ${user}`)
     const name = toName(args)
     console.log(`name is ${name}`)
-    const item = await Item.findOneAndRemove({ $and: [
-      { $match: { user } },
-      { $match: { name } }
-    ] })
+    const item = await Item.findOneAndRemove({
+      user: user?.id as string,
+      name
+    })
+    if (!item) {
+      throw new UserInputError('No item found')
+    }
     return item
   }
 }

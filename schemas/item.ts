@@ -9,9 +9,8 @@ const itemSchema = new mongoose.Schema({
   },
   // This is the application user, not the user in game
   user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
+    type: String,
+    required: true,
   },
   // If item is a baseItem, then it is always in all stores, so then storePool is not set.
   // The storePool is only used to manage where unique items can drop.
@@ -19,8 +18,7 @@ const itemSchema = new mongoose.Schema({
     type: String
   }],
   material: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Store'
+    type: String
   },
   baseCost: {
     type: Number

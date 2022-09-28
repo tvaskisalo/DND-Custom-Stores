@@ -29,6 +29,15 @@ const addStoreMutation = `mutation addStore(
     }
   }`
 
+const removeStoreMutation = `mutation removeStore(
+  $name: String!) {
+    removeStore(
+      name: $name
+    ) {
+      name
+    }
+  }`
+
 let testServer: ApolloServer
 
 
@@ -38,6 +47,7 @@ beforeAll( async () => {
     resolvers,
   })
   await mongoose.connect(MONGODB)
+  await User.deleteMany()
   await server.executeOperation({
     query: 'mutation addUser($username: String!, $password: String!) { addUser( username: $username, password: $password ) { value } }',
     variables: {
@@ -45,6 +55,14 @@ beforeAll( async () => {
       password: 'test'
     }
   })
+  await server.executeOperation({
+    query: 'mutation addUser($username: String!, $password: String!) { addUser( username: $username, password: $password ) { value } }',
+    variables: {
+      username: 'otherUser',
+      password: 'test'
+    }
+  })
+  await server.stop()
   // Unfortunately testing GraphQL queries with headers/context does not work (at least to my knowledge, I tried several methods and none of them worked)
   // Thus I cannot test if additiong without token is allowed or not. I bypass the check by hardcoding a user to the server's context
   // I will test token usage with cypress later on (at least that is the plan)
@@ -234,5 +252,74 @@ describe('Store addition', () => {
     })
 
     expect(result.errors).toBeDefined()
+  })
+})
+
+describe('Store deletion', () => {
+  beforeEach( async () => {
+    await Store.deleteMany()
+    const store1 = {
+      name: 'testName1',
+      itemTypeProbabilities: [
+        {
+          rarity: 'Common',
+          probability: 100
+        }
+      ]
+    }
+    const store2 = {
+      name: 'testName2',
+      itemTypeProbabilities: [
+        {
+          rarity: 'Common',
+          probability: 100
+        }
+      ]
+    }
+    const store3 = {
+      name: 'testName3',
+      itemTypeProbabilities: [
+        {
+          rarity: 'Common',
+          probability: 100
+        }
+      ]
+    }
+    const otherUser = await User.findOne({ username: 'otherUser' })
+    const user = await User.findOne({ username: 'testName' })
+    const newStore1 = new Store({ ...store1, user: user?.id as string })
+    await newStore1.save()
+    const newStore2 = new Store({ ...store2, user: user?.id as string })
+    await newStore2.save()
+    const newStore3 = new Store({ ...store3, user: otherUser?.id as string })
+    await newStore3.save()
+  })
+
+  test('Correct store gets deleted', async () => {
+    const result = await testServer.executeOperation(
+      {
+        query: removeStoreMutation,
+        variables: { name: 'testName1' }
+      }
+    )
+    expect(result.errors).toBeUndefined()
+    const stores = await Store.find({})
+    expect(stores.length).toEqual(2)
+    if (stores && stores[0] && stores[0].name && stores[1] && stores[1].name) {
+      expect(stores[0].name).not.toEqual('testName1')
+      expect(stores[1].name).not.toEqual('testName1')
+    }
+  })
+
+  test('User can not delete other users stores', async () => {
+    const result = await testServer.executeOperation(
+      {
+        query: removeStoreMutation,
+        variables: { name: 'testName3' }
+      }
+    )
+    expect(result.errors).toBeDefined()
+    const stores = await Store.find({})
+    expect(stores.length).toEqual(3)
   })
 })
