@@ -436,6 +436,7 @@ describe('Store updating', () => {
       }
     })
     expect(result.errors).toBeUndefined()
+    console.log(result.data)
     if (result.data && result.data.name && result.data.itemTypeProbabilities) {
       expect(result.data.name).toEqual('testName1')
       expect(result.data.itemTypeProbabilities.length).toEqual(2)
@@ -475,7 +476,35 @@ describe('Store updating', () => {
     expect(updatedStore?.itemTypeProbabilities[0].rarity).toEqual('Common')
     expect(updatedStore?.itemTypeProbabilities[0].probability).toEqual(100)
   })
+
+  test('User cant update with incorrect info', async () => {
+    const store3 = await Store.findOne({ name: 'testName1' })
+    const result = await testServer.executeOperation({
+      query: updateStoreMutation,
+      variables: {
+        id: store3?.id as string,
+        name: 'UpdatedStore',
+        itemTypeProbabilities: [
+          {
+            rarity: 'Uncommon',
+            probability: 55
+          },
+          {
+            rarity: 'Common',
+            probability: 50
+          }
+        ]
+      }
+    })
+    expect(result.errors).toBeDefined()
+    const updatedStore = await Store.findOne({ name: 'testName1' })
+    expect(updatedStore?.name).toEqual('testName1')
+    expect(updatedStore?.itemTypeProbabilities[0].rarity).toEqual('Common')
+    expect(updatedStore?.itemTypeProbabilities[0].probability).toEqual(100)
+  })
 })
+
+
 
 afterAll(async () => {
   //I found some undefined behavior and this should fix it

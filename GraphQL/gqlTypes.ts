@@ -99,7 +99,7 @@ type Mutation {
   ): Store,
   updateItem(
     id: String!,
-    name: String!,
+    name: String,
     storepool: [String]
     material: String,
     baseCost: Int,
@@ -107,8 +107,8 @@ type Mutation {
     properties: String,
     damage: String,
     damageTypes: [String],
-    baseItem: Boolean!,
-    unique: Boolean!
+    baseItem: Boolean,
+    unique: Boolean
   ): Item
 }
 `

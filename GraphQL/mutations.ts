@@ -146,25 +146,25 @@ export const Mutation = {
     // TODO: Check if the games exist
     const user = await getUser(context)
     const params = toUpdateStoreParams(args)
-    const item = await Store.findOneAndUpdate({
+    const store = await Store.findOneAndUpdate({
       id: params.id,
       user: user?.id as string
     }, {
       ...params,
       id:undefined
     }, { new: true })
-    return item
+    return store
   },
   updateGame: async (_root: unknown, args: unknown, context: unknown) => {
     const user = await getUser(context)
     const params = toUpdateGameParams(args)
-    const item = await Game.findOneAndUpdate({
+    const game = await Game.findOneAndUpdate({
       id: params.id,
       user: user?.id as string
     }, {
       ...params,
       id:undefined
     }, { new: true })
-    return item
+    return game
   },
 }

@@ -54,6 +54,44 @@ const removeItemMutation = `mutation removeItem(
     }
   }`
 
+const updateItemMutation = `mutation updateItem(
+  $id: String!,
+  $name: String,
+  $storepool: [String], 
+  $material: String, 
+  $baseCost: Int, 
+  $weight: Int, 
+  $properties: String, 
+  $damage: String, 
+  $damageTypes: [String], 
+  $baseItem: Boolean, 
+  $unique: Boolean) { 
+    updateItem (
+      id: $id,
+      name: $name, 
+      storepool: $storepool, 
+      material: $material, 
+      baseCost: $baseCost, 
+      weight: $weight, 
+      properties: $properties, 
+      damage: $damage, 
+      damageTypes: $damageTypes, 
+      baseItem: $baseItem, 
+      unique: $unique
+    ) {
+      name,
+      storepool,
+      material,
+      baseCost,
+      weight,
+      properties,
+      damage,
+      damageTypes,
+      baseItem,
+      unique
+    }
+  }`
+
 const resolvers = {
   Mutation,
   Query
@@ -280,14 +318,100 @@ describe('Item deletion', () => {
   })
 })
 
+describe('Item updating', () => {
+  beforeEach(async() => {
+    await Store.deleteMany()
+    await Item.deleteMany()
+    const item1 = {
+      name: 'testName1',
+      baseItem: false,
+      unique: true
+    }
+    const item2 = {
+      name: 'testName2',
+      baseItem: true,
+      unique: true
+    }
+    const item3 = {
+      name: 'testName3',
+      baseItem: true,
+      unique: true
+    }
+    const otherUser = await User.findOne({ username: 'otherUser' })
+    const user = await User.findOne({ username: 'testUser' })
+    const newItem1 = new Item({ ...item1, user: user?.id as string })
+    await newItem1.save()
+    const newItem2 = new Item({ ...item2, user: user?.id as string })
+    await newItem2.save()
+    const newItem3 = new Item({ ...item3, user: otherUser?.id as string })
+    await newItem3.save()
+  })
 
-afterAll(async () => {
-  //I found some undefined behavior and this should fix it
-  await testServer.stop()
-  await User.deleteMany()
-  await Store.deleteMany()
-  await Item.deleteMany()
+  test('Correct update request is succesful', async () => {
+    const item1 = await Item.findOne({ name: 'testName1' })
+    const result = await testServer.executeOperation({
+      query: updateItemMutation,
+      variables: {
+        id: item1?.id as string,
+        name: 'UpdatedItem',
+        material: 'testMaterial',
+        baseCost: 100,
+        weight: 10,
+        properties: 'testProperties',
+        damage: 'testDamage',
+        damageTypes: ['testDamageType'],
+        baseItem: true,
+        unique: false
+      }
+    })
+    expect(result.errors).toBeUndefined()
+    // For some reason this is needed here but nowhere else. I am confused
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const data = result.data?.updateItem
+    expect(data.name).toBe('UpdatedItem')
+    expect(data.material).toEqual('testMaterial')
+    expect(data.baseCost).toEqual(100)
+    expect(data.weight).toEqual(10)
+    expect(data.properties).toEqual('testProperties')
+    expect(data.damage).toEqual('testDamage')
+    expect(data.damageTypes.length).toEqual(1)
+    expect(data.damageTypes[0]).toEqual('testDamageType')
+    expect(data.baseItem).toEqual(true)
+    expect(data.unique).toEqual(false)
+  })
+
+  test('User cant update another users items', async () => {
+    const item1 = await Item.findOne({ name: 'testName3' })
+    const result = await testServer.executeOperation({
+      query: updateItemMutation,
+      variables: {
+        id: item1?.id as string,
+        name: 'UpdatedItem',
+        material: 'testMaterial',
+        baseCost: 100,
+        weight: 10,
+        properties: 'testProperties',
+        damage: 'testDamage',
+        damageTypes: ['testDamageType'],
+        baseItem: false,
+        unique: false
+      }
+    })
+    expect(result.errors).toBeUndefined()
+    const updatedStore = await Item.findOne({ name: 'testName3' })
+    expect(updatedStore?.name).toBe('testName3')
+    expect(updatedStore?.material).toBeUndefined()
+    expect(updatedStore?.baseCost).toBeUndefined()
+    expect(updatedStore?.weight).toBeUndefined()
+    expect(updatedStore?.properties).toBeUndefined()
+    expect(updatedStore?.damage).toBeUndefined()
+    expect(updatedStore?.damageTypes.length).toBe(0)
+    expect(updatedStore?.baseItem).toEqual(true)
+    expect(updatedStore?.unique).toEqual(true)
+  })
 })
+
+
 afterAll(async () => {
   //I found some undefined behavior and this should fix it
   await testServer.stop()
