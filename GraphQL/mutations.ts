@@ -10,10 +10,11 @@ import { Item } from '../schemas/item'
 
 export const Mutation = {
   addUser: async (_root: unknown, args: unknown) => {
+    //Parse args
     const { username, password } = toLoginRequest(args)
     const passwordHash = await bcrypt.hash(password, 10)
     const user = new User({
-      username: username,
+      username,
       passwordHash
     })
     const savedUser = await user.save()
@@ -23,17 +24,20 @@ export const Mutation = {
     return({ value: savedUser.username })
   },
   login: async (_root: unknown, args: unknown) => {
+    // Parse args
     const { username, password } = toLoginRequest(args)
     const user = await User.findOne({ username })
     if (!user) {
       throw new AuthenticationError('Invalid username')
     }
+    //Check is user exists and validity of password
     const correctPassword = user === null
       ? false
       : await bcrypt.compare(password, user.passwordHash)
     if (!correctPassword) {
       throw new AuthenticationError('Invalid password')
     }
+    // Create token with username and id
     const token = jwt.sign({
       username,
       id: user.id as string
@@ -41,6 +45,7 @@ export const Mutation = {
     return({ value: token })
   },
   addGame: async (_root:unknown, args: unknown, context: unknown) => {
+    //Parse args
     const newGame = toNewGameRequest(args)
     const user = await getUser(context)
     const game = new Game({ name: newGame.name, user: user?._id })
@@ -52,11 +57,13 @@ export const Mutation = {
     }
   },
   addStore: async (_root:unknown, args: unknown, context: unknown) => {
+    //Parse args
     const newStore = toNewStoreRequest(args)
     const user = await getUser(context)
-    const gamepool = newStore.game
+    const gamepool = newStore.games
     let store
     if (gamepool) {
+      //Check if all given games exist, assuming that no duplicate games exist
       const games = await Game.find({ name: { $in: gamepool } })
       if (games.length !== gamepool.length) {
         throw new UserInputError('Invalid gamepool')
@@ -73,12 +80,13 @@ export const Mutation = {
     }
   },
   addItem: async (_root:unknown, args: unknown, context: unknown) => {
+    // Parse args
     const newItem = toNewItemRequest(args)
     const storepool = newItem.storepool
     const user = await getUser(context)
     let item
-    //Checking if all the given stores in storepool exist, this will be refactored later on
     if (storepool) {
+      // Check if all given stores exist, assuming that no duplicate stores exist
       const stores = await Store.find({ name: { $in: storepool } })
       if (stores.length !== storepool.length) {
         throw new UserInputError('Invalid storepool')
@@ -95,23 +103,52 @@ export const Mutation = {
     }
   },
   removeGame: async (_root:unknown, args: unknown, context: unknown) => {
-    //TODO: Remove refrences from stores to deleted game
     const user = await getUser(context)
+    // Parse args
     const name = toName(args)
     const game = await Game.findOneAndRemove({
       user: user?.id as string,
       name
     })
+    // Removing all refrences to the deleted game.
+    // Yes, this is very inefficient, but it will be a rare case that user deletes a game.
+    // Find all stores that refrence the deleted game
+    const stores = await Store.find({ $in: [name, '$games' ] })
+    for (const store of stores) {
+      // Remove all references to the deleted game
+      await Store.findOneAndUpdate({
+        name: store.name,
+        user: user?.id as string
+      }, {
+        ...store,
+        games: store.games.map(game => game === name ? null : store)
+      }, { new: true })
+    }
     return game
   },
   removeStore: async (_root: unknown, args: unknown, context: unknown) => {
-    //TODO: Remove refrences from items to deleted store
     const user = await getUser(context)
+    // Parse args
     const name = toName(args)
     const store = await Store.findOneAndRemove({
       user: user?.id as string,
       name
     })
+    // Removing all refrences to the deleted store.
+    // Yes, this is very inefficient, but it will be a rare case that user deletes a store.
+    // Find all items that refrence the deleted store
+    const items = await Item.find({ $in: [name, '$storepool' ] })
+    for (const item of items) {
+      // Remove all references to the deleted store
+      await Item.findOneAndUpdate({
+        name: item.name,
+        user: user?.id as string
+      }, {
+        ...item,
+        storepool: item.storepool.map(store => store === name ? null : store)
+      }, { new: true })
+    }
+
     if (!store) {
       throw new UserInputError('No store found')
     }
@@ -119,6 +156,7 @@ export const Mutation = {
   },
   removeItem: async (_root: unknown, args: unknown, context: unknown) => {
     const user = await getUser(context)
+    // Parse args
     const name = toName(args)
     const item = await Item.findOneAndRemove({
       user: user?.id as string,
@@ -130,9 +168,15 @@ export const Mutation = {
     return item
   },
   updateItem: async (_root: unknown, args: unknown, context: unknown) => {
-    // TODO: Checking if updated storepool stores exist
     const user = await getUser(context)
+    // Parse args
     const params = toUpdateItemParams(args)
+    // Checking if all given stores exist, assuming no duplicate stores exist
+    const stores = await Store.find({ name: { $in: params.storepool } })
+    if (stores.length !== params.storepool?.length && params.storepool) {
+      throw new UserInputError('Incorrect storepool')
+    }
+    // No further checks are made, since mongoose will throw error with incorrect types
     const item = await Item.findOneAndUpdate({
       id: params.id,
       user: user?.id as string
@@ -143,9 +187,15 @@ export const Mutation = {
     return item
   },
   updateStore: async (_root: unknown, args: unknown, context: unknown) => {
-    // TODO: Check if the games exist
     const user = await getUser(context)
+    // Parse args
     const params = toUpdateStoreParams(args)
+    // Checking if all given games exist, assuming no duplicate games exist
+    const games = await Game.find({ name: { $in: params.games } })
+    if (games.length !== params.games?.length && params.games) {
+      throw new UserInputError('Invalid games list')
+    }
+    // No further checks are made, since mongoose will throw error with incorrect types
     const store = await Store.findOneAndUpdate({
       id: params.id,
       user: user?.id as string
@@ -157,6 +207,7 @@ export const Mutation = {
   },
   updateGame: async (_root: unknown, args: unknown, context: unknown) => {
     const user = await getUser(context)
+    // Parse args
     const params = toUpdateGameParams(args)
     const game = await Game.findOneAndUpdate({
       id: params.id,

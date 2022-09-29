@@ -12,6 +12,7 @@ export const Query = {
   },
   getGameInfo: async (_root: unknown, args: unknown, context: unknown) => {
     const user = await getUser(context)
+    // Parse args
     const name = toName(args)
     const game = await Game.findOne({
       user: user?.id as string,
@@ -21,11 +22,14 @@ export const Query = {
   },
   getStores: async (_root: unknown, args: unknown, context: unknown) => {
     const user = await getUser(context)
+    //If no game is specified, return all user's stores
     if (!args) {
       const stores = await Store.find({ user })
       return stores
     }
+    // Parse args
     const params = toGetStoresParams(args)
+    // Check if the user has the game
     const game = await Game.find({
       user: user?.id as string,
       name: params.game
@@ -33,14 +37,16 @@ export const Query = {
     if (!game) {
       throw new UserInputError('Game not found')
     }
+    // Find all user's stores that have the given game in their games
     const stores = await Store.find({
       user: user?.id as string,
-      game: game.map(game => game?.id as string)
+      $in: [ game, '$games' ]
     })
     return stores
   },
   getStoreInfo: async (_root: unknown, args: unknown, context: unknown) => {
     const user = await getUser(context)
+    //Parse args
     const name = toName(args)
     const store = await Store.findOne({
       user: user?.id as string,
@@ -56,7 +62,9 @@ export const Query = {
       const items = await Item.find({ user })
       return items
     }
+    //Parse args
     const params = toGetItemsParams(args)
+    //Check if the store exists
     const store = await Store.find({
       user: user?.id as string,
       name: params.name

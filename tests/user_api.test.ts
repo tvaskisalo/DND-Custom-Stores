@@ -10,11 +10,13 @@ import jwt from 'jsonwebtoken'
 import { toToken } from '../utils/parsers'
 import { Item } from '../schemas/item'
 import { Store } from '../schemas/store'
+import { login, addUserMutation } from './testQueries'
 
 const resolvers = {
   Mutation,
   Query
 }
+
 
 const testServer = new ApolloServer({
   typeDefs,
@@ -35,7 +37,7 @@ describe('Test for user addition', () => {
 
   test('Valid users can be added with resolver', async () => {
     const result = await testServer.executeOperation({
-      query: 'mutation addUser($username: String!, $password: String!) { addUser( username: $username, password: $password ) { value } }',
+      query: addUserMutation,
       variables: {
         username: 'testName',
         password: 'test'
@@ -48,7 +50,7 @@ describe('Test for user addition', () => {
 
   test('Username must be non-empty', async () => {
     const result = await testServer.executeOperation({
-      query: 'mutation addUser($username: String!, $password: String!) { addUser( username: $username, password: $password ) { value } }',
+      query: addUserMutation,
       variables: {
         username: '',
         password: 'test'
@@ -62,7 +64,7 @@ describe('Test for user addition', () => {
 
   test('Password must be non-empty', async () => {
     const result = await testServer.executeOperation({
-      query: 'mutation addUser($username: String!, $password: String!) { addUser( username: $username, password: $password ) { value } }',
+      query: addUserMutation,
       variables: {
         username: 'testName',
         password: ''
@@ -75,7 +77,7 @@ describe('Test for user addition', () => {
   })
   test('Users in database is incremented by one', async () => {
     await testServer.executeOperation({
-      query: 'mutation addUser($username: String!, $password: String!) { addUser( username: $username, password: $password ) { value } }',
+      query: addUserMutation,
       variables: {
         username: 'testName',
         password: 'test'
@@ -87,7 +89,7 @@ describe('Test for user addition', () => {
 
   test('Usernames are unique', async () => {
     const result = await testServer.executeOperation({
-      query: 'mutation addUser($username: String!, $password: String!) { addUser( username: $username, password: $password ) { value } }',
+      query: addUserMutation,
       variables: {
         username: 'testUser1',
         password: 'test'
@@ -110,7 +112,7 @@ describe('Tests for logging in', () => {
 
   test('User can login with correct username and password', async () => {
     const result = await testServer.executeOperation({
-      query: 'mutation login($username: String!, $password: String!) { login ( username: $username, password: $password ) { value } }',
+      query: login,
       variables: {
         username: 'testUser1',
         password: 'TestPassword1'
@@ -121,7 +123,7 @@ describe('Tests for logging in', () => {
 
   test('User login returns correct token', async () => {
     const result = await testServer.executeOperation({
-      query: 'mutation login($username: String!, $password: String!) { login ( username: $username, password: $password ) { value } }',
+      query: login,
       variables: {
         username: 'testUser1',
         password: 'TestPassword1'
@@ -137,7 +139,7 @@ describe('Tests for logging in', () => {
 
   test('User can not login with incorrect password', async () => {
     const result = await testServer.executeOperation({
-      query: 'mutation login($username: String!, $password: String!) { login ( username: $username, password: $password ) { value } }',
+      query: login,
       variables: {
         username: 'testUser1',
         password: 'wrongPassword'
@@ -151,7 +153,7 @@ describe('Tests for logging in', () => {
 
   test('User can not login with incorrect username', async () => {
     const result = await testServer.executeOperation({
-      query: 'mutation login($username: String!, $password: String!) { login ( username: $username, password: $password ) { value } }',
+      query: login,
       variables: {
         username: 'wrongUsername',
         password: 'TestPassword1'
@@ -165,7 +167,7 @@ describe('Tests for logging in', () => {
 
   test('User can not login with empty password', async () => {
     const result = await testServer.executeOperation({
-      query: 'mutation login($username: String!, $password: String!) { login ( username: $username, password: $password ) { value } }',
+      query: login,
       variables: {
         username: 'testUser1',
         password: ''
@@ -179,7 +181,7 @@ describe('Tests for logging in', () => {
 
   test('User can not login with empty username', async () => {
     const result = await testServer.executeOperation({
-      query: 'mutation login($username: String!, $password: String!) { login ( username: $username, password: $password ) { value } }',
+      query: login,
       variables: {
         username: '',
         password: 'TestPassword1'
@@ -193,7 +195,7 @@ describe('Tests for logging in', () => {
 
   test('User can not login with empty username and empty password', async () => {
     const result = await testServer.executeOperation({
-      query: 'mutation login($username: String!, $password: String!) { login ( username: $username, password: $password ) { value } }',
+      query: login,
       variables: {
         username: '',
         password: ''

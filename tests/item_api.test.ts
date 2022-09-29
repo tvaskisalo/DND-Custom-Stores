@@ -1,138 +1,17 @@
 // This test expects that user_api.test.ts passes'
 import { ApolloServer } from 'apollo-server-express'
-import { typeDefs } from '../GraphQL/gqlTypes'
-import { Mutation } from '../GraphQL/mutations'
-import { Query } from '../GraphQL/queries'
-import { MONGODB } from '../utils/config'
-import mongoose from 'mongoose'
 import { User } from '../schemas/user'
 import { Item } from '../schemas/item'
 import { Store } from '../schemas/store'
+import { addItemMutation, removeItemMutation, updateItemMutation } from './testQueries'
+import testServer from './testServer'
 
-const addItemMutation = `mutation addItem(
-  $name: String!, 
-  $storepool: [String], 
-  $material: String, 
-  $baseCost: Int, 
-  $weight: Int, 
-  $properties: String, 
-  $damage: String, 
-  $damageTypes: [String], 
-  $baseItem: Boolean!, 
-  $unique: Boolean!) { 
-    addItem (
-      name: $name, 
-      storepool: $storepool, 
-      material: $material, 
-      baseCost: $baseCost, 
-      weight: $weight, 
-      properties: $properties, 
-      damage: $damage, 
-      damageTypes: $damageTypes, 
-      baseItem: $baseItem, 
-      unique: $unique
-    ) {
-      name,
-      storepool,
-      material,
-      baseCost,
-      weight,
-      properties,
-      damage,
-      damageTypes,
-      baseItem,
-      unique
-    }
-  }`
-
-const removeItemMutation = `mutation removeItem(
-  $name: String!) {
-    removeItem(
-      name: $name
-    ) {
-      name
-    }
-  }`
-
-const updateItemMutation = `mutation updateItem(
-  $id: String!,
-  $name: String,
-  $storepool: [String], 
-  $material: String, 
-  $baseCost: Int, 
-  $weight: Int, 
-  $properties: String, 
-  $damage: String, 
-  $damageTypes: [String], 
-  $baseItem: Boolean, 
-  $unique: Boolean) { 
-    updateItem (
-      id: $id,
-      name: $name, 
-      storepool: $storepool, 
-      material: $material, 
-      baseCost: $baseCost, 
-      weight: $weight, 
-      properties: $properties, 
-      damage: $damage, 
-      damageTypes: $damageTypes, 
-      baseItem: $baseItem, 
-      unique: $unique
-    ) {
-      name,
-      storepool,
-      material,
-      baseCost,
-      weight,
-      properties,
-      damage,
-      damageTypes,
-      baseItem,
-      unique
-    }
-  }`
-
-const resolvers = {
-  Mutation,
-  Query
-}
-
-let testServer: ApolloServer
-
+let server: ApolloServer
 
 beforeAll( async () => {
-  const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-  })
-  await mongoose.connect(MONGODB)
-  await User.deleteMany()
-  await server.executeOperation({
-    query: 'mutation addUser($username: String!, $password: String!) { addUser( username: $username, password: $password ) { value } }',
-    variables: {
-      username: 'testUser',
-      password: 'test'
-    }
-  })
-  await server.executeOperation({
-    query: 'mutation addUser($username: String!, $password: String!) { addUser( username: $username, password: $password ) { value } }',
-    variables: {
-      username: 'otherUser',
-      password: 'test'
-    }
-  })
-  // Unfortunately testing GraphQL queries with headers/context does not work (at least to my knowledge, I tried several methods and none of them worked)
-  // Thus I cannot test if additiong without token is allowed or not. I bypass the check by hardcoding a user to the server's context
-  // I will test token usage with cypress later on (at least that is the plan)
-  const user = await User.findOne({ username: 'testUser' })
-  if (user && user.id) {
-    testServer = new ApolloServer({
-      typeDefs,
-      resolvers,
-      // Normally the context checks the token and sets these values if the token is valid
-      context: () => { return { username: 'testUser', id: user.id as string } },
-    })
-  }
+  // User that is logged in has the name testName.
+  // There exists another user with the name otherUser that is not logged in
+  server = await testServer()
 },100000)
 
 describe('Item addition', () => {
@@ -153,7 +32,7 @@ describe('Item addition', () => {
       baseItem: true,
       unique: false
     }
-    const result = await testServer.executeOperation(
+    const result = await server.executeOperation(
       {
         query: addItemMutation,
         variables: { ...item }
@@ -170,7 +49,7 @@ describe('Item addition', () => {
       baseItem: false,
       unique: true
     }
-    const result = await testServer.executeOperation(
+    const result = await server.executeOperation(
       {
         query: addItemMutation,
         variables: { ...item }
@@ -187,7 +66,7 @@ describe('Item addition', () => {
       baseItem: false,
       unique: true
     }
-    const result = await testServer.executeOperation(
+    const result = await server.executeOperation(
       {
         query: addItemMutation,
         variables: { ...item }
@@ -202,7 +81,7 @@ describe('Item addition', () => {
       baseItem: false,
       unique: true
     }
-    const result = await testServer.executeOperation(
+    const result = await server.executeOperation(
       {
         query: addItemMutation,
         variables: { ...item }
@@ -216,7 +95,7 @@ describe('Item addition', () => {
       name: 'testName',
       unique: true
     }
-    const result = await testServer.executeOperation(
+    const result = await server.executeOperation(
       {
         query: addItemMutation,
         variables: { ...item }
@@ -231,7 +110,7 @@ describe('Item addition', () => {
       name: 'testName',
       baseItem: false
     }
-    const result = await testServer.executeOperation(
+    const result = await server.executeOperation(
       {
         query: addItemMutation,
         variables: { ...item }
@@ -251,7 +130,7 @@ describe('Item addition', () => {
     const newItem = new Item({ ...item, user })
     await newItem.save()
 
-    const result = await testServer.executeOperation(
+    const result = await server.executeOperation(
       {
         query: addItemMutation,
         variables: { ...item }
@@ -290,7 +169,7 @@ describe('Item deletion', () => {
   })
 
   test('Correct item gets deleted', async () => {
-    const result = await testServer.executeOperation(
+    const result = await server.executeOperation(
       {
         query: removeItemMutation,
         variables: { name: 'testName1' }
@@ -306,7 +185,7 @@ describe('Item deletion', () => {
   })
 
   test('User can not delete other users items', async () => {
-    const result = await testServer.executeOperation(
+    const result = await server.executeOperation(
       {
         query: removeItemMutation,
         variables: { name: 'testName3' }
@@ -349,7 +228,7 @@ describe('Item updating', () => {
 
   test('Correct update request is succesful', async () => {
     const item1 = await Item.findOne({ name: 'testName1' })
-    const result = await testServer.executeOperation({
+    const result = await server.executeOperation({
       query: updateItemMutation,
       variables: {
         id: item1?.id as string,
@@ -382,7 +261,7 @@ describe('Item updating', () => {
 
   test('User cant update another users items', async () => {
     const item1 = await Item.findOne({ name: 'testName3' })
-    const result = await testServer.executeOperation({
+    const result = await server.executeOperation({
       query: updateItemMutation,
       variables: {
         id: item1?.id as string,
@@ -414,7 +293,7 @@ describe('Item updating', () => {
 
 afterAll(async () => {
   //I found some undefined behavior and this should fix it
-  await testServer.stop()
+  await server.stop()
   await User.deleteMany()
   await Store.deleteMany()
   await Item.deleteMany()

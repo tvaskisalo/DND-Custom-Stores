@@ -20,4 +20,5 @@
 28.9.2022 | 2 | Added more tests and changed the Schemas' properties: now most do not have refrences anymore. I will explain why later
 28.9.2022 | 1 | Added update resolvers for stores, games and items. Added tests for updating stores
 29.9.2022 | 1 | Added more tests for updating stores and items
-Total time | 32 | updated 29.9.2022
+29.9.2022 | 1.5 | Refactored tests, finished up store and game deletion.
+Total time | 33.5 | updated 29.9.2022

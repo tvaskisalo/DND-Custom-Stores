@@ -27,8 +27,8 @@ input ItemTypeProbabilityInput {
 type Store {
   name: String!,
   id: ID!,
-  itempool: [Item],
-  itemTypeProbabilities: [ItemTypeProbability]
+  itemTypeProbabilities: [ItemTypeProbability],
+  games: [String]
 }
 type Item {
   name: String!,
@@ -65,7 +65,8 @@ type Mutation {
   ): Game,
   addStore(
     name: String!,
-    itemTypeProbabilities: [ItemTypeProbabilityInput]
+    itemTypeProbabilities: [ItemTypeProbabilityInput],
+    games: [String]
   ): Store,
   addItem(
     name: String!,
@@ -95,7 +96,8 @@ type Mutation {
   updateStore(
     id: String!,
     name: String,
-    itemTypeProbabilities: [ItemTypeProbabilityInput]
+    itemTypeProbabilities: [ItemTypeProbabilityInput],
+    games: [String]
   ): Store,
   updateItem(
     id: String!,

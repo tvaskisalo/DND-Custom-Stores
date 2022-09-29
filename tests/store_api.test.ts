@@ -1,102 +1,21 @@
 // This test expects that user_api.test.ts passes'
 import { ApolloServer } from 'apollo-server-express'
-import { typeDefs } from '../GraphQL/gqlTypes'
-import { Mutation } from '../GraphQL/mutations'
-import { Query } from '../GraphQL/queries'
-import { MONGODB } from '../utils/config'
-import mongoose from 'mongoose'
 import { User } from '../schemas/user'
 import { Store } from '../schemas/store'
 import { Item } from '../schemas/item'
+import { addStoreMutation, removeStoreMutation, updateStoreMutation } from './testQueries'
+import testServer from './testServer'
 
-
-const resolvers = {
-  Mutation,
-  Query
-}
-
-const addStoreMutation = `mutation addStore(
-  $name: String!,
-  $itemTypeProbabilities: [ItemTypeProbabilityInput]) {
-    addStore(
-      name: $name,
-      itemTypeProbabilities: $itemTypeProbabilities
-    ) {
-      name,
-      itemTypeProbabilities {
-        rarity,
-        probability
-      }
-    }
-  }`
-
-const removeStoreMutation = `mutation removeStore(
-  $name: String!) {
-    removeStore(
-      name: $name
-    ) {
-      name
-    }
-  }`
-
-const updateStoreMutation = `mutation updateStore(
-  $id: String!,
-  $name: String,
-  $itemTypeProbabilities: [ItemTypeProbabilityInput]){
-    updateStore(
-      id: $id,
-      name: $name,
-      itemTypeProbabilities: $itemTypeProbabilities
-    ) {
-      name,
-      itemTypeProbabilities {
-        rarity,
-        probability
-      }
-    }
-  }`
-
-let testServer: ApolloServer
-
+let server: ApolloServer
 
 beforeAll( async () => {
-  const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-  })
-  await mongoose.connect(MONGODB)
-  await User.deleteMany()
-  await server.executeOperation({
-    query: 'mutation addUser($username: String!, $password: String!) { addUser( username: $username, password: $password ) { value } }',
-    variables: {
-      username: 'testName',
-      password: 'test'
-    }
-  })
-  await server.executeOperation({
-    query: 'mutation addUser($username: String!, $password: String!) { addUser( username: $username, password: $password ) { value } }',
-    variables: {
-      username: 'otherUser',
-      password: 'test'
-    }
-  })
-  await server.stop()
-  // Unfortunately testing GraphQL queries with headers/context does not work (at least to my knowledge, I tried several methods and none of them worked)
-  // Thus I cannot test if additiong without token is allowed or not. I bypass the check by hardcoding a user to the server's context
-  // I will test token usage with cypress later on (at least that is the plan)
-  const user = await User.findOne({ username: 'testName' })
-  if (user && user.id) {
-    testServer = new ApolloServer({
-      typeDefs,
-      resolvers,
-      // Normally the context checks the token and sets these values if the token is valid
-      context: () => { return { username: 'testName', id: user.id as string } },
-    })
-  }
+  server = await testServer()
 },100000)
 
 describe('Store addition', () => {
   beforeEach( async () => {
+  // User that is logged in has the name testName.
+  // There exists another user with the name otherUser that is not logged in
     await Store.deleteMany()
   })
 
@@ -110,7 +29,7 @@ describe('Store addition', () => {
         }
       ]
     }
-    const result = await testServer.executeOperation(
+    const result = await server.executeOperation(
       {
         query: addStoreMutation,
         variables: { ...store }
@@ -135,7 +54,7 @@ describe('Store addition', () => {
         }
       ]
     }
-    const result = await testServer.executeOperation(
+    const result = await server.executeOperation(
       {
         query: addStoreMutation,
         variables: { ...store }
@@ -155,7 +74,7 @@ describe('Store addition', () => {
         }
       ]
     }
-    const result = await testServer.executeOperation(
+    const result = await server.executeOperation(
       {
         query: addStoreMutation,
         variables: { ...store }
@@ -174,7 +93,7 @@ describe('Store addition', () => {
         }
       ]
     }
-    const result = await testServer.executeOperation(
+    const result = await server.executeOperation(
       {
         query: addStoreMutation,
         variables: { ...store }
@@ -197,7 +116,7 @@ describe('Store addition', () => {
     const newStore = new Store({ ...store, user })
     await newStore.save()
 
-    const result = await testServer.executeOperation({
+    const result = await server.executeOperation({
       query: addStoreMutation,
       variables: { ...store }
     })
@@ -209,7 +128,7 @@ describe('Store addition', () => {
     const store = {
       name: 'testName',
     }
-    const result = await testServer.executeOperation(
+    const result = await server.executeOperation(
       {
         query: addStoreMutation,
         variables: { ...store }
@@ -223,7 +142,7 @@ describe('Store addition', () => {
       name: 'testName',
       itemTypeProbabilities: []
     }
-    const result = await testServer.executeOperation(
+    const result = await server.executeOperation(
       {
         query: addStoreMutation,
         variables: { ...store }
@@ -242,7 +161,7 @@ describe('Store addition', () => {
         }
       ]
     }
-    const result = await testServer.executeOperation({
+    const result = await server.executeOperation({
       query: addStoreMutation,
       variables: { ...store }
     })
@@ -264,7 +183,7 @@ describe('Store addition', () => {
         }
       ]
     }
-    const result = await testServer.executeOperation({
+    const result = await server.executeOperation({
       query: addStoreMutation,
       variables: { ...store }
     })
@@ -304,7 +223,7 @@ describe('Store deletion', () => {
       ]
     }
     const otherUser = await User.findOne({ username: 'otherUser' })
-    const user = await User.findOne({ username: 'testName' })
+    const user = await User.findOne({ username: 'testUser' })
     const newStore1 = new Store({ ...store1, user: user?.id as string })
     await newStore1.save()
     const newStore2 = new Store({ ...store2, user: user?.id as string })
@@ -314,7 +233,7 @@ describe('Store deletion', () => {
   })
 
   test('Correct store gets deleted', async () => {
-    const result = await testServer.executeOperation(
+    const result = await server.executeOperation(
       {
         query: removeStoreMutation,
         variables: { name: 'testName1' }
@@ -330,7 +249,7 @@ describe('Store deletion', () => {
   })
 
   test('User can not delete other users stores', async () => {
-    const result = await testServer.executeOperation(
+    const result = await server.executeOperation(
       {
         query: removeStoreMutation,
         variables: { name: 'testName3' }
@@ -385,7 +304,7 @@ describe('Store updating', () => {
 
   test('Correct update request is succesful, test 1', async () => {
     const store1 = await Store.findOne({ name: 'testName1' })
-    const result = await testServer.executeOperation({
+    const result = await server.executeOperation({
       query: updateStoreMutation,
       variables: {
         id: store1?.id as string,
@@ -419,7 +338,7 @@ describe('Store updating', () => {
 
   test('Correct update request is succesful, test 2', async () => {
     const store1 = await Store.findOne({ name: 'testName1' })
-    const result = await testServer.executeOperation({
+    const result = await server.executeOperation({
       query: updateStoreMutation,
       variables: {
         id: store1?.id as string,
@@ -436,7 +355,6 @@ describe('Store updating', () => {
       }
     })
     expect(result.errors).toBeUndefined()
-    console.log(result.data)
     if (result.data && result.data.name && result.data.itemTypeProbabilities) {
       expect(result.data.name).toEqual('testName1')
       expect(result.data.itemTypeProbabilities.length).toEqual(2)
@@ -453,7 +371,7 @@ describe('Store updating', () => {
 
   test('User cant update another users stores', async () => {
     const store3 = await Store.findOne({ name: 'testName3' })
-    const result = await testServer.executeOperation({
+    const result = await server.executeOperation({
       query: updateStoreMutation,
       variables: {
         id: store3?.id as string,
@@ -479,7 +397,7 @@ describe('Store updating', () => {
 
   test('User cant update with incorrect info', async () => {
     const store3 = await Store.findOne({ name: 'testName1' })
-    const result = await testServer.executeOperation({
+    const result = await server.executeOperation({
       query: updateStoreMutation,
       variables: {
         id: store3?.id as string,
@@ -508,7 +426,7 @@ describe('Store updating', () => {
 
 afterAll(async () => {
   //I found some undefined behavior and this should fix it
-  await testServer.stop()
+  await server.stop()
   await User.deleteMany()
   await Store.deleteMany()
   await Item.deleteMany()

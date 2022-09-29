@@ -14,7 +14,7 @@ const itemSchema = new mongoose.Schema({
   },
   // If item is a baseItem, then it is always in all stores, so then storePool is not set.
   // The storePool is only used to manage where unique items can drop.
-  storePool: [{
+  storepool: [{
     type: String
   }],
   material: {
