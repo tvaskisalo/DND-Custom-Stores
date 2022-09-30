@@ -123,6 +123,34 @@ export const updateItemMutation = `mutation updateItem(
     }
   }`
 
+export const addGameMutation = `mutation addGame(
+  $name: String!) {
+    addGame (
+      name: $name
+    ) {
+      name
+    }
+  }`
+
+export const removeGameMutation = `mutation removeGame(
+  $name: String!) {
+    removeGame (
+      name: $name
+    ) {
+      name
+    }
+  }`
+
+export const updateGameMutation = `mutation updateGame(
+  $id: String!
+  $name: String) {
+    updateGame (
+      id: $id,
+      name: $name
+    ) {
+      name
+    }
+  }`
 
 export const addUserMutation = `mutation addUser(
   $username: String!,

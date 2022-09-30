@@ -5,6 +5,7 @@ import { Store } from '../schemas/store'
 import { Item } from '../schemas/item'
 import { addStoreMutation, removeStoreMutation, updateStoreMutation } from './testQueries'
 import testServer from './testServer'
+import { Game } from '../schemas/game'
 
 let server: ApolloServer
 
@@ -113,7 +114,7 @@ describe('Store addition', () => {
       ]
     }
     const user = await User.findOne({ username: 'testName' })
-    const newStore = new Store({ ...store, user })
+    const newStore = new Store({ ...store, user: user?.id as string })
     await newStore.save()
 
     const result = await server.executeOperation({
@@ -264,7 +265,6 @@ describe('Store deletion', () => {
 describe('Store updating', () => {
   beforeEach(async() => {
     await Store.deleteMany()
-    await Item.deleteMany()
     const store1 = {
       name: 'testName1',
       itemTypeProbabilities: [
@@ -293,7 +293,7 @@ describe('Store updating', () => {
       ]
     }
     const otherUser = await User.findOne({ username: 'otherUser' })
-    const user = await User.findOne({ username: 'testName' })
+    const user = await User.findOne({ username: 'testUser' })
     const newStore1 = new Store({ ...store1, user: user?.id as string })
     await newStore1.save()
     const newStore2 = new Store({ ...store2, user: user?.id as string })
@@ -322,18 +322,16 @@ describe('Store updating', () => {
       }
     })
     expect(result.errors).toBeUndefined()
-    if (result.data && result.data.name && result.data.itemTypeProbabilities) {
-      expect(result.data.name).toEqual('UpdatedStore')
-      expect(result.data.itemTypeProbabilities.length).toEqual(2)
-      expect(result.data.itemTypeProbabilities[0]).toEqual({
-        rarity: 'Uncommon',
-        probability: 50
-      })
-      expect(result.data.itemTypeProbabilities[1]).toEqual({
-        rarity: 'Common',
-        probability: 50
-      })
-    }
+    expect(result.data).toBeDefined()
+    const updatedStore = await Store.findOne({ name: 'UpdatedStore' })
+    expect(updatedStore?.name).toEqual('UpdatedStore')
+    expect(updatedStore?.itemTypeProbabilities.length).toEqual(2)
+    expect(updatedStore?.itemTypeProbabilities[0].rarity).toEqual('Uncommon')
+    expect(updatedStore?.itemTypeProbabilities[0].probability).toEqual(50)
+    expect(updatedStore?.itemTypeProbabilities[1].rarity).toEqual('Common')
+    expect(updatedStore?.itemTypeProbabilities[1].probability).toEqual(50)
+    const oldStore = await Store.findOne({ name: 'testName1' })
+    expect(oldStore).toBe(null)
   })
 
   test('Correct update request is succesful, test 2', async () => {
@@ -355,18 +353,13 @@ describe('Store updating', () => {
       }
     })
     expect(result.errors).toBeUndefined()
-    if (result.data && result.data.name && result.data.itemTypeProbabilities) {
-      expect(result.data.name).toEqual('testName1')
-      expect(result.data.itemTypeProbabilities.length).toEqual(2)
-      expect(result.data.itemTypeProbabilities[0]).toEqual({
-        rarity: 'Uncommon',
-        probability: 50
-      })
-      expect(result.data.itemTypeProbabilities[1]).toEqual({
-        rarity: 'Common',
-        probability: 50
-      })
-    }
+    const updatedStore = await Store.findOne({ name: 'testName1' })
+    expect(updatedStore?.name).toEqual('testName1')
+    expect(updatedStore?.itemTypeProbabilities.length).toEqual(2)
+    expect(updatedStore?.itemTypeProbabilities[0].rarity).toEqual('Uncommon')
+    expect(updatedStore?.itemTypeProbabilities[0].probability).toEqual(50)
+    expect(updatedStore?.itemTypeProbabilities[1].rarity).toEqual('Common')
+    expect(updatedStore?.itemTypeProbabilities[1].probability).toEqual(50)
   })
 
   test('User cant update another users stores', async () => {
@@ -389,10 +382,12 @@ describe('Store updating', () => {
       }
     })
     expect(result.errors).toBeUndefined()
-    const updatedStore = await Store.findOne({ name: 'testName3' })
-    expect(updatedStore?.name).toEqual('testName3')
-    expect(updatedStore?.itemTypeProbabilities[0].rarity).toEqual('Common')
-    expect(updatedStore?.itemTypeProbabilities[0].probability).toEqual(100)
+    const originalStore = await Store.findOne({ name: 'testName3' })
+    expect(originalStore?.name).toEqual('testName3')
+    expect(originalStore?.itemTypeProbabilities[0].rarity).toEqual('Common')
+    expect(originalStore?.itemTypeProbabilities[0].probability).toEqual(100)
+    const updatedStore = await Store.findOne({ name: 'UpdatedStore' })
+    expect(updatedStore).toBe(null)
   })
 
   test('User cant update with incorrect info', async () => {
@@ -430,4 +425,5 @@ afterAll(async () => {
   await User.deleteMany()
   await Store.deleteMany()
   await Item.deleteMany()
+  await Game.deleteMany()
 })

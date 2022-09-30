@@ -5,6 +5,7 @@ import { Item } from '../schemas/item'
 import { Store } from '../schemas/store'
 import { addItemMutation, removeItemMutation, updateItemMutation } from './testQueries'
 import testServer from './testServer'
+import { Game } from '../schemas/game'
 
 let server: ApolloServer
 
@@ -127,7 +128,7 @@ describe('Item addition', () => {
       unique: true
     }
     const user = await User.findOne({ username: 'testUser' })
-    const newItem = new Item({ ...item, user })
+    const newItem = new Item({ ...item, user: user?.id as string })
     await newItem.save()
 
     const result = await server.executeOperation(
@@ -247,16 +248,20 @@ describe('Item updating', () => {
     // For some reason this is needed here but nowhere else. I am confused
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const data = result.data?.updateItem
-    expect(data.name).toBe('UpdatedItem')
-    expect(data.material).toEqual('testMaterial')
-    expect(data.baseCost).toEqual(100)
-    expect(data.weight).toEqual(10)
-    expect(data.properties).toEqual('testProperties')
-    expect(data.damage).toEqual('testDamage')
-    expect(data.damageTypes.length).toEqual(1)
-    expect(data.damageTypes[0]).toEqual('testDamageType')
-    expect(data.baseItem).toEqual(true)
-    expect(data.unique).toEqual(false)
+    expect(data.name).toBe('testName1')
+    const updatedItem = await Item.findOne({ name: 'UpdatedItem' })
+    expect(updatedItem?.name).toBe('UpdatedItem')
+    expect(updatedItem?.material).toEqual('testMaterial')
+    expect(updatedItem?.baseCost).toEqual(100)
+    expect(updatedItem?.weight).toEqual(10)
+    expect(updatedItem?.properties).toEqual('testProperties')
+    expect(updatedItem?.damage).toEqual('testDamage')
+    expect(updatedItem?.damageTypes.length).toEqual(1)
+    expect(updatedItem?.damageTypes[0]).toEqual('testDamageType')
+    expect(updatedItem?.baseItem).toEqual(true)
+    expect(updatedItem?.unique).toEqual(false)
+    const oldItem = await Item.findOne({ name: 'testName1' })
+    expect(oldItem).toBe(null)
   })
 
   test('User cant update another users items', async () => {
@@ -277,16 +282,18 @@ describe('Item updating', () => {
       }
     })
     expect(result.errors).toBeUndefined()
-    const updatedStore = await Item.findOne({ name: 'testName3' })
-    expect(updatedStore?.name).toBe('testName3')
-    expect(updatedStore?.material).toBeUndefined()
-    expect(updatedStore?.baseCost).toBeUndefined()
-    expect(updatedStore?.weight).toBeUndefined()
-    expect(updatedStore?.properties).toBeUndefined()
-    expect(updatedStore?.damage).toBeUndefined()
-    expect(updatedStore?.damageTypes.length).toBe(0)
-    expect(updatedStore?.baseItem).toEqual(true)
-    expect(updatedStore?.unique).toEqual(true)
+    const originalItem = await Item.findOne({ name: 'testName3' })
+    expect(originalItem?.name).toBe('testName3')
+    expect(originalItem?.material).toBeUndefined()
+    expect(originalItem?.baseCost).toBeUndefined()
+    expect(originalItem?.weight).toBeUndefined()
+    expect(originalItem?.properties).toBeUndefined()
+    expect(originalItem?.damage).toBeUndefined()
+    expect(originalItem?.damageTypes.length).toBe(0)
+    expect(originalItem?.baseItem).toEqual(true)
+    expect(originalItem?.unique).toEqual(true)
+    const updatedItem = await Item.findOne({ name: 'UpdatedItem' })
+    expect(updatedItem).toBe(null)
   })
 })
 
@@ -297,4 +304,5 @@ afterAll(async () => {
   await User.deleteMany()
   await Store.deleteMany()
   await Item.deleteMany()
+  await Game.deleteMany()
 })

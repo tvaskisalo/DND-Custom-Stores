@@ -178,12 +178,11 @@ export const Mutation = {
     }
     // No further checks are made, since mongoose will throw error with incorrect types
     const item = await Item.findOneAndUpdate({
-      id: params.id,
+      _id: params.id,
       user: user?.id as string
     }, {
-      ...params,
-      id:undefined
-    }, { new: true })
+      ...params
+    })
     return item
   },
   updateStore: async (_root: unknown, args: unknown, context: unknown) => {
@@ -197,12 +196,11 @@ export const Mutation = {
     }
     // No further checks are made, since mongoose will throw error with incorrect types
     const store = await Store.findOneAndUpdate({
-      id: params.id,
+      _id: params.id,
       user: user?.id as string
     }, {
-      ...params,
-      id:undefined
-    }, { new: true })
+      ...params
+    })
     return store
   },
   updateGame: async (_root: unknown, args: unknown, context: unknown) => {
@@ -210,12 +208,11 @@ export const Mutation = {
     // Parse args
     const params = toUpdateGameParams(args)
     const game = await Game.findOneAndUpdate({
-      id: params.id,
+      _id: params.id,
       user: user?.id as string
     }, {
-      ...params,
-      id:undefined
-    }, { new: true })
+      ...params
+    })
     return game
   },
 }

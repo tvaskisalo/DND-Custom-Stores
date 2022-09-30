@@ -1,15 +1,19 @@
 import mongoose from 'mongoose'
+import uniqueValidator from 'mongoose-unique-validator'
 
 const gameSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: true,
+    unique: true,
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }
 })
+
+gameSchema.plugin(uniqueValidator)
 
 gameSchema.set('toJSON', {
   transform: (_document, returnedObject) => {

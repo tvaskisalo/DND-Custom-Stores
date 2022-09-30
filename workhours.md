@@ -21,4 +21,5 @@
 28.9.2022 | 1 | Added update resolvers for stores, games and items. Added tests for updating stores
 29.9.2022 | 1 | Added more tests for updating stores and items
 29.9.2022 | 1.5 | Refactored tests, finished up store and game deletion.
-Total time | 33.5 | updated 29.9.2022
+30.9.2022 | 1.5 | Added tests for games and improved some tests
+Total time | 35 | updated 29.9.2022
