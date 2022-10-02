@@ -20,27 +20,31 @@ export const Query = {
     })
     return game
   },
-  getStores: async (_root: unknown, args: unknown, context: unknown) => {
+  // We have to set args as any, instead of unknow so that TypeScript does not complain about checking the nullish value
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getStores: async (_root: unknown, args: any, context: unknown) => {
     const user = await getUser(context)
     //If no game is specified, return all user's stores
-    if (!args) {
-      const stores = await Store.find({ user })
+    // Enable unsafe argument to check nullish value. I do not see a better way
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    if (Object.keys(args).length === 0) {
+      const stores = await Store.find({ user: user?.id as string })
       return stores
     }
     // Parse args
     const params = toGetStoresParams(args)
     // Check if the user has the game
-    const game = await Game.find({
+    const game = await Game.findOne({
       user: user?.id as string,
       name: params.game
     })
-    if (!game) {
+    if (game === null) {
       throw new UserInputError('Game not found')
     }
     // Find all user's stores that have the given game in their games
     const stores = await Store.find({
       user: user?.id as string,
-      $in: [ game, '$games' ]
+      games: game.name
     })
     return stores
   },
@@ -55,10 +59,14 @@ export const Query = {
     return store
 
   },
-  getItems: async (_root: unknown, args: unknown, context: unknown) => {
+  // We have to set args as any, instead of unknow so that TypeScript does not complain about checking the nullish value
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getItems: async (_root: unknown, args: any, context: unknown) => {
     const user = await getUser(context)
     //If no store is given, return all items
-    if (!args) {
+    // Enable unsafe argument to check nullish value. I do not see a better way
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    if (Object.keys(args).length === 0) {
       const items = await Item.find({ user })
       return items
     }

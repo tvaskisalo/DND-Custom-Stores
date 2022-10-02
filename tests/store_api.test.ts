@@ -3,11 +3,51 @@ import { ApolloServer } from 'apollo-server-express'
 import { User } from '../schemas/user'
 import { Store } from '../schemas/store'
 import { Item } from '../schemas/item'
-import { addStoreMutation, removeStoreMutation, updateStoreMutation } from './testQueries'
+import { addStoreMutation, getStoreInfoQuery, removeStoreMutation, updateStoreMutation } from './testQueries'
 import testServer from './testServer'
 import { Game } from '../schemas/game'
 
 let server: ApolloServer
+
+//This is used for testing getters, updating and deleting
+const initTest = async () => {
+  await Store.deleteMany()
+  const store1 = {
+    name: 'testName1',
+    itemTypeProbabilities: [
+      {
+        rarity: 'Common',
+        probability: 100
+      }
+    ]
+  }
+  const store2 = {
+    name: 'testName2',
+    itemTypeProbabilities: [
+      {
+        rarity: 'Common',
+        probability: 100
+      }
+    ]
+  }
+  const store3 = {
+    name: 'testName3',
+    itemTypeProbabilities: [
+      {
+        rarity: 'Common',
+        probability: 100
+      }
+    ]
+  }
+  const otherUser = await User.findOne({ username: 'otherUser' })
+  const user = await User.findOne({ username: 'testUser' })
+  const newStore1 = new Store({ ...store1, user: user?.id as string })
+  await newStore1.save()
+  const newStore2 = new Store({ ...store2, user: user?.id as string })
+  await newStore2.save()
+  const newStore3 = new Store({ ...store3, user: otherUser?.id as string })
+  await newStore3.save()
+}
 
 beforeAll( async () => {
   server = await testServer()
@@ -193,44 +233,45 @@ describe('Store addition', () => {
   })
 })
 
+describe('Store getter', () => {
+  beforeEach(async () => {
+    await initTest()
+  })
+
+  test('GetStoreInfo return correct info', async () => {
+    const result = await server.executeOperation(
+      {
+        query: getStoreInfoQuery,
+        variables: {
+          name: 'testName1'
+        }
+      }
+    )
+    expect(result.errors).toBeUndefined()
+    expect(result.data).toBeDefined()
+    expect(result.data?.getStoreInfo.name).toBe('testName1')
+    expect(result.data?.getStoreInfo.itemTypeProbabilities.length).toBe(1)
+    expect(result.data?.getStoreInfo.itemTypeProbabilities[0].rarity).toBe('Common')
+    expect(result.data?.getStoreInfo.itemTypeProbabilities[0].probability).toBe(100)
+  })
+
+  test('User cant get other users store info', async () => {
+    const result = await server.executeOperation(
+      {
+        query: getStoreInfoQuery,
+        variables: {
+          name: 'testName3'
+        }
+      }
+    )
+    expect(result.data?.getStoreInfo).toBe(null)
+  })
+})
+
+
 describe('Store deletion', () => {
   beforeEach(async () => {
-    await Store.deleteMany()
-    const store1 = {
-      name: 'testName1',
-      itemTypeProbabilities: [
-        {
-          rarity: 'Common',
-          probability: 100
-        }
-      ]
-    }
-    const store2 = {
-      name: 'testName2',
-      itemTypeProbabilities: [
-        {
-          rarity: 'Common',
-          probability: 100
-        }
-      ]
-    }
-    const store3 = {
-      name: 'testName3',
-      itemTypeProbabilities: [
-        {
-          rarity: 'Common',
-          probability: 100
-        }
-      ]
-    }
-    const otherUser = await User.findOne({ username: 'otherUser' })
-    const user = await User.findOne({ username: 'testUser' })
-    const newStore1 = new Store({ ...store1, user: user?.id as string })
-    await newStore1.save()
-    const newStore2 = new Store({ ...store2, user: user?.id as string })
-    await newStore2.save()
-    const newStore3 = new Store({ ...store3, user: otherUser?.id as string })
-    await newStore3.save()
+    await initTest()
   })
 
   test('Correct store gets deleted', async () => {
@@ -251,8 +292,7 @@ describe('Store deletion', () => {
 
   test('User can not delete other users stores', async () => {
     const result = await server.executeOperation(
-      {
-        query: removeStoreMutation,
+      {  //I found some undefined behavior and this should fix it
         variables: { name: 'testName3' }
       }
     )
@@ -264,42 +304,7 @@ describe('Store deletion', () => {
 
 describe('Store updating', () => {
   beforeEach(async() => {
-    await Store.deleteMany()
-    const store1 = {
-      name: 'testName1',
-      itemTypeProbabilities: [
-        {
-          rarity: 'Common',
-          probability: 100
-        }
-      ]
-    }
-    const store2 = {
-      name: 'testName2',
-      itemTypeProbabilities: [
-        {
-          rarity: 'Common',
-          probability: 100
-        }
-      ]
-    }
-    const store3 = {
-      name: 'testName3',
-      itemTypeProbabilities: [
-        {
-          rarity: 'Common',
-          probability: 100
-        }
-      ]
-    }
-    const otherUser = await User.findOne({ username: 'otherUser' })
-    const user = await User.findOne({ username: 'testUser' })
-    const newStore1 = new Store({ ...store1, user: user?.id as string })
-    await newStore1.save()
-    const newStore2 = new Store({ ...store2, user: user?.id as string })
-    await newStore2.save()
-    const newStore3 = new Store({ ...store3, user: otherUser?.id as string })
-    await newStore3.save()
+    await initTest()
   })
 
   test('Correct update request is succesful, test 1', async () => {

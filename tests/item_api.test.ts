@@ -3,11 +3,39 @@ import { ApolloServer } from 'apollo-server-express'
 import { User } from '../schemas/user'
 import { Item } from '../schemas/item'
 import { Store } from '../schemas/store'
-import { addItemMutation, removeItemMutation, updateItemMutation } from './testQueries'
+import { addItemMutation, getItemInfoQuery, removeItemMutation, updateItemMutation } from './testQueries'
 import testServer from './testServer'
 import { Game } from '../schemas/game'
 
 let server: ApolloServer
+
+//This is used for testing getters, updating and deleting
+const initTest = async () => {
+  await Item.deleteMany()
+  const item1 = {
+    name: 'testName1',
+    baseItem: false,
+    unique: true
+  }
+  const item2 = {
+    name: 'testName2',
+    baseItem: true,
+    unique: true
+  }
+  const item3 = {
+    name: 'testName3',
+    baseItem: true,
+    unique: true
+  }
+  const otherUser = await User.findOne({ username: 'otherUser' })
+  const user = await User.findOne({ username: 'testUser' })
+  const newItem1 = new Item({ ...item1, user: user?.id as string })
+  await newItem1.save()
+  const newItem2 = new Item({ ...item2, user: user?.id as string })
+  await newItem2.save()
+  const newItem3 = new Item({ ...item3, user: otherUser?.id as string })
+  await newItem3.save()
+}
 
 beforeAll( async () => {
   // User that is logged in has the name testName.
@@ -141,32 +169,41 @@ describe('Item addition', () => {
   })
 })
 
+describe('Iteminfo getter', () => {
+  beforeEach(async() => {
+    await initTest()
+  })
+
+  test('GetItemInfo return correct items', async () => {
+    const result = await server.executeOperation(
+      {
+        query: getItemInfoQuery,
+        variables: {
+          name: 'testName1'
+        }
+      }
+    )
+    expect(result.errors).toBeUndefined()
+    expect(result.data).toBeDefined()
+    expect(result.data?.getItemInfo.name).toBe('testName1')
+  })
+
+  test('User cant get other users item info', async () => {
+    const result = await server.executeOperation(
+      {
+        query: getItemInfoQuery,
+        variables: {
+          name: 'testName3'
+        }
+      }
+    )
+    expect(result.data?.getItemInfo).toBe(null)
+  })
+})
+
 describe('Item deletion', () => {
   beforeEach(async () => {
-    await Item.deleteMany()
-    const item1 = {
-      name: 'testName1',
-      baseItem: false,
-      unique: true
-    }
-    const item2 = {
-      name: 'testName2',
-      baseItem: true,
-      unique: true
-    }
-    const item3 = {
-      name: 'testName3',
-      baseItem: true,
-      unique: true
-    }
-    const otherUser = await User.findOne({ username: 'otherUser' })
-    const user = await User.findOne({ username: 'testUser' })
-    const newItem1 = new Item({ ...item1, user: user?.id as string })
-    await newItem1.save()
-    const newItem2 = new Item({ ...item2, user: user?.id as string })
-    await newItem2.save()
-    const newItem3 = new Item({ ...item3, user: otherUser?.id as string })
-    await newItem3.save()
+    await initTest()
   })
 
   test('Correct item gets deleted', async () => {
@@ -200,31 +237,7 @@ describe('Item deletion', () => {
 
 describe('Item updating', () => {
   beforeEach(async() => {
-    await Store.deleteMany()
-    await Item.deleteMany()
-    const item1 = {
-      name: 'testName1',
-      baseItem: false,
-      unique: true
-    }
-    const item2 = {
-      name: 'testName2',
-      baseItem: true,
-      unique: true
-    }
-    const item3 = {
-      name: 'testName3',
-      baseItem: true,
-      unique: true
-    }
-    const otherUser = await User.findOne({ username: 'otherUser' })
-    const user = await User.findOne({ username: 'testUser' })
-    const newItem1 = new Item({ ...item1, user: user?.id as string })
-    await newItem1.save()
-    const newItem2 = new Item({ ...item2, user: user?.id as string })
-    await newItem2.save()
-    const newItem3 = new Item({ ...item3, user: otherUser?.id as string })
-    await newItem3.save()
+    await initTest()
   })
 
   test('Correct update request is succesful', async () => {

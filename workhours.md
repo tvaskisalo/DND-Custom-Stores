@@ -22,4 +22,5 @@
 29.9.2022 | 1 | Added more tests for updating stores and items
 29.9.2022 | 1.5 | Refactored tests, finished up store and game deletion.
 30.9.2022 | 1.5 | Added tests for games and improved some tests
-Total time | 35 | updated 29.9.2022
+2.10.2022 | 2.5 | Added getter tests for individual games, items and stores. Started testing game and store interactions
+Total time | 37.5 | updated 29.9.2022

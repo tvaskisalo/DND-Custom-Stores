@@ -4,7 +4,7 @@ import { User } from '../schemas/user'
 import { Store } from '../schemas/store'
 import { Item } from '../schemas/item'
 import testServer from './testServer'
-import { addGameMutation, removeGameMutation, updateGameMutation } from './testQueries'
+import { addGameMutation, getGameInfoQuery, getGamesQuery, removeGameMutation, updateGameMutation } from './testQueries'
 import { Game } from '../schemas/game'
 
 
@@ -76,6 +76,68 @@ describe('Game addition', () => {
       }
     )
     expect(result.errors).toBeDefined()
+  })
+})
+
+describe('Games getter', () => {
+  beforeEach(async () => {
+    await Game.deleteMany()
+    const game1 = {
+      name: 'testGame1'
+    }
+    const game2 = {
+      name: 'testGame2'
+    }
+    const game3 = {
+      name: 'testGame3'
+    }
+    const otherUser = await User.findOne({ username: 'otherUser' })
+    const user = await User.findOne({ username: 'testUser' })
+    const newGame1 = new Game({ ...game1, user: user?.id as string })
+    await newGame1.save()
+    const newGame2 = new Game({ ...game2, user: user?.id as string })
+    await newGame2.save()
+    const newGame3 = new Game({ ...game3, user: otherUser?.id as string })
+    await newGame3.save()
+  })
+
+  test('Get games return correct games', async () => {
+    const result = await server.executeOperation(
+      {
+        query: getGamesQuery,
+      }
+    )
+    expect(result.errors).toBeUndefined()
+    expect(result.data).toBeDefined()
+    expect(result.data?.getGames.length).toBe(2)
+    expect(['testGame2','testGame1']).toContain(result.data?.getGames[0].name)
+    expect(['testGame2','testGame1']).toContain(result.data?.getGames[1].name)
+  })
+
+  test('GetGameInfo returns correct info', async () => {
+    const result = await server.executeOperation(
+      {
+        query: getGameInfoQuery,
+        variables: {
+          name: 'testGame1'
+        }
+      }
+    )
+    expect(result.errors).toBeUndefined()
+    expect(result.data).toBeDefined()
+    expect(result.data?.getGameInfo.name).toBe('testGame1')
+  })
+
+  test('User cant get other users gameInfo', async () => {
+    const result = await server.executeOperation(
+      {
+        query: getGameInfoQuery,
+        variables: {
+          name: 'testGame3'
+        }
+      }
+    )
+    expect(result.data?.getGameInfo).toBe(null)
   })
 })
 
@@ -157,8 +219,6 @@ describe('Game updating', () => {
     expect(updatedGame).not.toBe(null)
     const oldGame = await Game.findOne({ name: 'testGame1' })
     expect(oldGame).toBe(null)
-    const games = await Game.find({})
-    console.log(games.length)
   })
 
   test('User cant update another users games', async () => {

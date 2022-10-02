@@ -1,15 +1,18 @@
 export const addStoreMutation = `mutation addStore(
   $name: String!,
-  $itemTypeProbabilities: [ItemTypeProbabilityInput]) {
+  $itemTypeProbabilities: [ItemTypeProbabilityInput],
+  $games: [String]) {
     addStore(
       name: $name,
-      itemTypeProbabilities: $itemTypeProbabilities
+      itemTypeProbabilities: $itemTypeProbabilities,
+      games: $games
     ) {
       name,
       itemTypeProbabilities {
         rarity,
         probability
-      }
+      },
+      games
     }
   }`
 
@@ -25,17 +28,48 @@ export const removeStoreMutation = `mutation removeStore(
 export const updateStoreMutation = `mutation updateStore(
   $id: String!,
   $name: String,
-  $itemTypeProbabilities: [ItemTypeProbabilityInput]){
+  $itemTypeProbabilities: [ItemTypeProbabilityInput],
+  $games: [String]){
     updateStore(
       id: $id,
       name: $name,
-      itemTypeProbabilities: $itemTypeProbabilities
+      itemTypeProbabilities: $itemTypeProbabilities,
+      games: $games
     ) {
       name,
       itemTypeProbabilities {
         rarity,
         probability
-      }
+      },
+      games
+    }
+  }`
+
+export const getStoresQuery = `query getStores(
+  $game: String){
+    getStores(
+      game: $game
+    ) {
+      name,
+      itemTypeProbabilities {
+        rarity,
+        probability
+      },
+      games
+    }
+  }`
+
+export const getStoreInfoQuery = `query getStoreInfo(
+  $name: String!){
+    getStoreInfo(
+      name: $name
+    ) {
+      name,
+      itemTypeProbabilities {
+        rarity,
+        probability
+      },
+      games
     }
   }`
 
@@ -123,6 +157,42 @@ export const updateItemMutation = `mutation updateItem(
     }
   }`
 
+export const getItemsQuery = `query getItems(
+  $store: String){
+    getItems(
+      store: $store
+    ) {
+      name,
+      storepool,
+      material,
+      baseCost,
+      weight,
+      properties,
+      damage,
+      damageTypes,
+      baseItem,
+      unique
+    }
+  }`
+
+export const getItemInfoQuery = `query getItemInfo(
+  $name: String!){
+    getItemInfo(
+      name: $name
+    ) {
+      name,
+      storepool,
+      material,
+      baseCost,
+      weight,
+      properties,
+      damage,
+      damageTypes,
+      baseItem,
+      unique
+    }
+  }`
+
 export const addGameMutation = `mutation addGame(
   $name: String!) {
     addGame (
@@ -152,6 +222,22 @@ export const updateGameMutation = `mutation updateGame(
     }
   }`
 
+
+export const getGamesQuery = `query getGames{
+    getGames{
+      name
+    }
+  }`
+
+export const getGameInfoQuery = `query getGameInfo(
+  $name: String!){
+    getGameInfo(
+      name: $name
+    ){
+      name
+    }
+  }`
+
 export const addUserMutation = `mutation addUser(
   $username: String!,
   $password: String!) {
@@ -173,3 +259,4 @@ export const login = `mutation login(
         value 
       } 
     }`
+
