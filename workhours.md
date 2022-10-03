@@ -23,4 +23,5 @@
 29.9.2022 | 1.5 | Refactored tests, finished up store and game deletion.
 30.9.2022 | 1.5 | Added tests for games and improved some tests
 2.10.2022 | 2.5 | Added getter tests for individual games, items and stores. Started testing game and store interactions
-Total time | 37.5 | updated 29.9.2022
+3.10.2022 | 4 | Added rest of the test for interactions between games and items and items and stores. Changed Schemas to allow duplicate names if user is different and added validation in the backend for unique names.
+Total time | 41.5 | updated 3.10.2022

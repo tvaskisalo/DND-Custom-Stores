@@ -38,8 +38,8 @@ const initTest = async () => {
 }
 
 beforeAll( async () => {
-  // User that is logged in has the name testName.
-  // There exists another user with the name otherUser that is not logged in
+  // User that is logged in has the username testUser.
+  // There exists another user with the username otherUser that is not logged in
   server = await testServer()
 },100000)
 
@@ -149,7 +149,7 @@ describe('Item addition', () => {
     expect(result.data?.addItem).toBeUndefined()
   })
 
-  test('Name must be unique', async () => {
+  test('Name must be unique is item is owned by same user', async () => {
     const item = {
       name: 'testName',
       baseItem: false,
@@ -166,6 +166,25 @@ describe('Item addition', () => {
       }
     )
     expect(result.errors).toBeDefined()
+  })
+  test('Name can be duplicate if user is different', async () => {
+    const item = {
+      name: 'testName',
+      baseItem: false,
+      unique: true
+    }
+    const otherUser = await User.findOne({ username: 'otherUser' })
+    const otherItem = new Item({ ...item, user: otherUser?.id as string })
+    await otherItem.save()
+    const result = await server.executeOperation(
+      {
+        query: addItemMutation,
+        variables: { ...item }
+      }
+    )
+    expect(result.errors).toBeUndefined()
+    const items = await Item.find({ name: 'testName' })
+    expect(items.length).toBe(2)
   })
 })
 
@@ -278,11 +297,11 @@ describe('Item updating', () => {
   })
 
   test('User cant update another users items', async () => {
-    const item1 = await Item.findOne({ name: 'testName3' })
+    const item3 = await Item.findOne({ name: 'testName3' })
     const result = await server.executeOperation({
       query: updateItemMutation,
       variables: {
-        id: item1?.id as string,
+        id: item3?.id as string,
         name: 'UpdatedItem',
         material: 'testMaterial',
         baseCost: 100,
@@ -307,6 +326,50 @@ describe('Item updating', () => {
     expect(originalItem?.unique).toEqual(true)
     const updatedItem = await Item.findOne({ name: 'UpdatedItem' })
     expect(updatedItem).toBe(null)
+  })
+  test('Name cannot be updated to duplicate name', async () => {
+    const item1 = await Item.findOne({ name: 'testName1' })
+    const result = await server.executeOperation(
+      {
+        query: updateItemMutation,
+        variables:{
+          id: item1?.id as string,
+          name: 'testName2'
+        }
+      }
+    )
+    expect(result.errors).toBeDefined()
+    const updatedItem = await Item.findOne({ name: 'testName1' })
+    expect(updatedItem).not.toBe(null)
+  })
+  test('Name can be updated to duplicate if user is different', async () => {
+    const item1 = await Item.findOne({ name: 'testName1' })
+    const result = await server.executeOperation(
+      {
+        query: updateItemMutation,
+        variables:{
+          id: item1?.id as string,
+          name: 'testName3'
+        }
+      }
+    )
+    expect(result.errors).toBeUndefined()
+    const updatedItem = await Item.findOne({ name: 'testName1' })
+    expect(updatedItem).toBe(null)
+  })
+  test('Bad fields cannot be added', async () => {
+    const item1 = await Item.findOne({ name: 'testName1' })
+    await server.executeOperation(
+      {
+        query: updateItemMutation,
+        variables:{
+          id: item1?.id as string,
+          testField: 'testField1'
+        }
+      }
+    )
+    const updatedItem = await Item.findOne({ name: 'testName1' })
+    expect(updatedItem).not.toHaveProperty('testField')
   })
 })
 

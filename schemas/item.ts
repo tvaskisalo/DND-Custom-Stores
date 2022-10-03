@@ -1,11 +1,11 @@
 import mongoose from 'mongoose'
-import uniqueValidator from 'mongoose-unique-validator'
 
 const itemSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    unique: true
+    // Item's name must be unique for each user. This is validated in the backend
+
   },
   // This is the application user, not the user in game
   user: {
@@ -43,8 +43,6 @@ const itemSchema = new mongoose.Schema({
     type: Boolean
   }
 })
-
-itemSchema.plugin(uniqueValidator)
 
 itemSchema.set('toJSON', {
   transform: (_document, returnedObject) => {

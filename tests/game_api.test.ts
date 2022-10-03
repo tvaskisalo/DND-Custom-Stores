@@ -7,12 +7,32 @@ import testServer from './testServer'
 import { addGameMutation, getGameInfoQuery, getGamesQuery, removeGameMutation, updateGameMutation } from './testQueries'
 import { Game } from '../schemas/game'
 
+const initTest = async () => {
+  await Game.deleteMany()
+  const game1 = {
+    name: 'testGame1'
+  }
+  const game2 = {
+    name: 'testGame2'
+  }
+  const game3 = {
+    name: 'testGame3'
+  }
+  const otherUser = await User.findOne({ username: 'otherUser' })
+  const user = await User.findOne({ username: 'testUser' })
+  const newGame1 = new Game({ ...game1, user: user?.id as string })
+  await newGame1.save()
+  const newGame2 = new Game({ ...game2, user: user?.id as string })
+  await newGame2.save()
+  const newGame3 = new Game({ ...game3, user: otherUser?.id as string })
+  await newGame3.save()
+}
 
 let server: ApolloServer
 
 beforeAll( async () => {
-  // User that is logged in has the name testName.
-  // There exists another user with the name otherUser that is not logged in
+  // User that is logged in has the username testUser.
+  // There exists another user with the username otherUser that is not logged in
   server = await testServer()
 },100000)
 
@@ -35,6 +55,28 @@ describe('Game addition', () => {
     expect(result.errors).toBeUndefined()
     expect(result.data).toBeDefined()
     expect(result.data?.addGame).toBeDefined()
+    const addedGame = await Game.findOne({ name: 'testGame' })
+    expect(addedGame).not.toBe(null)
+  })
+
+  test('Games with same name can be added if user is different', async () => {
+    const otherUser = await User.findOne({ username: 'otherUser' })
+    const otherGame = new Game({ name: 'testGame', user: otherUser?.id as string })
+    await otherGame.save()
+    const game = {
+      name: 'testGame'
+    }
+    const result = await server.executeOperation(
+      {
+        query: addGameMutation,
+        variables: { ...game }
+      }
+    )
+    expect(result.errors).toBeUndefined()
+    expect(result.data).toBeDefined()
+    expect(result.data?.addGame).toBeDefined()
+    const games = await Game.find({ name: 'testGame' })
+    expect(games.length).toBe(2)
   })
 
   test('Name can not be empty', async () => {
@@ -62,7 +104,7 @@ describe('Game addition', () => {
     expect(result.errors).toBeDefined()
   })
 
-  test('Name must be unique', async () => {
+  test('Name must be unique if game is owned by same user', async () => {
     const game = {
       name: 'testGame'
     }
@@ -81,24 +123,7 @@ describe('Game addition', () => {
 
 describe('Games getter', () => {
   beforeEach(async () => {
-    await Game.deleteMany()
-    const game1 = {
-      name: 'testGame1'
-    }
-    const game2 = {
-      name: 'testGame2'
-    }
-    const game3 = {
-      name: 'testGame3'
-    }
-    const otherUser = await User.findOne({ username: 'otherUser' })
-    const user = await User.findOne({ username: 'testUser' })
-    const newGame1 = new Game({ ...game1, user: user?.id as string })
-    await newGame1.save()
-    const newGame2 = new Game({ ...game2, user: user?.id as string })
-    await newGame2.save()
-    const newGame3 = new Game({ ...game3, user: otherUser?.id as string })
-    await newGame3.save()
+    await initTest()
   })
 
   test('Get games return correct games', async () => {
@@ -143,19 +168,7 @@ describe('Games getter', () => {
 
 describe('Game deletion', () => {
   beforeEach(async () => {
-    await Game.deleteMany()
-    const game1 = {
-      name: 'testGame1'
-    }
-    const game2 = {
-      name: 'testGame2'
-    }
-    const otherUser = await User.findOne({ username: 'otherUser' })
-    const user = await User.findOne({ username: 'testUser' })
-    const newGame1 = new Game({ ...game1, user: user?.id as string })
-    await newGame1.save()
-    const newGame2 = new Game({ ...game2, user: otherUser?.id as string })
-    await newGame2.save()
+    await initTest()
   })
 
   test('Correct game gets deleted', async () => {
@@ -167,39 +180,27 @@ describe('Game deletion', () => {
     )
     expect(result.errors).toBeUndefined()
     const games = await Game.find({})
-    expect(games.length).toBe(1)
-    if (games && games[0])
-      expect(games[0]?.name).toBe('testGame2')
+    expect(games.length).toBe(2)
+    expect(games[0]?.name).not.toBe('testGame1')
+    expect(games[1]?.name).not.toBe('testGame1')
   })
 
   test('User can not delete other users games', async () => {
     const result = await server.executeOperation(
       {
         query: removeGameMutation,
-        variables: { name: 'testGame2' }
+        variables: { name: 'testGame3' }
       }
     )
-    expect(result.errors).toBeUndefined()
+    expect(result.errors).toBeDefined()
     const games = await Game.find({})
-    expect(games.length).toEqual(2)
+    expect(games.length).toEqual(3)
   })
 })
 
 describe('Game updating', () => {
   beforeEach(async () => {
-    await Game.deleteMany()
-    const game1 = {
-      name: 'testGame1'
-    }
-    const game2 = {
-      name: 'testGame2'
-    }
-    const otherUser = await User.findOne({ username: 'otherUser' })
-    const user = await User.findOne({ username: 'testUser' })
-    const newGame1 = new Game({ ...game1, user: user?.id as string })
-    await newGame1.save()
-    const newGame2 = new Game({ ...game2, user: otherUser?.id as string })
-    await newGame2.save()
+    await initTest()
   })
 
   test('Correct update request is succesful', async () => {
@@ -222,19 +223,65 @@ describe('Game updating', () => {
   })
 
   test('User cant update another users games', async () => {
-    const game2 = await Game.findOne({ name: 'testGame2' })
+    const game3 = await Game.findOne({ name: 'testGame3' })
     const result = await server.executeOperation({
       query: updateGameMutation,
       variables: {
-        id: game2?.id as string,
+        id: game3?.id as string,
         name: 'UpdatedGame'
       }
     })
     expect(result.errors).toBeUndefined()
-    const originalGame = await Game.findOne({ name: 'testGame2' })
+    const originalGame = await Game.findOne({ name: 'testGame3' })
     expect(originalGame).toBeDefined()
     const updatedGame = await Game.findOne({ name: 'UpdatedGame' })
     expect(updatedGame).toBe(null)
+  })
+
+  test('Name cannot be updated to duplicate name', async () => {
+    const game1 = await Game.findOne({ name: 'testGame1' })
+    const result = await server.executeOperation(
+      {
+        query: updateGameMutation,
+        variables:{
+          id: game1?.id as string,
+          name: 'testGame2'
+        }
+      }
+    )
+    expect(result.errors).toBeDefined()
+    const updatedGame = await Game.findOne({ name: 'testGame1' })
+    expect(updatedGame).not.toBe(null)
+  })
+
+  test('Name can be updated to duplicate if user is different', async () => {
+    const game1 = await Game.findOne({ name: 'testGame1' })
+    const result = await server.executeOperation(
+      {
+        query: updateGameMutation,
+        variables:{
+          id: game1?.id as string,
+          name: 'testGame3'
+        }
+      }
+    )
+    expect(result.errors).toBeUndefined()
+    const updatedGame = await Game.findOne({ name: 'testGame1' })
+    expect(updatedGame).toBe(null)
+  })
+  test('Bad fields cannot be added', async () => {
+    const game1 = await Game.findOne({ name: 'testGame1' })
+    await server.executeOperation(
+      {
+        query: updateGameMutation,
+        variables:{
+          id: game1?.id as string,
+          testField: 'testField1'
+        }
+      }
+    )
+    const updatedGame = await Game.findOne({ name: 'testGame1' })
+    expect(updatedGame).not.toHaveProperty('testField')
   })
 })
 

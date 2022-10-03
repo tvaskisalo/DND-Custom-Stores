@@ -1,16 +1,11 @@
-//This test assumes that store_api.test.ts, user_api.test.ts and store_api.test.ts pass
+//This test assumes that game_api.test.ts, user_api.test.ts and store_api.test.ts pass
 import { ApolloServer } from 'apollo-server-express'
 import { User } from '../schemas/user'
 import { Store } from '../schemas/store'
 import { Item } from '../schemas/item'
 import { Game } from '../schemas/game'
 import testServer from './testServer'
-import { addStoreMutation, getStoresQuery } from './testQueries'
-
-//TODO: test all mutations and queries that require interaction with stores AND games
-test('TODO', () => {
-  expect(true)
-})
+import { addStoreMutation, getStoresQuery, removeGameMutation, updateStoreMutation } from './testQueries'
 
 const games = [
   {
@@ -165,8 +160,11 @@ describe('Store adding with games', () => {
   })
   test('Store with incorrect games fails', async () => {
     const user = await User.findOne({ username: 'testUser' })
+    const otherUser = await User.findOne({ username: 'otherUser' })
     const newGame1 = new Game({ ...games[0], user: user?.id as string })
     await newGame1.save()
+    const newGame3 = new Game({ ...games[2], user: otherUser?.id as string })
+    await newGame3.save()
     const result = await server.executeOperation(
       {
         query: addStoreMutation,
@@ -180,7 +178,7 @@ describe('Store adding with games', () => {
     expect(addedStore).toBe(null)
   })
 })
-describe('Getting stores with game', () => {
+describe('Getting stores with game name', () => {
   beforeEach(async () => {
     await initTest()
   })
@@ -249,16 +247,97 @@ describe('Updating stores with games', () => {
   beforeEach(async () => {
     await initTest()
   })
-  test('TODO', () => {
-    expect(true)
+  test('Store can be updated with correct games, test 1', async() => {
+    const store = await Store.findOne({ name: 'Store1' })
+    const result = await server.executeOperation(
+      {
+        query: updateStoreMutation,
+        variables: {
+          id: store?.id as string,
+          games: ['Game1', 'Game2']
+        }
+      }
+    )
+    expect(result.errors).toBeUndefined()
+    const updatedStore = await Store.findOne({ name: 'Store1' })
+    expect(updatedStore).not.toBe(null)
+    expect(updatedStore?.games.length).toBe(2)
+    expect(['Game1', 'Game2']).toContain(updatedStore?.games[0])
+    expect(['Game1', 'Game2']).toContain(updatedStore?.games[0])
+  })
+  test('Store can be updated with correct games, test 2', async() => {
+    const store = await Store.findOne({ name: 'Store2' })
+    const result = await server.executeOperation(
+      {
+        query: updateStoreMutation,
+        variables: {
+          id: store?.id as string,
+          games: ['Game1', 'Game2']
+        }
+      }
+    )
+    expect(result.errors).toBeUndefined()
+    const updatedStore = await Store.findOne({ name: 'Store2' })
+    expect(updatedStore).not.toBe(null)
+    expect(updatedStore?.games.length).toBe(2)
+    expect(['Game1', 'Game2']).toContain(updatedStore?.games[0])
+    expect(['Game1', 'Game2']).toContain(updatedStore?.games[0])
+  })
+
+  test('Stores cannot have invalid games', async () => {
+    const store = await Store.findOne({ name: 'Store1' })
+    const result = await server.executeOperation(
+      {
+        query: updateStoreMutation,
+        variables: {
+          id: store?.id as string,
+          //Current user should not have Game3
+          games: ['Game3']
+        }
+      }
+    )
+    expect(result.errors).toBeDefined()
+    const updatedStore = await Store.findOne({ name: 'Store1' })
+    expect(updatedStore).not.toBe(null)
+    expect(updatedStore?.games.length).toBe(0)
+  })
+
+  test('Games can be removed from stores', async () => {
+    const store = await Store.findOne({ name: 'Store3' })
+    const result = await server.executeOperation(
+      {
+        query: updateStoreMutation,
+        variables: {
+          id: store?.id as string,
+          games: ['Game1']
+        }
+      }
+    )
+    expect(result.errors).toBeUndefined()
+    const updatedStore = await Store.findOne({ name: 'Store2' })
+    expect(updatedStore).not.toBe(null)
+    expect(updatedStore?.games.length).toBe(1)
+    expect(updatedStore?.games[0]).toBe('Game1')
   })
 })
 describe('Deleting games', () => {
   beforeEach(async () => {
     await initTest()
   })
-  test('TODO', () => {
-    expect(true)
+  test('When user deletes a game, refrences to the game are removed', async() => {
+    const result = await server.executeOperation(
+      {
+        query: removeGameMutation,
+        variables: {
+          name: 'Game1'
+        }
+      }
+    )
+    expect(result.errors).toBeUndefined()
+    const store2 = await Store.findOne({ name: 'Store2' })
+    expect(store2?.games).not.toContain('Game1')
+    const store3 = await Store.findOne({ name: 'Store3' })
+    expect(store3?.games).not.toContain('Game1')
   })
 })
 

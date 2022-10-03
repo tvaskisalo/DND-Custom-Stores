@@ -65,7 +65,8 @@ export const toUpdateStoreParams = (reqData: any): UpdateStoreParams => {
   const updateRequest: UpdateStoreParams = {
     id: parseString(reqData.id),
     name: reqData.name ? parseString(reqData.name): undefined,
-    itemTypeProbabilities: reqData.itemTypeProbabilities ? parseItemTypeProbabilities(reqData.itemTypeProbabilities) : undefined
+    itemTypeProbabilities: reqData.itemTypeProbabilities ? parseItemTypeProbabilities(reqData.itemTypeProbabilities) : undefined,
+    games: reqData.games ? parseStringArray(reqData.games) : undefined
   }
   return updateRequest
 }

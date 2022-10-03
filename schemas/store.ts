@@ -1,11 +1,9 @@
 import mongoose from 'mongoose'
-import uniqueValidator from 'mongoose-unique-validator'
-
 const storeSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    unique: true
+    // Store's name must be unique for each user. This is validated in the backend
   },
   user: {
     type: String
@@ -24,8 +22,6 @@ const storeSchema = new mongoose.Schema({
     }
   ]
 })
-
-storeSchema.plugin(uniqueValidator)
 
 storeSchema.set('toJSON', {
   transform: (_document, returnedObject) => {

@@ -55,8 +55,8 @@ beforeAll( async () => {
 
 describe('Store addition', () => {
   beforeEach( async () => {
-  // User that is logged in has the name testName.
-  // There exists another user with the name otherUser that is not logged in
+  // User that is logged in has the username testUser.
+  // There exists another user with the username otherUser that is not logged in
     await Store.deleteMany()
   })
 
@@ -143,7 +143,7 @@ describe('Store addition', () => {
     expect(result.errors).toBeDefined()
   })
 
-  test('Store name must be unique', async () => {
+  test('Store name owned by same user must be unique', async () => {
     const store = {
       name: 'testName',
       itemTypeProbabilities: [
@@ -153,16 +153,40 @@ describe('Store addition', () => {
         }
       ]
     }
-    const user = await User.findOne({ username: 'testName' })
+    const user = await User.findOne({ username: 'testUser' })
     const newStore = new Store({ ...store, user: user?.id as string })
     await newStore.save()
-
     const result = await server.executeOperation({
       query: addStoreMutation,
       variables: { ...store }
     })
-
     expect(result.errors).toBeDefined()
+  })
+
+  test('Store name can be duplicate if user is different', async () => {
+    const otherUser = await User.findOne({ username: 'otherUser' })
+    const store = {
+      name: 'testName',
+      itemTypeProbabilities: [
+        {
+          rarity: 'Common',
+          probability: 100
+        }
+      ]
+    }
+    const otherStore = new Store({ ...store, user: otherUser?.id as string })
+    await otherStore.save()
+    const result = await server.executeOperation(
+      {
+        query: addStoreMutation,
+        variables: { ...store }
+      }
+    )
+    expect(result.errors).toBeUndefined()
+    expect(result.data).toBeDefined()
+    expect(result.data?.addStore).toBeDefined()
+    const stores = await Store.find({ name: 'testName' })
+    expect(stores.length).toBe(2)
   })
 
   test('Store itemTypeProbabilities must be defined', async () => {
@@ -419,6 +443,52 @@ describe('Store updating', () => {
     expect(updatedStore?.name).toEqual('testName1')
     expect(updatedStore?.itemTypeProbabilities[0].rarity).toEqual('Common')
     expect(updatedStore?.itemTypeProbabilities[0].probability).toEqual(100)
+  })
+
+  test('Name cannot be updated to duplicate name', async () => {
+    const store1 = await Store.findOne({ name: 'testName1' })
+    const result = await server.executeOperation(
+      {
+        query: updateStoreMutation,
+        variables:{
+          id: store1?.id as string,
+          name: 'testName2'
+        }
+      }
+    )
+    expect(result.errors).toBeDefined()
+    const updatedStore = await Store.findOne({ name: 'testName1' })
+    expect(updatedStore).not.toBe(null)
+  })
+
+  test('Name can be updated to duplicate if user is different', async () => {
+    const store1 = await Store.findOne({ name: 'testName1' })
+    const result = await server.executeOperation(
+      {
+        query: updateStoreMutation,
+        variables: {
+          id: store1?.id as string,
+          name: 'testName3'
+        }
+      }
+    )
+    expect(result.errors).toBeUndefined()
+    const updatesStore = await Store.findOne({ name: 'testName1' })
+    expect(updatesStore).toBe(null)
+  })
+  test('Bad fields cant be added', async () => {
+    const store1 = await Store.findOne({ name: 'testName1' })
+    await server.executeOperation(
+      {
+        query: updateStoreMutation,
+        variables:{
+          id: store1?.id as string,
+          testField: 'testField1',
+        }
+      }
+    )
+    const updatedStore = await Store.findOne({ name: 'testName1' })
+    expect(updatedStore).not.toHaveProperty('testField')
   })
 })
 

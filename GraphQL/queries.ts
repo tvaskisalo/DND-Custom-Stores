@@ -7,7 +7,7 @@ import { UserInputError } from 'apollo-server-express'
 export const Query = {
   getGames: async (_root: unknown, _args: unknown, context: unknown) => {
     const user = await getUser(context)
-    const games = await Game.find({ user: user })
+    const games = await Game.find({ user: user?.id as string })
     return games
   },
   getGameInfo: async (_root: unknown, args: unknown, context: unknown) => {
@@ -67,13 +67,13 @@ export const Query = {
     // Enable unsafe argument to check nullish value. I do not see a better way
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     if (Object.keys(args).length === 0) {
-      const items = await Item.find({ user })
+      const items = await Item.find({ user: user?.id as string })
       return items
     }
     //Parse args
     const params = toGetItemsParams(args)
     //Check if the store exists
-    const store = await Store.find({
+    const store = await Store.findOne({
       user: user?.id as string,
       name: params.name
     })
@@ -84,8 +84,8 @@ export const Query = {
     const items = await Item.find({
       user: user?.id as string,
       $or: [
-        { baseItem: { $eq: true } },
-        { $in: [ store, '$storepool' ] }
+        { baseItem: true },
+        { storepool: store.name }
       ] }
     )
     return items
