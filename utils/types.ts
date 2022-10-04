@@ -59,3 +59,8 @@ export type ItemTypeProbability = {
   rarity: string,
   probability: number
 }
+export type ItemTypeRange = {
+  min: number,
+  max: number,
+  rarity: string
+}

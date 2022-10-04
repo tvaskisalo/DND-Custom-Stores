@@ -111,6 +111,9 @@ type Mutation {
     damageTypes: [String],
     baseItem: Boolean,
     unique: Boolean
-  ): Item
+  ): Item,
+  generateItempool(
+    name: String!
+  ): [Item]
 }
 `

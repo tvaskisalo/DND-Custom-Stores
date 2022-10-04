@@ -1,4 +1,4 @@
-import { toLoginRequest, toNewGameRequest, toNewStoreRequest, toNewItemRequest, getUser, toName, toUpdateItemParams, toUpdateGameParams, toUpdateStoreParams } from '../utils/parsers'
+import { toLoginRequest, toNewGameRequest, toNewStoreRequest, toNewItemRequest, getUser, toName, toUpdateItemParams, toUpdateGameParams, toUpdateStoreParams, toStore } from '../utils/parsers'
 import dao from '../utils/dao'
 
 export const Mutation = {
@@ -77,4 +77,11 @@ export const Mutation = {
     const item = await dao.updateItem(params, user?.id as string)
     return item
   },
+  generateItempool: async (_root: unknown, args: unknown, context: unknown) => {
+    const user = await getUser(context)
+    // Parse params
+    const storeName = toStore(args)
+    const itemPool = await dao.generateItempool(storeName, user?.id as string)
+    return itemPool
+  }
 }
