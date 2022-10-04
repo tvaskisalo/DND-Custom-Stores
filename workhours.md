@@ -24,4 +24,5 @@
 30.9.2022 | 1.5 | Added tests for games and improved some tests
 2.10.2022 | 2.5 | Added getter tests for individual games, items and stores. Started testing game and store interactions
 3.10.2022 | 4 | Added rest of the test for interactions between games and items and items and stores. Changed Schemas to allow duplicate names if user is different and added validation in the backend for unique names.
-Total time | 41.5 | updated 3.10.2022
+4.10.2022 | 1 | Refactored mutations and queries so that they use a dao, not direct access to mongodb
+Total time | 42.5 | updated 4.10.2022

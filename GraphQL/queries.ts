@@ -1,23 +1,17 @@
-import { Game } from '../schemas/game'
 import { toName, getUser, toGetItemsParams, toGetStoresParams } from '../utils/parsers'
-import { Item } from '../schemas/item'
-import { Store } from '../schemas/store'
-import { UserInputError } from 'apollo-server-express'
+import dao from '../utils/dao'
 
 export const Query = {
   getGames: async (_root: unknown, _args: unknown, context: unknown) => {
     const user = await getUser(context)
-    const games = await Game.find({ user: user?.id as string })
+    const games = await dao.getGames(user?.id as string)
     return games
   },
   getGameInfo: async (_root: unknown, args: unknown, context: unknown) => {
     const user = await getUser(context)
     // Parse args
     const name = toName(args)
-    const game = await Game.findOne({
-      user: user?.id as string,
-      name
-    })
+    const game = await dao.getGameInfo(name, user?.id as string)
     return game
   },
   // We have to set args as any, instead of unknow so that TypeScript does not complain about checking the nullish value
@@ -28,36 +22,20 @@ export const Query = {
     // Enable unsafe argument to check nullish value. I do not see a better way
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     if (Object.keys(args).length === 0) {
-      const stores = await Store.find({ user: user?.id as string })
+      const stores = await dao.getStores(undefined, user?.id as string)
       return stores
     }
     // Parse args
     const params = toGetStoresParams(args)
-    // Check if the user has the game
-    const game = await Game.findOne({
-      user: user?.id as string,
-      name: params.game
-    })
-    if (game === null) {
-      throw new UserInputError('Game not found')
-    }
-    // Find all user's stores that have the given game in their games
-    const stores = await Store.find({
-      user: user?.id as string,
-      games: game.name
-    })
+    const stores = await dao.getStores(params, user?.id as string)
     return stores
   },
   getStoreInfo: async (_root: unknown, args: unknown, context: unknown) => {
     const user = await getUser(context)
     //Parse args
     const name = toName(args)
-    const store = await Store.findOne({
-      user: user?.id as string,
-      name
-    })
+    const store = await dao.getStoreInfo(name, user?.id as string)
     return store
-
   },
   // We have to set args as any, instead of unknow so that TypeScript does not complain about checking the nullish value
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -67,36 +45,18 @@ export const Query = {
     // Enable unsafe argument to check nullish value. I do not see a better way
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     if (Object.keys(args).length === 0) {
-      const items = await Item.find({ user: user?.id as string })
+      const items = await dao.getItems(undefined, user?.id as string)
       return items
     }
     //Parse args
     const params = toGetItemsParams(args)
-    //Check if the store exists
-    const store = await Store.findOne({
-      user: user?.id as string,
-      name: params.name
-    })
-    if (!store) {
-      throw new UserInputError('Store not found')
-    }
-    // Gets all user's items that have the given store in store pool and all baseItems
-    const items = await Item.find({
-      user: user?.id as string,
-      $or: [
-        { baseItem: true },
-        { storepool: store.name }
-      ] }
-    )
+    const items = await dao.getItems(params, user?.id as string)
     return items
   },
   getItemInfo: async (_root: unknown, args: unknown, context: unknown) => {
     const user = await getUser(context)
     const name = toName(args)
-    const item = await Item.findOne({
-      user: user?.id as string,
-      name
-    })
+    const item = await dao.getItemInfo(name, user?.id as string)
     return item
   },
 }

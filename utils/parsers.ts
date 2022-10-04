@@ -129,6 +129,9 @@ export const toName = (reqData: any): string => {
   return parseString(reqData.name)
 }
 
+export const toStore = (reqData: any): string => {
+  return parseString(reqData.store)
+}
 export const toNewItemRequest = (reqData: any): NewItemRequest => {
   const newItemRequest: NewItemRequest = {
     name: parseString(reqData.name),
