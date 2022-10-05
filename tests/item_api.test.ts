@@ -119,36 +119,6 @@ describe('Item addition', () => {
     expect(result.errors).toBeDefined()
   })
 
-  test('Field baseItem must be defined', async () => {
-    const item = {
-      name: 'testName',
-      unique: true
-    }
-    const result = await server.executeOperation(
-      {
-        query: addItemMutation,
-        variables: { ...item }
-      }
-    )
-    expect(result.errors).toBeDefined()
-    expect(result.data?.addItem).toBeUndefined()
-  })
-
-  test('Field unique must be defined', async () => {
-    const item = {
-      name: 'testName',
-      baseItem: false
-    }
-    const result = await server.executeOperation(
-      {
-        query: addItemMutation,
-        variables: { ...item }
-      }
-    )
-    expect(result.errors).toBeDefined()
-    expect(result.data?.addItem).toBeUndefined()
-  })
-
   test('Name must be unique is item is owned by same user', async () => {
     const item = {
       name: 'testName',

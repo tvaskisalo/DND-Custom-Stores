@@ -99,8 +99,7 @@ describe('Generating item rarities', () => {
         probability: 5
       },
     ]
-    const seed = 'test'
-    const itemRarities = itemGenerator.generateItemRarities(capacity, itemTypeProbabilities, seed)
+    const itemRarities = itemGenerator.generateItemRarities(capacity, itemTypeProbabilities, undefined)
     expect(itemRarities.length).toBe(capacity)
     //This tests that each rarity shows up in the array the correct amount of times compared to its probability
     const commons = itemRarities.filter(r => r==='Common')
@@ -120,6 +119,5 @@ describe('Generating item rarities', () => {
 
     const uniques = itemRarities.filter(r => r==='Unique')
     expect(Math.round((uniques.length/capacity)*100)).toBe(5)
-    console.log(itemRarities)
   })
 })

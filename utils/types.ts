@@ -6,23 +6,23 @@ export type Token = {
   username: string,
   id: string
 }
+export type RarityDefinition = {
+  rarity: string,
+  enchantmentTiers: number[]
+}
 export type NewGameRequest = {
-  name: string
+  name: string,
+  enchantments?: string[]
+  rarities?: RarityDefinition[]
 }
 export type NewStoreRequest = {
   name: string,
   itemTypeProbabilities: ItemTypeProbability[],
   games?: string[]
 }
-export type GetStoresParams = {
-  game: string
-}
-export type GetItemsParams = {
-  name: string
-}
-export type UpdateItemParams = {
-  id: string,
-  name?: string,
+export type NewItemRequest = {
+  name: string,
+  games?: string[],
   storepool?: string[],
   material?: string,
   baseCost?: number,
@@ -31,7 +31,28 @@ export type UpdateItemParams = {
   damage?: string,
   damageTypes?: string[],
   baseItem?: boolean,
-  unique?: boolean
+  unique?: boolean,
+  weapon?: boolean,
+  weaponType?: string,
+  armor?: boolean,
+  armorType?: string,
+  armorClass?: string,
+  strength?: string,
+  stealth?: string
+}
+export type NewEnchantRequest = {
+  name: string,
+  games?: string[],
+  tier?: number,
+  damage?: string
+  damageTypes?: string[],
+  description?: string
+}
+export type UpdateGameParams = {
+  id: string,
+  name?: string,
+  enchantments?: string[]
+  rarities?: RarityDefinition[]
 }
 export type UpdateStoreParams = {
   id: string,
@@ -39,12 +60,10 @@ export type UpdateStoreParams = {
   itemTypeProbabilities?: ItemTypeProbability[],
   games?: string[]
 }
-export type UpdateGameParams = {
+export type UpdateItemParams = {
   id: string,
-  name?: string
-}
-export type NewItemRequest = {
-  name: string,
+  name?: string,
+  games?: string[],
   storepool?: string[],
   material?: string,
   baseCost?: number,
@@ -52,9 +71,33 @@ export type NewItemRequest = {
   properties?: string,
   damage?: string,
   damageTypes?: string[],
-  baseItem: boolean,
-  unique: boolean
+  baseItem?: boolean,
+  unique?: boolean,
+  weapon?: boolean,
+  weaponType?: string,
+  armor?: boolean,
+  armorType?: string,
+  armorClass?: string,
+  strength?: string,
+  stealth?: string
 }
+export type UpdateEnchantParams = {
+  id: string,
+  games?: string[],
+  name?: string
+  tier?: number,
+  damage?: string
+  damageTypes?: string[],
+  description?: string
+}
+
+export type GetStoresParams = {
+  game: string
+}
+export type GetItemsParams = {
+  name: string
+}
+
 export type ItemTypeProbability = {
   rarity: string,
   probability: number

@@ -12,36 +12,29 @@ const itemSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  // Which games the items belong to
+  games: [String],
   // If item is a baseItem, then it is always in all stores, so then storePool is not set.
   // The storePool is only used to manage where unique items can drop.
-  storepool: [{
-    type: String
-  }],
-  material: {
-    type: String
-  },
-  baseCost: {
-    type: Number
-  },
-  weight: {
-    type: Number
-  },
-  properties: {
-    type: String
-  },
+  storepool: [String],
+  material: String,
+  baseCost: Number,
+  weight: Number,
+  properties: String,
   // Damage is based on how many and what dice are rolled, not a number
-  damage: {
-    type: String
-  },
-  damageTypes: [{
-    type: String
-  }],
-  baseItem: {
-    type: Boolean
-  },
-  unique: {
-    type: Boolean
-  }
+  damage: String,
+  damageTypes: [String],
+  // If item is a baseItem it can have different rarities, uniques cannot
+  // Only baseItems are used for item generation
+  baseItem: Boolean,
+  unique: Boolean,
+  weapon: Boolean,
+  weaponType: String,
+  armor: Boolean,
+  armorType: String,
+  armorClass: String,
+  strength: String,
+  stealth: String
 })
 
 itemSchema.set('toJSON', {

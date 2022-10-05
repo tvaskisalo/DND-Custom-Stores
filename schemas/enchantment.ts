@@ -1,24 +1,22 @@
 import mongoose from 'mongoose'
 
-const gameSchema = new mongoose.Schema({
+const enchantmentSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true
-    // Game's name must be unique for each user. This is validated in the backend
   },
   user: {
     type: String,
-    required: true,
+    required: true
   },
-  rarities: [
-    {
-      rarity: String,
-      enchantmentTiers: [Number]
-    }
-  ]
+  games: [String],
+  tier: Number,
+  damage: String,
+  damageTypes: [String],
+  description: String
 })
 
-gameSchema.set('toJSON', {
+enchantmentSchema.set('toJSON', {
   transform: (_document, returnedObject) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     returnedObject.id = returnedObject._id.toString()
@@ -27,4 +25,4 @@ gameSchema.set('toJSON', {
   }
 })
 
-export const Game = mongoose.model('Game', gameSchema)
+export const Enchantment = mongoose.model('Enchantment', enchantmentSchema)

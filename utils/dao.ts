@@ -1,4 +1,4 @@
-// Point is to give abstraction to data access to mongo, so it is easier to for example add cache later on
+// Point is to give abstraction to data access to mongo so it is easier to, for example, add cache later on
 // This also adds the possbility of reusing code for other mutations
 // This also makes it possible to test with mocks
 // Dao is also responsible for ensuring that only valid data is added
@@ -10,45 +10,48 @@ import { Store } from '../schemas/store'
 import { Item } from '../schemas/item'
 import jwt from 'jsonwebtoken'
 import { AuthenticationError, UserInputError, ValidationError } from 'apollo-server-express'
-import { GetItemsParams, GetStoresParams, NewGameRequest, NewItemRequest, NewStoreRequest, UpdateGameParams, UpdateItemParams, UpdateStoreParams } from './types'
+import { GetItemsParams, GetStoresParams, NewEnchantRequest, NewGameRequest, NewItemRequest, NewStoreRequest, UpdateEnchantParams, UpdateGameParams, UpdateItemParams, UpdateStoreParams } from './types'
+import { Enchantment } from '../schemas/enchantment'
 
 //Checks if the name is already in use by the user
-const validateName = async (userid: string, name: string, schemaName: string): Promise<boolean> => {
+const validateName = async (name: string | undefined, schemaName: string, userId:string): Promise<boolean> => {
+  if (!name) return true
   if (schemaName === 'Game') {
-    const games = await Game.findOne({ name, user: userid })
+    const games = await Game.findOne({ name, user: userId })
     if (games !== null) {
-      return new Promise<boolean>((resolve, _reject) => {
-        setTimeout(() => {
-          resolve(false)
-        },300)
-      })
+      return false
     }
   }
   if (schemaName === 'Store') {
-    const stores = await Store.findOne({ name, user: userid })
+    const stores = await Store.findOne({ name, user: userId })
     if (stores !== null) {
-      return new Promise<boolean>((resolve, _reject) => {
-        setTimeout(() => {
-          resolve(false)
-        },300)
-      })
+      return false
     }
   }
   if (schemaName === 'Item') {
-    const items = await Item.findOne({ name, user: userid })
+    const items = await Item.findOne({ name, user: userId })
     if (items !== null) {
-      return new Promise<boolean>((resolve, _reject) => {
-        setTimeout(() => {
-          resolve(false)
-        },300)
-      })
+      return false
     }
   }
-  return new Promise<boolean>((resolve, _reject) => {
-    setTimeout(() => {
-      resolve(true)
-    },300)
-  })
+  return true
+}
+const validateGamepool = async (gamepool: string[] | undefined, userId: string): Promise<boolean> => {
+  if (!gamepool) return true
+  const games = await Game.find({ name: gamepool, user: userId })
+  if (games.length !== gamepool.length) {
+    return false
+  }
+  return true
+}
+
+const validateStorepool = async (storepool: string[] | undefined, userId: string): Promise<boolean> => {
+  if (!storepool)return true
+  const stores = await Store.find({ name: storepool, user: userId  })
+  if (stores.length !== storepool.length) {
+    return false
+  }
+  return true
 }
 
 const addUser = async (username: string, password: string): Promise<string> => {
@@ -84,7 +87,7 @@ const login = async (username: string, password: string): Promise<string> => {
 }
 const addGame = async (newGame: NewGameRequest, userId: string) => {
   // Checking if the name is already in use by other user's game
-  if (!await validateName(userId, newGame.name, 'Game')) {
+  if (!await validateName(newGame.name, 'Game', userId)) {
     throw new ValidationError('Name is in use')
   }
   const game = new Game({ ...newGame, user: userId })
@@ -92,27 +95,20 @@ const addGame = async (newGame: NewGameRequest, userId: string) => {
     const savedGame = await game.save()
     return(savedGame)
   } catch (e) {
-    console.log(e)
     throw new UserInputError('Invalid game Info')
   }
 }
 const addStore = async (newStore: NewStoreRequest, userId: string) => {
   // Checking if the name is already in use by other user's store
-  if (!await validateName(userId, newStore.name, 'Store')) {
+  if (!await validateName(newStore.name, 'Store', userId)) {
     throw new ValidationError('Name is in use')
   }
   const gamepool = newStore.games
-  let store
-  if (gamepool) {
-    //Check if all given games exist, assuming that no duplicate games exist
-    const games = await Game.find({ name: { $in: gamepool } })
-    if (games.length !== gamepool.length) {
-      throw new UserInputError('Invalid gamepool')
-    }
-    store = new Store({ ...newStore, user: userId, games: gamepool })
-  } else {
-    store = new Store({ ...newStore, user: userId })
+  //Check if all given games exist, assuming that no duplicate games exist
+  if (!await validateGamepool(gamepool, userId)) {
+    throw new UserInputError('Invalid gamepool')
   }
+  const store = new Store({ ...newStore, user: userId })
   try {
     const savedStore = await store.save()
     return savedStore
@@ -120,28 +116,40 @@ const addStore = async (newStore: NewStoreRequest, userId: string) => {
     throw new UserInputError('Invalid Store Information')
   }
 }
-const addItem = async (newItem: NewItemRequest, userId:string) => {
+const addItem = async (newItem: NewItemRequest, userId: string) => {
   const storepool = newItem.storepool
+  const gamepool = newItem.games
   // Checking if the name is already in use by other user's item
-  if(!await validateName(userId, newItem.name, 'Item')) {
+  if(!await validateName(newItem.name, 'Item', userId)) {
     throw new ValidationError('Name is in use')
   }
-  let item
-  if (storepool) {
-    // Check if all given stores exist, assuming that no duplicate stores exist
-    const stores = await Store.find({ name: storepool, user: userId  })
-    if (stores.length !== storepool.length) {
-      throw new UserInputError('Invalid storepool')
-    }
-    item = new Item({ ...newItem, user: userId, storepool })
-  } else {
-    item = new Item({ ...newItem , user: userId })
+  // Check if all given stores exist, assuming that no duplicate stores exist
+  if (!await validateStorepool(storepool, userId)) {
+    throw new UserInputError('Invalid storepool')
   }
+  //Check if all given games exist, assuming that no duplicate games exist
+  if (!await validateGamepool(gamepool, userId)) {
+    throw new UserInputError('Invalid gamepool')
+  }
+  const item = new Item({ ...newItem, user: userId })
   try {
     const savedItem = await item.save()
     return savedItem
   } catch(e) {
     throw new UserInputError('Invalid Item Information')
+  }
+}
+const addEnchantment = async (newEnchant: NewEnchantRequest, userId: string) => {
+  const gamepool = newEnchant.games
+  //Check if all given games exist, assuming that no duplicate games exist
+  if (!await validateGamepool(gamepool, userId)) {
+    throw new UserInputError('Invalid gamepool')
+  }
+  const enchantment = new Enchantment({ ...newEnchant, user: userId })
+  try {
+    return await enchantment.save()
+  } catch (e) {
+    throw new UserInputError('Invalid Enchantment information')
   }
 }
 const removeGame = async (name: string, userId: string) => {
@@ -156,7 +164,7 @@ const removeGame = async (name: string, userId: string) => {
   // Yes, this is very inefficient, but it will be a rare case that user deletes a game.
   // Honestly I should have used relational database for this project
   // Find all stores that refrence the deleted game
-  const stores = await Store.find({ games: name })
+  const stores = await Store.find({ games: name, user: userId })
   for (const store of stores) {
     // Remove all references to the deleted game
     await Store.findOneAndUpdate({
@@ -164,6 +172,16 @@ const removeGame = async (name: string, userId: string) => {
       user: userId
     }, {
       games: store.games.filter(game => game !== name)
+    })
+  }
+  const enchantments = await Enchantment.find({ games: name, user: userId })
+  for (const enchantment of enchantments) {
+    // Remove all references to the deleted game
+    await Enchantment.findOneAndUpdate({
+      _id: enchantment.id as string,
+      user: userId
+    }, {
+      games: enchantment.games.filter(game => game !== name)
     })
   }
   return game
@@ -201,12 +219,20 @@ const removeItem = async (name: string, userId: string) => {
   }
   return item
 }
+const removeEnchantment = async (name: string, userId: string) => {
+  const enchantment = await Enchantment.findOneAndRemove({
+    user: userId,
+    name
+  })
+  if (!enchantment) {
+    throw new UserInputError('No enchantment found')
+  }
+  return enchantment
+}
 const updateGame = async (game: UpdateGameParams, userId: string) => {
-  if (game.name) {
-    // Checking if the name is already in use by other user's game
-    if(!await validateName(userId, game.name, 'Game')){
-      throw new ValidationError('Name is in use')
-    }
+  // Checking if the name is already in use by other user's game
+  if(!await validateName(game.name, 'Game', userId)) {
+    throw new ValidationError('Name is in use')
   }
   const updatedGame = await Game.findOneAndUpdate({
     _id: game.id,
@@ -217,15 +243,12 @@ const updateGame = async (game: UpdateGameParams, userId: string) => {
   return updatedGame
 }
 const updateStore = async (store: UpdateStoreParams, userId: string) => {
-  if (store.name) {
-    // Checking if the name is already in use by other user's store
-    if(!await validateName(userId, store.name, 'Store')){
-      throw new ValidationError('Name is in use')
-    }
+  // Checking if the name is already in use by other user's store
+  if(!await validateName(store.name, 'Store', userId)) {
+    throw new ValidationError('Name is in use')
   }
   // Checking if all given games exist, assuming no duplicate games exist
-  const games = await Game.find({ name: { $in: store.games }, user: userId })
-  if (games.length !== store.games?.length && store.games) {
+  if (!await validateGamepool(store.games, userId)) {
     throw new UserInputError('Invalid games list')
   }
   // No further checks are made, since mongoose will throw error with incorrect types
@@ -238,16 +261,15 @@ const updateStore = async (store: UpdateStoreParams, userId: string) => {
   return updatedStore
 }
 const updateItem = async (item: UpdateItemParams, userId: string) => {
-  if (item.name) {
-    // Checking if the name is already in use by other user's item
-    if(!await validateName(userId, item.name, 'Item')) {
-      throw new ValidationError('Name is in use')
-    }
+  // Checking if the name is already in use by other user's item
+  if (!await validateName(item.name, 'Item', userId)) {
+    throw new ValidationError('Name is in use')
   }
-  // Checking if all given stores exist, assuming no duplicate stores exist
-  const stores = await Store.find({ name: item.storepool, user:userId })
-  if (stores.length !== item.storepool?.length && item.storepool) {
+  if (!await validateStorepool(item.storepool, userId)) {
     throw new UserInputError('Incorrect storepool')
+  }
+  if (!await validateGamepool(item.games, userId)) {
+    throw new UserInputError('Incorrect gamepool')
   }
   // No further checks are made, since mongoose will throw error with incorrect types
   const updatedItem = await Item.findOneAndUpdate({
@@ -257,6 +279,18 @@ const updateItem = async (item: UpdateItemParams, userId: string) => {
     ...item
   })
   return updatedItem
+}
+const updateEnchantment = async (enchant: UpdateEnchantParams, userId: string) => {
+  if (! await validateGamepool(enchant.games, userId)) {
+    throw new UserInputError('Invalid gamepool')
+  }
+  const updatedEnchantment = await Enchantment.findOneAndUpdate({
+    _id: enchant.id,
+    user: userId
+  }, {
+    ...enchant
+  })
+  return updatedEnchantment
 }
 const getGames = async (userId: string) => {
   const games = await Game.find({ user: userId })
@@ -294,7 +328,7 @@ const getStoreInfo = async (name: string, userId: string) => {
   })
   return store
 }
-const getItems = async (items: GetItemsParams | undefined,userId: string) => {
+const getItems = async (items: GetItemsParams | undefined, userId: string) => {
   if (!items) {
     return await Item.find({ user: userId })
   }
@@ -322,7 +356,7 @@ const getItemInfo = async (name: string, userId: string) => {
   })
   return item
 }
-const generateItempool = async (name: string, userId:string) => {
+const generateItempool = async (name: string, userId: string) => {
   //This function does not work currently, it is under development
   const store = await Store.findOne({ name, user: userId })
   if (!store) {
@@ -342,12 +376,15 @@ export default {
   addGame,
   addStore,
   addItem,
+  addEnchantment,
   removeGame,
   removeStore,
   removeItem,
+  removeEnchantment,
   updateGame,
   updateStore,
   updateItem,
+  updateEnchantment,
   getGames,
   getGameInfo,
   getStores,

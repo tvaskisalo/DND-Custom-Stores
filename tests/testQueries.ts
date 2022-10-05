@@ -76,6 +76,7 @@ export const getStoreInfoQuery = `query getStoreInfo(
 
 export const addItemMutation = `mutation addItem(
   $name: String!, 
+  $games: [String],
   $storepool: [String], 
   $material: String, 
   $baseCost: Int, 
@@ -83,10 +84,18 @@ export const addItemMutation = `mutation addItem(
   $properties: String, 
   $damage: String, 
   $damageTypes: [String], 
-  $baseItem: Boolean!, 
-  $unique: Boolean!) { 
+  $baseItem: Boolean, 
+  $unique: Boolean,
+  $weapon: Boolean,
+  $weaponType: String,
+  $armor: Boolean,
+  $armorType: String,
+  $armorClass: String
+  $strength: String,
+  $stealth: String) { 
     addItem (
       name: $name, 
+      games: $games,
       storepool: $storepool, 
       material: $material, 
       baseCost: $baseCost, 
@@ -95,9 +104,17 @@ export const addItemMutation = `mutation addItem(
       damage: $damage, 
       damageTypes: $damageTypes, 
       baseItem: $baseItem, 
-      unique: $unique
+      unique: $unique,
+      weapon: $weapon,
+      weaponType: $weaponType,
+      armor: $armor,
+      armorType: $armorType,
+      armorClass: $armorClass,
+      strength: $strength,
+      stealth: $stealth,
     ) {
       name,
+      games
       storepool,
       material,
       baseCost,
@@ -106,7 +123,14 @@ export const addItemMutation = `mutation addItem(
       damage,
       damageTypes,
       baseItem,
-      unique
+      unique,
+      weapon,
+      weaponType,
+      armor,
+      armorType,
+      armorClass,
+      strength,
+      stealth
     }
   }`
 
@@ -122,6 +146,7 @@ export const removeItemMutation = `mutation removeItem(
 export const updateItemMutation = `mutation updateItem(
   $id: String!,
   $name: String,
+  $games: [String],
   $storepool: [String], 
   $material: String, 
   $baseCost: Int, 
@@ -130,10 +155,18 @@ export const updateItemMutation = `mutation updateItem(
   $damage: String, 
   $damageTypes: [String], 
   $baseItem: Boolean, 
-  $unique: Boolean) { 
+  $unique: Boolean,
+  $weapon: Boolean,
+  $weaponType: String,
+  $armor: Boolean,
+  $armorType: String,
+  $armorClass: String
+  $strength: String,
+  $stealth: String) { 
     updateItem (
       id: $id,
       name: $name, 
+      games: $games,
       storepool: $storepool, 
       material: $material, 
       baseCost: $baseCost, 
@@ -142,18 +175,33 @@ export const updateItemMutation = `mutation updateItem(
       damage: $damage, 
       damageTypes: $damageTypes, 
       baseItem: $baseItem, 
-      unique: $unique
+      unique: $unique,
+      weapon: $weapon,
+      weaponType: $weaponType,
+      armor: $armor,
+      armorType: $armorType,
+      armorClass: $armorClass,
+      strength: $strength,
+      stealth: $stealth
       ) {
-      name,
-      storepool,
-      material,
-      baseCost,
-      weight,
-      properties,
-      damage,
-      damageTypes,
-      baseItem,
-      unique
+        name,
+        games
+        storepool,
+        material,
+        baseCost,
+        weight,
+        properties,
+        damage,
+        damageTypes,
+        baseItem,
+        unique,
+        weapon,
+        weaponType,
+        armor,
+        armorType,
+        armorClass,
+        strength,
+        stealth
     }
   }`
 
@@ -194,11 +242,20 @@ export const getItemInfoQuery = `query getItemInfo(
   }`
 
 export const addGameMutation = `mutation addGame(
-  $name: String!) {
+  $name: String!,
+  $enchantments: [String],
+  $rarities: [RarityDefinitionInput]) {
     addGame (
-      name: $name
+      name: $name,
+      enchantments: $enchantments
+      rarities: $rarities
     ) {
-      name
+      name,
+      enchantments
+      rarities {
+        rarity,
+        enchantments
+      }
     }
   }`
 
@@ -213,12 +270,21 @@ export const removeGameMutation = `mutation removeGame(
 
 export const updateGameMutation = `mutation updateGame(
   $id: String!
-  $name: String) {
+  $name: String,
+  $enchantments: [String],
+  $rarities: [RarityDefinitionInput]) {
     updateGame (
       id: $id,
-      name: $name
+      name: $name,
+      enchantments: $enchantments
+      rarities: $rarities
     ) {
       name
+      enchantments
+      rarities {
+        rarity,
+        enchantments
+      }
     }
   }`
 

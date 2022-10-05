@@ -26,4 +26,5 @@
 3.10.2022 | 4 | Added rest of the test for interactions between games and items and items and stores. Changed Schemas to allow duplicate names if user is different and added validation in the backend for unique names.
 4.10.2022 | 1 | Refactored mutations and queries so that they use a dao, not direct access to mongodb
 4.10.2022 | 1.5 | Started developing the itemgenerator. Added a way to generate item rarities based on given probabilities and the tests for it
-Total time | 44 | updated 4.10.2022
+5.10.2022 | 3 | Added Enchantment Schema, updated Item and Game schemas and updated the types, parsers and GraphQL difinitions
+Total time | 47 | updated 5.10.2022

@@ -12,8 +12,18 @@ type Token {
 type Username {
   value: String!
 }
+type RarityDefinition {
+  rarity: String!,
+  enchantments: [Int]!
+}
+input RarityDefinitionInput {
+  rarity: String!,
+  enchantments: [Int]!
+}
 type Game {
   name: String!,
+  enchantments: [String],
+  rarities: [RarityDefinition]
   id: ID!
 }
 type ItemTypeProbability {
@@ -32,6 +42,7 @@ type Store {
 }
 type Item {
   name: String!,
+  games: [String],
   id: ID!,
   storepool: [String]
   material: String,
@@ -40,8 +51,15 @@ type Item {
   properties: String,
   damage: String,
   damageTypes: [String],
-  baseItem: Boolean!,
-  unique: Boolean!
+  baseItem: Boolean,
+  unique: Boolean,
+  weapon: Boolean,
+  weaponType: String,
+  armor: Boolean,
+  armorType: String,
+  armorClass: String,
+  strength: String,
+  stealth: String
 }
 type Query {
   getGames: [Game],
@@ -61,7 +79,9 @@ type Mutation {
     password: String!
   ): Username,
   addGame(
-    name: String!
+    name: String!,
+    enchantments: [String],
+    rarities: [RarityDefinitionInput]
   ): Game,
   addStore(
     name: String!,
@@ -70,15 +90,23 @@ type Mutation {
   ): Store,
   addItem(
     name: String!,
-    storepool: [String]
+    games: [String],
+    storepool: [String],
     material: String,
     baseCost: Int,
     weight: Int,
     properties: String,
     damage: String,
     damageTypes: [String],
-    baseItem: Boolean!,
-    unique: Boolean!
+    baseItem: Boolean,
+    unique: Boolean,
+    weapon: Boolean,
+    weaponType: String,
+    armor: Boolean,
+    armorType: String,
+    armorClass: String,
+    strength: String,
+    stealth: String
   ): Item,
   removeGame(
     name: String!
@@ -91,7 +119,9 @@ type Mutation {
   ): Item,
   updateGame(
     id: String!,
-    name: String
+    name: String,
+    enchantments: [String],
+    rarities: [RarityDefinitionInput]
   ): Game,
   updateStore(
     id: String!,
@@ -102,7 +132,8 @@ type Mutation {
   updateItem(
     id: String!,
     name: String,
-    storepool: [String]
+    games: [String],
+    storepool: [String],
     material: String,
     baseCost: Int,
     weight: Int,
@@ -110,7 +141,14 @@ type Mutation {
     damage: String,
     damageTypes: [String],
     baseItem: Boolean,
-    unique: Boolean
+    unique: Boolean,
+    weapon: Boolean,
+    weaponType: String,
+    armor: Boolean,
+    armorType: String,
+    armorClass: String,
+    strength: String,
+    stealth: String
   ): Item,
   generateItempool(
     name: String!
