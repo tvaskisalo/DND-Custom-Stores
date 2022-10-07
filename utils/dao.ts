@@ -10,7 +10,7 @@ import { Store } from '../schemas/store'
 import { Item } from '../schemas/item'
 import jwt from 'jsonwebtoken'
 import { AuthenticationError, UserInputError, ValidationError } from 'apollo-server-express'
-import { GetItemsParams, GetStoresParams, NewEnchantRequest, NewGameRequest, NewItemRequest, NewStoreRequest, UpdateEnchantParams, UpdateGameParams, UpdateItemParams, UpdateStoreParams } from './types'
+import { GetEnchantmentsParams, GetItemsParams, GetStoresParams, NewEnchantRequest, NewGameRequest, NewItemRequest, NewStoreRequest, UpdateEnchantParams, UpdateGameParams, UpdateItemParams, UpdateStoreParams } from './types'
 import { Enchantment } from '../schemas/enchantment'
 
 //Checks if the name is already in use by the user
@@ -219,10 +219,10 @@ const removeItem = async (name: string, userId: string) => {
   }
   return item
 }
-const removeEnchantment = async (name: string, userId: string) => {
+const removeEnchantment = async (id: string, userId: string) => {
   const enchantment = await Enchantment.findOneAndRemove({
     user: userId,
-    name
+    id
   })
   if (!enchantment) {
     throw new UserInputError('No enchantment found')
@@ -328,14 +328,14 @@ const getStoreInfo = async (name: string, userId: string) => {
   })
   return store
 }
-const getItems = async (items: GetItemsParams | undefined, userId: string) => {
-  if (!items) {
+const getItems = async (args: GetItemsParams | undefined, userId: string) => {
+  if (!args) {
     return await Item.find({ user: userId })
   }
   //Check if the store exists
   const store = await Store.findOne({
     user: userId,
-    name: items.name
+    name: args.name
   })
   if (!store) {
     throw new UserInputError('Store not found')
@@ -355,6 +355,24 @@ const getItemInfo = async (name: string, userId: string) => {
     name
   })
   return item
+}
+const getEnchantments = async (args: GetEnchantmentsParams | undefined, userId: string) => {
+  if (!args) {
+    return await Enchantment.find({ user: userId })
+  }
+  if (args.game) {
+    const game = await Game.findOne({
+      user: userId,
+      name: args.game
+    })
+    if (!game) {
+      throw new UserInputError('Game not found')
+    }
+  }
+  return await Enchantment.find({
+    user: userId,
+    games: args.game
+  })
 }
 const generateItempool = async (name: string, userId: string) => {
   //This function does not work currently, it is under development
@@ -391,5 +409,6 @@ export default {
   getStoreInfo,
   getItems,
   getItemInfo,
+  getEnchantments,
   generateItempool
 }

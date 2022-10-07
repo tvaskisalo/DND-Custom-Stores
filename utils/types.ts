@@ -10,6 +10,36 @@ export type RarityDefinition = {
   rarity: string,
   enchantmentTiers: number[]
 }
+//This is an item that has certain fields defined. Used for item generation
+export type CompleteItem = {
+  name: string,
+  games?: string[],
+  storepool?: string[],
+  material?: string,
+  baseCost?: number,
+  weight?: number,
+  properties?: string,
+  damage?: string,
+  damageTypes?: string[],
+  baseItem?: boolean,
+  unique?: boolean,
+  weapon: boolean,
+  weaponType?: string,
+  armor: boolean,
+  armorType?: string,
+  armorClass?: string,
+  strength?: string,
+  stealth?: string
+}
+//This is an enchantment that has certain fields defined. Used for item generation
+export type CompleteEnchantment = {
+  name: string,
+  games?: string[],
+  tier: number,
+  damage?: string
+  damageTypes?: string[],
+  description: string
+}
 export type NewGameRequest = {
   name: string,
   enchantments?: string[]
@@ -96,6 +126,9 @@ export type GetStoresParams = {
 }
 export type GetItemsParams = {
   name: string
+}
+export type GetEnchantmentsParams = {
+  game: string
 }
 
 export type ItemTypeProbability = {

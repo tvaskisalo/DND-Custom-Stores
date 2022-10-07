@@ -27,4 +27,5 @@
 4.10.2022 | 1 | Refactored mutations and queries so that they use a dao, not direct access to mongodb
 4.10.2022 | 1.5 | Started developing the itemgenerator. Added a way to generate item rarities based on given probabilities and the tests for it
 5.10.2022 | 3 | Added Enchantment Schema, updated Item and Game schemas and updated the types, parsers and GraphQL difinitions
-Total time | 47 | updated 5.10.2022
+7.10.2022 | 1.5 | Added mutations and queries for enchantments. Continued item generator
+Total time | 48.5 | updated 7.10.2022

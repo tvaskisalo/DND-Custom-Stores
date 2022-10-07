@@ -1,4 +1,4 @@
-import { toName, getUser, toGetItemsParams, toGetStoresParams } from '../utils/parsers'
+import { toName, getUser, toGetItemsParams, toGetStoresParams, toGetEnchantmentsParams } from '../utils/parsers'
 import dao from '../utils/dao'
 
 export const Query = {
@@ -59,4 +59,20 @@ export const Query = {
     const item = await dao.getItemInfo(name, user?.id as string)
     return item
   },
+  //Same thing as above
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getEnchantments: async (_root: unknown, args: any, context: unknown) => {
+    const user = await getUser(context)
+    // If no game is given, return all user's enchantments
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    if (Object.keys(args).length === 0) {
+      const enchantments = await dao.getEnchantments(undefined, user?.id as string)
+      return enchantments
+    }
+
+    //Parse args
+    const params = toGetEnchantmentsParams(args)
+    const enchantments = await dao.getEnchantments(params, user?.id as string)
+    return enchantments
+  }
 }

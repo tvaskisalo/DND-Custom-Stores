@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AuthenticationError } from 'apollo-server-express'
 import { User } from '../schemas/user'
-import { GetItemsParams, GetStoresParams, ItemTypeProbability, UpdateGameParams, UpdateItemParams, UpdateStoreParams, LoginRequest, NewGameRequest, NewItemRequest, NewStoreRequest, Token, RarityDefinition } from './types'
+import { GetItemsParams, GetStoresParams, ItemTypeProbability, UpdateGameParams, UpdateItemParams, UpdateStoreParams, LoginRequest, NewGameRequest, NewItemRequest, NewStoreRequest, Token, RarityDefinition, GetEnchantmentsParams, UpdateEnchantParams } from './types'
 
 const isString = (str: unknown): str is string => {
   return typeof str === 'string' || str instanceof String
@@ -98,6 +98,19 @@ export const toUpdateItemParams = (reqData: any): UpdateItemParams => {
   return updateRequest
 }
 
+export const toUpdateEnchantmentParams = (reqData: any): UpdateEnchantParams => {
+  const updateRequest: UpdateEnchantParams = {
+    id: parseString(reqData.id),
+    games: reqData.games ? parseStringArray(reqData.games) : undefined,
+    name: reqData.name ? parseString(reqData.name) : undefined,
+    tier: reqData.tier ? parseNumber(reqData.tier) : undefined,
+    damage: reqData.damage ? parseString(reqData.damage) : undefined,
+    damageTypes: reqData.damageTypes ? parseStringArray(reqData.damageTypes) : undefined,
+    description: reqData.description ? parseString(reqData.description) : undefined
+  }
+  return updateRequest
+}
+
 export const toNewGameRequest = (reqData: any): NewGameRequest => {
   const newGameRequest: NewGameRequest = {
     name: parseString(reqData.name),
@@ -140,10 +153,20 @@ export const toGetStoresParams = (reqData: any): GetStoresParams => {
   }
   return params
 }
+export const toId = (reqData: any): string => {
+  return parseString(reqData.id)
+}
 
 export const toGetItemsParams = (reqData: any): GetItemsParams => {
   const params: GetItemsParams = {
     name: parseString(reqData.store)
+  }
+  return params
+}
+
+export const toGetEnchantmentsParams = (reqData: any): GetEnchantmentsParams => {
+  const params: GetEnchantmentsParams = {
+    game: parseString(reqData.game)
   }
   return params
 }

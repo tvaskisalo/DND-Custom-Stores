@@ -9,6 +9,14 @@ type User {
 type Token {
   value: String!
 }
+type Enchantment {
+  name: String!,
+  games: [String],
+  tier: Int,
+  damage: String,
+  damageTypes: [String],
+  description: String
+}
 type Username {
   value: String!
 }
@@ -67,7 +75,8 @@ type Query {
   getStores(game: String): [Store],
   getStoreInfo(name: String!): Store
   getItems(store: String): [Item]
-  getItemInfo(name: String!): Item
+  getItemInfo(name: String!): Item,
+  getEnchantments(game: String): [Enchantment]
 }
 type Mutation {
   login(
@@ -108,6 +117,14 @@ type Mutation {
     strength: String,
     stealth: String
   ): Item,
+  addEnchantment(
+    name: String!,
+    games: [String],
+    tier: Int,
+    damage: String,
+    damageTypes: [String],
+    description: String
+  ): Enchantment,
   removeGame(
     name: String!
   ): Game,
@@ -117,6 +134,9 @@ type Mutation {
   removeItem(
     name: String!
   ): Item,
+  removeEnchantment(
+    id: String!,
+  ): Enchantment,
   updateGame(
     id: String!,
     name: String,
@@ -150,6 +170,15 @@ type Mutation {
     strength: String,
     stealth: String
   ): Item,
+  updateEnchantment(
+    id: String!,
+    name: String,
+    games: [String],
+    tier: Int,
+    damage: String,
+    damageTypes: [String],
+    description: String
+  ): Enchantment
   generateItempool(
     name: String!
   ): [Item]

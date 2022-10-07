@@ -1,4 +1,4 @@
-import { toLoginRequest, toNewGameRequest, toNewStoreRequest, toNewItemRequest, getUser, toName, toUpdateItemParams, toUpdateGameParams, toUpdateStoreParams, toStore } from '../utils/parsers'
+import { toLoginRequest, toNewGameRequest, toNewStoreRequest, toNewItemRequest, getUser, toName, toUpdateItemParams, toUpdateGameParams, toUpdateStoreParams, toStore, toId, toUpdateEnchantmentParams } from '../utils/parsers'
 import dao from '../utils/dao'
 
 export const Mutation = {
@@ -35,6 +35,13 @@ export const Mutation = {
     const item = await dao.addItem(newItem, user?.id as string)
     return item
   },
+  addEnchantment: async (_root:unknown, args: unknown, context: unknown) => {
+    // Parse params
+    const newEnchant = toNewItemRequest(args)
+    const user = await getUser(context)
+    const enchantment = await dao.addEnchantment(newEnchant, user?.id as string)
+    return enchantment
+  },
   removeGame: async (_root:unknown, args: unknown, context: unknown) => {
     const user = await getUser(context)
     // Parse params
@@ -56,6 +63,13 @@ export const Mutation = {
     const item = await dao.removeItem(name, user?.id as string)
     return item
   },
+  removeEnchantment: async (_root: unknown, args: unknown, context: unknown) => {
+    const user = await getUser(context)
+    // Parse params
+    const id = toId(args)
+    const enchantment = await dao.removeEnchantment(id, user?.id as string)
+    return enchantment
+  },
   updateGame: async (_root: unknown, args: unknown, context: unknown) => {
     const user = await getUser(context)
     // Parse params
@@ -76,6 +90,13 @@ export const Mutation = {
     const params = toUpdateItemParams(args)
     const item = await dao.updateItem(params, user?.id as string)
     return item
+  },
+  updateEnchantment: async (_root: unknown, args: unknown, context: unknown) => {
+    const user = await getUser(context)
+    // Parse params
+    const params = toUpdateEnchantmentParams(args)
+    const enchantment = await dao.updateEnchantment(params, user?.id as string)
+    return enchantment
   },
   generateItempool: async (_root: unknown, args: unknown, context: unknown) => {
     const user = await getUser(context)
