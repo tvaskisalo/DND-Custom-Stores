@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react'
-import { ADDGAME } from '../mutations'
-import { useField } from '../utils/utils'
+import { ADDGAME } from '../../mutations'
+import { useField } from '../../utils/utils'
 import { useMutation } from '@apollo/client'
-
+import Form from './Form'
 
 
 const AddGame = () => {
-  const Gamename = useField('text')
+  const name = useField('text','Name')
   const [ addGame, result ] = useMutation(ADDGAME)
 
   useEffect(() => {
@@ -18,21 +18,15 @@ const AddGame = () => {
     try {
       await addGame({
         variables: {
-          name: Gamename.value
+          name: name.value
         }
       })
-    } catch (err: any) {
-      console.log(err.message)
+    } catch (err) {
+      console.log(err)
     }
   }
-  return (
-    <div>
-      <form onSubmit={submit}>
-        <div>Gamename <input { ...Gamename }/></div>
-        <div><button>login</button></div>
-      </form>
-    </div>
-  )
+  const form = Form(submit, [name], 'Add game')
+  return form
 }
 
 

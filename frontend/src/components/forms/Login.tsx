@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react'
-import { LOGIN } from '../mutations'
-import { useField } from '../utils/utils'
+import { LOGIN } from '../../mutations'
+import { useField } from '../../utils/utils'
 import { useMutation } from '@apollo/client'
 import PropTypes from 'prop-types'
+import Form from './Form'
 
 
 const Login = ({ setToken }) => {
-  const username = useField('text')
-  const password = useField('password')
+  const username = useField('text', 'Username')
+  const password = useField('password', 'Password')
   const [ login, result ] = useMutation(LOGIN)
 
   useEffect(() => {
@@ -32,15 +33,8 @@ const Login = ({ setToken }) => {
       console.log(err)
     }
   }
-  return (
-    <div>
-      <form onSubmit={submit}>
-        <div>username <input { ...username }/></div>
-        <div>password <input { ...password }/></div>
-        <div><button>login</button></div>
-      </form>
-    </div>
-  )
+  const form = Form(submit, [username, password], 'Login')
+  return form
 }
 
 Login.propTypes = {

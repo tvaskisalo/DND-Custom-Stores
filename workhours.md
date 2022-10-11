@@ -28,4 +28,5 @@
 4.10.2022 | 1.5 | Started developing the itemgenerator. Added a way to generate item rarities based on given probabilities and the tests for it
 5.10.2022 | 3 | Added Enchantment Schema, updated Item and Game schemas and updated the types, parsers and GraphQL difinitions
 7.10.2022 | 1.5 | Added mutations and queries for enchantments. Continued item generator
-Total time | 48.5 | updated 7.10.2022
+11.10.2022 | 1.5 | Refactored frontend forms and added a few more
+Total time | 50 | updated 11.10.2022

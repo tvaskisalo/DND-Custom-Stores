@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import Home from './components/Home'
-import Login from './components/Login'
-import AddUser from './components/AddUser'
-import AddGame from './components/AddGame'
+import Login from './components/forms/Login'
+import AddUser from './components/forms/AddUser'
+import AddGame from './components/forms/AddGame'
 import GamesView from './components/GamesView'
 import Navigationbar from './components/Navigtionbar'
 import { useApolloClient } from '@apollo/client'
+import AddItem from './components/forms/AddItem'
 
 const App = () => {
   const [token, setToken] = useState('')
@@ -31,6 +32,7 @@ const App = () => {
         <Route path="/adduser" element={<AddUser />} />
         <Route path="/addgame" element={<AddGame />} />
         <Route path="/games" element={token ? <GamesView /> : <Navigate replace to='/login'/>} />
+        <Route path="/addItem" element={<AddItem />} />
       </Routes>
     </div>
   )

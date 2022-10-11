@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react'
-import { ADDUSER } from '../mutations'
-import { useField } from '../utils/utils'
+import { ADDUSER } from '../../mutations'
+import { useField } from '../../utils/utils'
 import { useMutation } from '@apollo/client'
+import Form from './Form'
 
 
 
 const AddUser = () => {
-  const username = useField('text')
-  const password = useField('password')
+  const username = useField('number', 'Username')
+  const password = useField('password', 'Password')
   const [ addUser, result ] = useMutation(ADDUSER)
 
   useEffect(() => {
@@ -23,19 +24,12 @@ const AddUser = () => {
           password: password.value
         }
       })
-    } catch (err: any) {
-      console.log(err.message)
+    } catch (err) {
+      console.log(err)
     }
   }
-  return (
-    <div>
-      <form onSubmit={submit}>
-        <div>username <input { ...username }/></div>
-        <div>password <input { ...password }/></div>
-        <div><button>login</button></div>
-      </form>
-    </div>
-  )
+  const form = Form(submit, [username, password], 'Sign up')
+  return form
 }
 
 
