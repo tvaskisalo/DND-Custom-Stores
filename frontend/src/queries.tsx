@@ -5,7 +5,10 @@ export const GETGAMES = gql`
     getGames {
       name
       enchantments
-      rarities
+      rarities {
+        rarity
+        enchantmentTiers
+      }
       id
     }
   }
@@ -18,7 +21,10 @@ export const GETGAMEINFO = gql`
     ) {
       name
       enchantments
-      rarities
+      rarities {
+        rarity
+        enchantmentTiers
+      }
       id
     }
   }
@@ -30,7 +36,10 @@ export const GETSTOREINFO = gql`
     ) {
       name
       id
-      itemTypeProbabilities,
+      itemTypeProbabilities {
+        rarity
+        probability
+      }
       games
     }
   }
@@ -70,7 +79,10 @@ export const GETSTORES = gql`
     ) {
       name
       id
-      itemTypeProbabilities,
+      itemTypeProbabilities {
+        rarity
+        probability
+      }
       games
     }
   }
