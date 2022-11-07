@@ -36,7 +36,10 @@ export const ADDGAME = gql`mutation addGame (
       name
       id
       enchantments
-      rarities
+      rarities {
+        rarity
+        enchantmentTiers
+      }
     }
   }`
 
@@ -51,7 +54,10 @@ export const ADDSTORE = gql`mutation addStore (
     ){
       name
       id
-      itemTypeProbabilities
+      itemTypeProbabilities {
+        rarity
+        probability
+      }
       games
     }
   }`
@@ -59,7 +65,7 @@ export const ADDSTORE = gql`mutation addStore (
 export const ADDITEM = gql`mutation addItem(
   $name: String! 
   $games: [String]
-  $storePool: [String] 
+  $storepool: [String] 
   $material: String 
   $baseCost: Int 
   $weight: Int 
@@ -78,7 +84,7 @@ export const ADDITEM = gql`mutation addItem(
     addItem (
       name: $name 
       games: $games
-      storePool: $storePool 
+      storepool: $storepool 
       material: $material 
       baseCost: $baseCost 
       weight: $weight 
@@ -97,7 +103,7 @@ export const ADDITEM = gql`mutation addItem(
     ) {
       name
       games
-      storePool
+      storepool
       material
       baseCost
       weight
@@ -145,7 +151,10 @@ export const REMOVEGAME = gql`mutation removeGame($name: String!){
     name
     id
     enchantments
-    rarities
+    rarities {
+      rarity
+      enchantmentTiers
+    }
   }
 }`
 export const REMOVESTORE = gql`mutation removeStore($name: String!){
@@ -160,7 +169,7 @@ export const REMOVEITEM = gql`mutation removeItem($name: String!){
   removeItem(name: $name) {
     name
     games
-    storePool
+    storepool
     material
     baseCost
     weight
@@ -204,7 +213,10 @@ export const UPDATEGAME = gql`mutation updateGame (
       name
       id
       enchantments
-      rarities
+      rarities {
+        rarity
+        enchantmentTiers
+      }
     }
   }`
 
@@ -222,7 +234,10 @@ export const UPDATESTORE = gql`mutation updateStore (
       id
       name
       id
-      itemTypeProbabilities
+      itemTypeProbabilities {
+        rarity
+        probability
+      }
       games
     }
   }`
@@ -231,7 +246,7 @@ export const UPDATEITEM = gql`mutation updateItem(
   $id: String!
   $name: String 
   $games: [String]
-  $storePool: [String] 
+  $storepool: [String] 
   $material: String 
   $baseCost: Int 
   $weight: Int 
@@ -251,7 +266,7 @@ export const UPDATEITEM = gql`mutation updateItem(
       id: $id
       name: $name 
       games: $games
-      storePool: $storePool 
+      storepool: $storepool 
       material: $material 
       baseCost: $baseCost 
       weight: $weight 
@@ -271,7 +286,7 @@ export const UPDATEITEM = gql`mutation updateItem(
       id
       name
       games
-      storePool
+      storepool
       material
       baseCost
       weight

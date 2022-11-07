@@ -22,11 +22,11 @@ type Username {
 }
 type RarityDefinition {
   rarity: String!,
-  enchantments: [Int]!
+  enchantmentTiers: [Int]
 }
 input RarityDefinitionInput {
   rarity: String!,
-  enchantments: [Int]!
+  enchantmentTiers: [Int]
 }
 type Game {
   name: String!,

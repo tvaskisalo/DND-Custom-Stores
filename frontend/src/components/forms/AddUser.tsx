@@ -7,7 +7,7 @@ import Form from './Form'
 
 
 const AddUser = () => {
-  const username = useField('number', 'Username')
+  const username = useField('text', 'Username')
   const password = useField('password', 'Password')
   const [ addUser, result ] = useMutation(ADDUSER)
 
@@ -28,7 +28,13 @@ const AddUser = () => {
       console.log(err)
     }
   }
-  const form = Form(submit, [username, password], 'Sign up')
+  const form = Form(
+    submit,
+    [
+      username,
+      password
+    ],
+    'Sign up')
   return form
 }
 

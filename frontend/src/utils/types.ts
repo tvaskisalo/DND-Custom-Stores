@@ -5,3 +5,11 @@ export type Field = {
   value: string | undefined,
   onChange: (e: unknown) => void
 }
+export type ItemTypeProbability = {
+  rarity: string,
+  probability: number
+}
+export type RarityDefinition = {
+  rarity: string,
+  enchantmentTiers: number[]
+}

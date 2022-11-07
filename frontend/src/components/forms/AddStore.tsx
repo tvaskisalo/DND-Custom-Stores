@@ -3,10 +3,13 @@ import { ADDSTORE } from '../../mutations'
 import { useField } from '../../utils/utils'
 import { useMutation } from '@apollo/client'
 import Form from './Form'
+import { toItemTypeProbabilities } from '../../utils/parsers'
 
 
 const AddStore = () => {
   const name = useField('text','Name')
+  const games = useField('text','Games')
+  const itemTypeProbabilities = useField('text','ItemTypeProbabilities')
   const [ addStore, result ] = useMutation(ADDSTORE)
 
   useEffect(() => {
@@ -18,14 +21,23 @@ const AddStore = () => {
     try {
       await addStore({
         variables: {
-          name: name.value
+          name: name.value,
+          games: games.value?.split(' '),
+          itemTypeProbabilities: toItemTypeProbabilities(itemTypeProbabilities?.value)
         }
       })
     } catch (err) {
       console.log(err)
     }
   }
-  const form = Form(submit, [name], 'Add game')
+  const form = Form(
+    submit,
+    [
+      name,
+      games,
+      itemTypeProbabilities
+    ],
+    'Add game')
   return form
 }
 

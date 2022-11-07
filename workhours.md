@@ -29,4 +29,5 @@
 5.10.2022 | 3 | Added Enchantment Schema, updated Item and Game schemas and updated the types, parsers and GraphQL difinitions
 7.10.2022 | 1.5 | Added mutations and queries for enchantments. Continued item generator
 11.10.2022 | 1.5 | Refactored frontend forms and added a few more
-Total time | 50 | updated 11.10.2022
+7.11.2022 | 1.5 | Added the rest of the forms to the frontend
+Total time | 51.5 | updated 7.11.2022

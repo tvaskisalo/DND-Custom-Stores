@@ -254,7 +254,7 @@ export const addGameMutation = `mutation addGame(
       enchantments
       rarities {
         rarity,
-        enchantments
+        enchantmentTiers
       }
     }
   }`
@@ -283,7 +283,7 @@ export const updateGameMutation = `mutation updateGame(
       enchantments
       rarities {
         rarity,
-        enchantments
+        enchantmentTiers
       }
     }
   }`

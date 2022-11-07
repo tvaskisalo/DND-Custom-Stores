@@ -86,6 +86,7 @@ const login = async (username: string, password: string): Promise<string> => {
   return token
 }
 const addGame = async (newGame: NewGameRequest, userId: string) => {
+  // TODO check that all enchantments exist
   // Checking if the name is already in use by other user's game
   if (!await validateName(newGame.name, 'Game', userId)) {
     throw new ValidationError('Name is in use')

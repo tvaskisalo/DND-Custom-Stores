@@ -1,4 +1,3 @@
-//TODO: Test queries and mutations related to games
 import { ApolloServer } from 'apollo-server-express'
 import { User } from '../schemas/user'
 import { Store } from '../schemas/store'

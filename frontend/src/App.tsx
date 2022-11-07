@@ -8,6 +8,8 @@ import GamesView from './components/GamesView'
 import Navigationbar from './components/Navigtionbar'
 import { useApolloClient } from '@apollo/client'
 import AddItem from './components/forms/AddItem'
+import AddEnchantment from './components/forms/AddEnchantment'
+import AddStore from './components/forms/AddStore'
 
 const App = () => {
   const [token, setToken] = useState('')
@@ -29,10 +31,14 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login setToken={setToken}/>} />
+
         <Route path="/adduser" element={<AddUser />} />
         <Route path="/addgame" element={<AddGame />} />
-        <Route path="/games" element={token ? <GamesView /> : <Navigate replace to='/login'/>} />
         <Route path="/addItem" element={<AddItem />} />
+        <Route path="/addStore" element={<AddStore />} />
+        <Route path='/addEnchantment' element={<AddEnchantment/>} />
+
+        <Route path="/games" element={token ? <GamesView /> : <Navigate replace to='/login'/>} />
       </Routes>
     </div>
   )

@@ -7,11 +7,17 @@ import Form from './Form'
 
 const AddItem = () => {
   const name = useField('text','Name')
+  //Currently given a string that will be parsed to an array.
+  const games = useField('text','Games')
+  //Currently given a string that will be parsed to an array.
+  const storePool = useField('text','StorePool')
   const material = useField('text','Material')
   const baseCost = useField('number','Basecost')
   const weight = useField('number','Weight')
   const properties = useField('text','Properties')
   const damage = useField('text','Damage')
+  //Currently given a string that will be parsed to an array.
+  const damageTypes = useField('text','DamageTypes')
   const baseItem = useField('boolean','BaseItem')
   const unique = useField('boolean','Unique')
   const weapon = useField('boolean','Weapon')
@@ -33,16 +39,19 @@ const AddItem = () => {
       await addItem({
         variables: {
           name: name.value,
+          games: games.value?.split(' '),
+          storePool: storePool.value?.split(' '),
           material: material.value,
-          baseCost: baseCost.value,
-          weight: weight.value,
+          baseCost: Number(baseCost.value),
+          weight: Number(weight.value),
           properties: properties.value,
           damage: damage.value,
-          baseItem: baseItem.value,
-          unique: unique.value,
-          weapon: weapon.value,
+          damageTypes: damageTypes.value?.split(' '),
+          baseItem: baseItem.value ? baseItem.value.toLowerCase() === 'true' : undefined,
+          unique: unique.value ? unique.value.toLowerCase() === 'true' : undefined,
+          weapon: weapon.value ? weapon.value.toLowerCase() === 'true' : undefined,
           weaponType: weaponType.value,
-          armor: armor.value,
+          armor: armor.value ? armor.value.toLowerCase() === 'true' : undefined,
           armorType: armorType.value,
           armorClass: armorClass.value,
           strength: strength.value,
@@ -57,11 +66,14 @@ const AddItem = () => {
     submit,
     [
       name,
+      games,
+      storePool,
       material,
       baseCost,
       weight,
       properties,
       damage,
+      damageTypes,
       baseItem,
       unique,
       weapon,
