@@ -31,4 +31,5 @@
 11.10.2022 | 1.5 | Refactored frontend forms and added a few more
 7.11.2022 | 1.5 | Added the rest of the forms to the frontend
 7.11.2022 | 2 | Added pages to view Stores, Items and Games
-Total time | 53.5 | updated 7.11.2022
+9.11.2022 | 2.5 | Made the first version of the itempool generator
+Total time | 56 | updated 7.11.2022
