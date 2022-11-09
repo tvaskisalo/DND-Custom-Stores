@@ -7,6 +7,7 @@ export const addStoreMutation = `mutation addStore(
       itemTypeProbabilities: $itemTypeProbabilities,
       games: $games
     ) {
+      id,
       name,
       itemTypeProbabilities {
         rarity,
@@ -21,6 +22,7 @@ export const removeStoreMutation = `mutation removeStore(
     removeStore(
       name: $name
     ) {
+      id,
       name
     }
   }`
@@ -36,6 +38,7 @@ export const updateStoreMutation = `mutation updateStore(
       itemTypeProbabilities: $itemTypeProbabilities,
       games: $games
     ) {
+      id,
       name,
       itemTypeProbabilities {
         rarity,
@@ -50,6 +53,7 @@ export const getStoresQuery = `query getStores(
     getStores(
       game: $game
     ) {
+      id,
       name,
       itemTypeProbabilities {
         rarity,
@@ -64,6 +68,7 @@ export const getStoreInfoQuery = `query getStoreInfo(
     getStoreInfo(
       name: $name
     ) {
+      id,
       name,
       itemTypeProbabilities {
         rarity,
@@ -113,6 +118,7 @@ export const addItemMutation = `mutation addItem(
       strength: $strength,
       stealth: $stealth,
     ) {
+      id,
       name,
       games
       storepool,
@@ -139,6 +145,7 @@ export const removeItemMutation = `mutation removeItem(
     removeItem(
       name: $name
     ) {
+      id,
       name
     }
   }`
@@ -184,6 +191,7 @@ export const updateItemMutation = `mutation updateItem(
       strength: $strength,
       stealth: $stealth
       ) {
+        id,
         name,
         games
         storepool,
@@ -210,6 +218,7 @@ export const getItemsQuery = `query getItems(
     getItems(
       store: $store
     ) {
+      id,
       name,
       storepool,
       material,
@@ -228,6 +237,7 @@ export const getItemInfoQuery = `query getItemInfo(
     getItemInfo(
       name: $name
     ) {
+      id,
       name,
       storepool,
       material,
@@ -250,6 +260,7 @@ export const addGameMutation = `mutation addGame(
       enchantments: $enchantments
       rarities: $rarities
     ) {
+      id,
       name,
       enchantments
       rarities {
@@ -264,6 +275,7 @@ export const removeGameMutation = `mutation removeGame(
     removeGame (
       name: $name
     ) {
+      id,
       name
     }
   }`
@@ -279,6 +291,7 @@ export const updateGameMutation = `mutation updateGame(
       enchantments: $enchantments
       rarities: $rarities
     ) {
+      id,
       name
       enchantments
       rarities {
@@ -303,6 +316,93 @@ export const getGameInfoQuery = `query getGameInfo(
       name
     }
   }`
+
+export const addEnchantmentMutation = `mutation addEnchantment(
+  $name: String!,
+  $games: [String],
+  $tier: Int,
+  $damage: String
+  $damageTypes: [String],
+  $description: String
+  ) {
+    addEnchantment (
+      name: $name,
+      games: $games,
+      tier: $tier,
+      damage: $damage,
+      damageTypes: $damageTypes,
+      description: $description
+    ) {
+      id,
+      name,
+      games,
+      tier,
+      damage,
+      damageTypes,
+      description
+    }
+  }`
+
+export const removeEnchantmentMutation = `mutation removeEnchantment(
+  $id: String!
+  ) {
+    removeEnchantment (
+      id: $id
+    ) {
+      id,
+      name,
+      games,
+      tier,
+      damage,
+      damageTypes,
+      description
+    }
+  }`
+
+export const updateEnchantmentMutation = `mutation updateEnchantment(
+  $id: String!
+  $name: String,
+  $games: [String],
+  $tier: Int,
+  $damage: String
+  $damageTypes: [String],
+  $description: String
+  ) {
+    updateEnchantment (
+      id: $id,
+      name: $name,
+      games: $games,
+      tier: $tier,
+      damage: $damage,
+      damageTypes: $damageTypes,
+      description: $description
+    ) {
+      id,
+      name,
+      games,
+      tier,
+      damage,
+      damageTypes,
+      description
+    }
+  }`
+
+export const getEnchantmentsQuery = `query getEnchantments(
+  $game: String
+  ) {
+    getEnchantments (
+      game: $game
+    ) {
+      id,
+      name,
+      games,
+      tier,
+      damage,
+      damageTypes,
+      description
+    }
+  }
+`
 
 export const addUserMutation = `mutation addUser(
   $username: String!,

@@ -8,12 +8,14 @@ export type Token = {
 }
 export type RarityDefinition = {
   rarity: string,
-  enchantmentTiers: number[]
+  enchantmentTiers: number[],
+  enchantmentCount: number
 }
 //This is an item that has certain fields defined. Used for item generation
 export type CompleteItem = {
   name: string,
   games?: string[],
+  rarity?: string
   storepool?: string[],
   material?: string,
   baseCost?: number,
