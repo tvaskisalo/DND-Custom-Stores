@@ -1,5 +1,5 @@
 import itemGenerator from '../utils/itemGenerator'
-import { CompleteEnchantment, CompleteItem, ItemTypeProbability, RarityDefinition } from '../utils/types'
+import { CompleteEnchantment, CompleteItem, itemRarityProbability, RarityDefinition } from '../utils/types'
 const items: CompleteItem[] = [
   {
     name: 'Dagger',
@@ -7,7 +7,9 @@ const items: CompleteItem[] = [
     damageTypes: ['Puncture'],
     weapon: true,
     armor: false,
-    properties: 'Basic dagger'
+    properties: 'Basic dagger',
+    baseItem: true,
+    unique: false
   },
   {
     name: 'Long Sword',
@@ -15,6 +17,8 @@ const items: CompleteItem[] = [
     damageTypes: ['Piercing'],
     weapon: true,
     armor: false,
+    baseItem: true,
+    unique: false
   },
   {
     name: 'Staff',
@@ -22,20 +26,26 @@ const items: CompleteItem[] = [
     damageTypes: ['Magical'],
     weapon: true,
     armor: false,
+    baseItem: true,
+    unique: false
   },
   {
     name: 'Chestplate',
     weapon: false,
     armor: true,
     strength: '1d4',
-    stealth: '1d6'
+    stealth: '1d6',
+    baseItem: true,
+    unique: false
   },
   {
     name: 'Shoulderguards',
     weapon: false,
     armor: true,
     strength: '1d4',
-    stealth: '1d6'
+    stealth: '1d6',
+    baseItem: true,
+    unique: false
   },
   {
     name: 'Spiked Shield',
@@ -44,7 +54,18 @@ const items: CompleteItem[] = [
     weapon: true,
     armor: true,
     strength: '1d4',
-    stealth: '1d6'
+    stealth: '1d6',
+    baseItem: true,
+    unique: false
+  },
+  {
+    name: 'Master Sword',
+    damage: '1d20',
+    damageTypes: ['Holy'],
+    weapon: true,
+    armor: false,
+    baseItem: false,
+    unique: true
   }
 ]
 const enchantments: CompleteEnchantment[] = [
@@ -53,46 +74,54 @@ const enchantments: CompleteEnchantment[] = [
     tier: 1,
     damage: '1d6',
     damageTypes: ['Fire'],
-    description: 'Adds fire damage to a weapon'
+    description: 'Adds fire damage to a weapon',
+    weapon: true,
+    armor: false
   },
   {
     name: 'Frost',
     tier: 1,
     damage: '1d12',
     damageTypes: ['Frost'],
-    description: 'Adds frost damage to a weapon'
+    description: 'Adds frost damage to a weapon',
+    weapon: true,
+    armor: false
   },
   {
     name: 'Blessing',
     tier: 2,
     damage: '1d10',
     damageTypes: ['Holy'],
-    description: 'Adds holy damage to a weapon'
+    description: 'Adds holy damage to a weapon',
+    weapon: true,
+    armor: false
   },
   {
     name: 'Curse',
     tier: 2,
     damage: '1d10',
     damageTypes: ['Evil'],
-    description: 'Adds evil damage to a weapon'
-  }
+    description: 'Adds evil damage to a weapon',
+    weapon: true,
+    armor: false
+  },
 ]
 describe('Generating item rarities', () => {
   test('Capacity 1, itemrarities 1', () => {
     const capacity = 1
-    const itemTypeProbabilities: ItemTypeProbability[] = [
+    const itemRarityProbabilities: itemRarityProbability[] = [
       {
         rarity: 'Common',
         probability: 100
       }
     ]
-    const itemRarities = itemGenerator.generateItemRarities(capacity, itemTypeProbabilities, undefined)
+    const itemRarities = itemGenerator.generateItemRarities(capacity, itemRarityProbabilities, undefined)
     expect(itemRarities.length).toBe(1)
     expect(itemRarities[0]).toBe('Common')
   })
   test('Capacity 4, itemrarities 2, constant seed', () => {
     const capacity = 4
-    const itemTypeProbabilities: ItemTypeProbability[] = [
+    const itemRarityProbabilities: itemRarityProbability[] = [
       {
         rarity: 'Common',
         probability: 50
@@ -103,13 +132,13 @@ describe('Generating item rarities', () => {
       }
     ]
     const seed = 'test'
-    const itemRarities = itemGenerator.generateItemRarities(capacity, itemTypeProbabilities, seed)
+    const itemRarities = itemGenerator.generateItemRarities(capacity, itemRarityProbabilities, seed)
     expect(itemRarities.length).toBe(4)
     expect(itemRarities).toEqual(['Uncommon', 'Common', 'Uncommon', 'Common'])
   })
   test('Capacity 10, itemrarities: 6, consant seed', () => {
     const capacity = 10
-    const itemTypeProbabilities: ItemTypeProbability[] = [
+    const itemRarityProbabilities: itemRarityProbability[] = [
       {
         rarity: 'Common',
         probability: 25
@@ -136,7 +165,7 @@ describe('Generating item rarities', () => {
       },
     ]
     const seed = 'test'
-    const itemRarities = itemGenerator.generateItemRarities(capacity, itemTypeProbabilities, seed)
+    const itemRarities = itemGenerator.generateItemRarities(capacity, itemRarityProbabilities, seed)
     expect(itemRarities.length).toBe(10)
     expect(itemRarities).toEqual([
       'Legendary', 'Uncommon',
@@ -149,7 +178,7 @@ describe('Generating item rarities', () => {
   //This might fail due to variance, but it should be REALLY unlikely. If it fails check your code to be sure
   test('Capacity 1000000, itemRarities 6', () => {
     const capacity = 1000000
-    const itemTypeProbabilities: ItemTypeProbability[] = [
+    const itemRarityProbabilities: itemRarityProbability[] = [
       {
         rarity: 'Common',
         probability: 25
@@ -175,7 +204,7 @@ describe('Generating item rarities', () => {
         probability: 5
       },
     ]
-    const itemRarities = itemGenerator.generateItemRarities(capacity, itemTypeProbabilities, undefined)
+    const itemRarities = itemGenerator.generateItemRarities(capacity, itemRarityProbabilities, undefined)
     expect(itemRarities.length).toBe(capacity)
     //This tests that each rarity shows up in the array the correct amount of times compared to its probability
     const commons = itemRarities.filter(r => r==='Common')
@@ -245,19 +274,11 @@ describe('Enchanting items', () => {
     expect(generatedItem.properties).toContain('Adds fire damage to a weapon')
     expect(generatedItem.properties).toContain('Adds frost damage to a weapon')
   })
-
-  test('Generator will throw an error if the n is larger than the amount of enchantments', () => {
-    const n = 10
-    const item = items[0]
-    const enchantment = enchantments.slice(0,1)
-    const seed = 'test'
-    expect(() => itemGenerator.generateEnchantedItem(n, item, enchantment, seed)).toThrow('Number of enchantments cannot exceed number of enchantments in the game')
-  })
 })
 
 test('Itempool generation', () => {
   const capacity = 10
-  const itemTypeProbabilities: ItemTypeProbability[] = [
+  const itemRarityProbabilities: itemRarityProbability[] = [
     {
       rarity: 'Common',
       probability: 25
@@ -307,7 +328,32 @@ test('Itempool generation', () => {
     }
   ]
   const seed = undefined
-  const itempool = itemGenerator.generateItemPool(capacity, items, itemTypeProbabilities, enchantments, rarityDefinitions, seed)
+  const itempool = itemGenerator.generateItemPool(capacity, items, itemRarityProbabilities, enchantments, rarityDefinitions, seed)
+  console.log(itempool)
+  expect(false)
+})
+
+test('itempool generation with uniques', () => {
+  const capacity = 4
+  const itemRarityProbabilities: itemRarityProbability[] = [
+    {
+      rarity: 'Common',
+      probability: 50
+    },
+    {
+      rarity: 'Unique',
+      probability: 50
+    }
+  ]
+  const rarityDefs: RarityDefinition[] = [
+    {
+      rarity: 'Common',
+      enchantmentTiers: [1],
+      enchantmentCount: 2
+    }
+  ]
+  const seed = 'test'
+  const itempool = itemGenerator.generateItemPool(capacity, items, itemRarityProbabilities, enchantments, rarityDefs, seed)
   console.log(itempool)
   expect(false)
 })

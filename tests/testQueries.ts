@@ -1,15 +1,15 @@
 export const addStoreMutation = `mutation addStore(
   $name: String!,
-  $itemTypeProbabilities: [ItemTypeProbabilityInput],
+  $itemRarityProbabilities: [itemRarityProbabilityInput],
   $games: [String]) {
     addStore(
       name: $name,
-      itemTypeProbabilities: $itemTypeProbabilities,
+      itemRarityProbabilities: $itemRarityProbabilities,
       games: $games
     ) {
       id,
       name,
-      itemTypeProbabilities {
+      itemRarityProbabilities {
         rarity,
         probability
       },
@@ -30,17 +30,17 @@ export const removeStoreMutation = `mutation removeStore(
 export const updateStoreMutation = `mutation updateStore(
   $id: String!,
   $name: String,
-  $itemTypeProbabilities: [ItemTypeProbabilityInput],
+  $itemRarityProbabilities: [itemRarityProbabilityInput],
   $games: [String]){
     updateStore(
       id: $id,
       name: $name,
-      itemTypeProbabilities: $itemTypeProbabilities,
+      itemRarityProbabilities: $itemRarityProbabilities,
       games: $games
     ) {
       id,
       name,
-      itemTypeProbabilities {
+      itemRarityProbabilities {
         rarity,
         probability
       },
@@ -55,7 +55,7 @@ export const getStoresQuery = `query getStores(
     ) {
       id,
       name,
-      itemTypeProbabilities {
+      itemRarityProbabilities {
         rarity,
         probability
       },
@@ -70,7 +70,7 @@ export const getStoreInfoQuery = `query getStoreInfo(
     ) {
       id,
       name,
-      itemTypeProbabilities {
+      itemRarityProbabilities {
         rarity,
         probability
       },

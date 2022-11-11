@@ -1,18 +1,50 @@
 import seedrandom from 'seedrandom'
-import { CompleteItem, CompleteEnchantment, ItemTypeProbability, ItemTypeRange, RarityDefinition, } from './types'
+import { CompleteItem, CompleteEnchantment, itemRarityProbability, ItemRarityRange, RarityDefinition, } from './types'
+
+//Filter function to filter all the correct enchantments.
+const enchantmentFilter = (item: CompleteItem, enchantment: CompleteEnchantment, tiers: number[]) => {
+  const sameTier = tiers.includes(enchantment.tier)
+  if (item.armor && enchantment.armor && sameTier) return true
+  if (item.weapon && enchantment.weapon && sameTier) return true
+  return false
+}
+
+const parseEnchantedItem = (item: CompleteItem, enchantment: CompleteEnchantment) => {
+  // Adding echantment name in front of the item name
+  item.name = enchantment.name + ' ' + item.name
+  // Adding enchantment's damage, stealth and strength to the item
+  if (enchantment.damage) item.damage = item.damage ? item.damage + ' ' + enchantment.damage : enchantment.damage
+  if (enchantment.stealth) item.stealth = item.stealth ? item.stealth + ' ' + enchantment.stealth : enchantment.stealth
+  if (enchantment.strength) item.strength = item.strength ? item.strength + ' ' + enchantment.strength : enchantment.strength
+  // Updating damageTypes
+  if (enchantment.damageTypes) {
+    enchantment.damageTypes.forEach(type => {
+      if (!item.damageTypes) {
+        item.damageTypes = []
+      }
+      item.damageTypes.push(type)
+    })
+  }
+  // Add enchantment descriptions to the item properties
+  if (!item.properties) {
+    item.properties = enchantment.name + ': ' +enchantment.description
+  } else {
+    item.properties = item.properties + ' /n ' + enchantment.name + ': ' +enchantment.description
+  }
+}
 
 //This will genrate random list of item rarities
-//This function assumes that the sum of itemTypeProbabilities is 100
-const generateItemRarities = (capacity: number, itemTypeProbabilities: ItemTypeProbability[], seed: string | undefined): string[] => {
-  const ranges: ItemTypeRange[] = []
+//This function assumes that the sum of itemRarityProbabilities is 100
+const generateItemRarities = (capacity: number, itemRarityProbabilities: itemRarityProbability[], seed: string | undefined): string[] => {
+  const ranges: ItemRarityRange[] = []
   //seed is for not only for testing purposes
   const random = seedrandom(seed)
   let min = 0
-  itemTypeProbabilities.forEach(itemType => {
+  itemRarityProbabilities.forEach(itemRarity => {
     //Adding ranges such that the next rarity's minimum is equal to last range's maximum.
     //Here minimum is inclusive but maximum is exclusive
-    ranges.push({ min, max:min+itemType.probability, rarity: itemType.rarity })
-    min = min+itemType.probability
+    ranges.push({ min, max:min+itemRarity.probability, rarity: itemRarity.rarity })
+    min = min+itemRarity.probability
   })
   const itemRarities: string[] = []
   for (let i = 0; i<capacity; i++) {
@@ -30,8 +62,14 @@ const generateItemRarities = (capacity: number, itemTypeProbabilities: ItemTypeP
 
 // this function will generate enchantments for given item based on rarity.
 const generateEnchantedItem = (n: number, item: CompleteItem, enchantments: CompleteEnchantment[], seed: string | undefined): CompleteItem => {
-  if (n > enchantments.length) {
-    throw new Error('Number of enchantments cannot exceed number of enchantments in the game')
+  //If enchantment list is empty, return the original item
+  if (enchantments.length === 0) return item
+  //Might later on make a new type "EnchantedItem", if needed. It would add clarity
+  const itemCopy = structuredClone(item)
+  //If the number of enchantments that need to be added is greater or equal than available enchantments add all eanchantmenst to the item
+  if (n >= enchantments.length) {
+    enchantments.forEach(enchantment => parseEnchantedItem(itemCopy, enchantment))
+    return itemCopy
   }
   const random = seedrandom(seed)
   // Copy the array so we do not modify the original
@@ -44,65 +82,67 @@ const generateEnchantedItem = (n: number, item: CompleteItem, enchantments: Comp
   const itemEnchantments = randomizedCopy.slice(0, n)
   // Sort enchantments alphabetically by name
   itemEnchantments.sort((a,b) => a.name.localeCompare(b.name))
-  //Might later on make a new type "EnchantedItem", if needed. It would add clarity
-  const itemCopy = structuredClone(item)
-  itemEnchantments.forEach(enchantment => {
-    // Adding echantment name in front of the item name
-    itemCopy.name = enchantment.name + ' ' + itemCopy.name
-    // Adding enchantment's damage to the item
-    if (enchantment.damage) itemCopy.damage = itemCopy.damage ? itemCopy.damage +' '+enchantment.damage : enchantment.damage
-    // Updating damageTypes
-    if (enchantment.damageTypes) {
-      enchantment.damageTypes.forEach(type => {
-        if (!itemCopy.damageTypes) {
-          itemCopy.damageTypes = []
-        }
-        itemCopy.damageTypes.push(type)
-      })
-    }
-    // Add enchantment descriptions to the item properties
-    if (!itemCopy.properties) {
-      itemCopy.properties = enchantment.name + ': ' +enchantment.description
-    } else {
-      itemCopy.properties = itemCopy.properties + ' /n ' + enchantment.name + ': ' +enchantment.description
-    }
-  })
+  itemEnchantments.forEach(enchantment => parseEnchantedItem(itemCopy, enchantment))
   return itemCopy
 }
 
-const generateItemPool = (
-  capacity: number,
-  items: CompleteItem[],
-  itemTypeProbabilities: ItemTypeProbability[],
-  enchantments: CompleteEnchantment[],
+//Generates enchanted items with rarity and adds to itempool
+const addEnchantedItemsToItempool = (
+  enchantableItems: CompleteItem[],
+  nonUniqueItemRarities: string[],
   rarityDefinitions: RarityDefinition[],
-  seed: string | undefined): CompleteItem[] => {
-  const random = seedrandom(seed)
-  //Generate the rarities for the items
-  const itemRarities = generateItemRarities(capacity, itemTypeProbabilities, seed).sort((a,b) => a.localeCompare(b))
-  //clone items and enchantments
-  const itemsList: CompleteItem[] = []
-  for (let i = 0; i < capacity; i++) {
-    const itemIndex = Math.floor(random()*items.length)
-    itemsList.push(items[itemIndex])
-  }
-  // Add a rarity to all items
-  for (let i = 0; i < capacity; i++) {
-    itemsList[i] = {
-      ...itemsList[i],
-      rarity: itemRarities[i],
-      name: itemRarities[i] + ' ' + itemsList[i].name
+  enchantments: CompleteEnchantment[],
+  itempool: CompleteItem[],
+  seed: string | undefined) => {
+  for (let i = 0; i < enchantableItems.length; i++) {
+    enchantableItems[i] = {
+      ...enchantableItems[i],
+      rarity: nonUniqueItemRarities[i],
+      name: nonUniqueItemRarities[i] + ' ' + enchantableItems[i].name
     }
   }
-  const itempool: CompleteItem[] = []
-  itemsList.forEach(item => {
+  enchantableItems.forEach(item => {
     const rarityDef = rarityDefinitions.find(i => i.rarity === item.rarity)
     if (rarityDef) {
-      const correctEnchantments = enchantments.filter(e => rarityDef.enchantmentTiers.includes(e.tier))
+      const correctEnchantments = enchantments.filter(e => enchantmentFilter(item, e, rarityDef.enchantmentTiers))
       const enchantedItem = generateEnchantedItem(rarityDef.enchantmentCount, item, correctEnchantments, seed)
       itempool.push(enchantedItem)
     }
   })
+}
+
+//Generates an itempool. Nonunique items are randomly enchanted according to given rarity definitions and enchantements.
+//The count of different rarity items is determined by the itemRarityProbability
+const generateItemPool = (
+  capacity: number,
+  items: CompleteItem[],
+  itemRarityProbabilities: itemRarityProbability[],
+  enchantments: CompleteEnchantment[],
+  rarityDefinitions: RarityDefinition[],
+  seed: string | undefined): CompleteItem[] => {
+  const random = seedrandom(seed)
+  const itempool: CompleteItem[] = []
+  //Generate the rarities for the items
+  const itemRarities = generateItemRarities(capacity, itemRarityProbabilities, seed).sort((a,b) => a.localeCompare(b))
+  //Count the number of uniques and nonUniques and seperate them since they are handled differently
+  const uniqueCount = itemRarities.filter(r => r.toLowerCase() === 'unique').length
+  const nonUniqueItemRarities = itemRarities.filter(r => r.toLowerCase() !== 'unique')
+  const uniques = items.filter(item => item.unique)
+  const nonUniqueItems = items.filter(item => !item.unique)
+  //Clone items and enchantments
+  const enchantableItems: CompleteItem[] = []
+  for (let i = 0; i < capacity-uniqueCount; i++) {
+    const itemIndex = Math.floor(random()*nonUniqueItems.length)
+    enchantableItems.push(nonUniqueItems[itemIndex])
+  }
+  // Add a rarity and enchantments to all items
+  addEnchantedItemsToItempool(enchantableItems, nonUniqueItemRarities, rarityDefinitions, enchantments, itempool, seed)
+  //Add uniques to the itempool
+  for (let i = 0; i < uniqueCount; i++) {
+    const item = uniques[Math.floor(random()*uniques.length)]
+    item.rarity = 'Unique'
+    itempool.push(item)
+  }
   return itempool
 }
 

@@ -53,7 +53,7 @@ const items = [
 const stores = [
   {
     name: 'Store1',
-    itemTypeProbabilities: [
+    itemRarityProbabilities: [
       {
         rarity: 'Uncommon',
         probability: 50
@@ -66,7 +66,7 @@ const stores = [
   },
   {
     name: 'Store2',
-    itemTypeProbabilities: [
+    itemRarityProbabilities: [
       {
         rarity: 'Uncommon',
         probability: 34
@@ -83,7 +83,7 @@ const stores = [
   },
   {
     name: 'Store3',
-    itemTypeProbabilities: [
+    itemRarityProbabilities: [
       {
         rarity: 'Common',
         probability: 100
@@ -92,7 +92,7 @@ const stores = [
   },
   {
     name: 'Store4',
-    itemTypeProbabilities: [
+    itemRarityProbabilities: [
       {
         rarity: 'Common',
         probability: 1000

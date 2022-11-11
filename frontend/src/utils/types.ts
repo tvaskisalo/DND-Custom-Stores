@@ -5,7 +5,7 @@ export type Field = {
   value: string | undefined,
   onChange: (e: unknown) => void
 }
-export type ItemTypeProbability = {
+export type itemRarityProbability = {
   rarity: string,
   probability: number
 }

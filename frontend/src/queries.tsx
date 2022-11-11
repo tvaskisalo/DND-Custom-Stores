@@ -36,7 +36,7 @@ export const GETSTOREINFO = gql`
     ) {
       name
       id
-      itemTypeProbabilities {
+      itemRarityProbabilities {
         rarity
         probability
       }
@@ -79,7 +79,7 @@ export const GETSTORES = gql`
     ) {
       name
       id
-      itemTypeProbabilities {
+      itemRarityProbabilities {
         rarity
         probability
       }

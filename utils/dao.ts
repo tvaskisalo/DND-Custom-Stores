@@ -387,7 +387,7 @@ const generateItempool = async (name: string, userId: string) => {
   //const storeCapacity = 10
   // Now we have a list of rarities that will be in the store.
   // E.g. if itemRarities is ['Common','Common', 'Rare'] the store will have two common items and one rare item
-  //const itemRarities = generateItemRarities(storeCapacity, store.itemTypeProbabilities)
+  //const itemRarities = generateItemRarities(storeCapacity, store.itemRarityProbabilities)
 }
 export default {
   addUser,

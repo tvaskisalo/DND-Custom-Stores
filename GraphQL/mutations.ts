@@ -1,4 +1,4 @@
-import { toLoginRequest, toNewGameRequest, toNewStoreRequest, toNewItemRequest, getUser, toName, toUpdateItemParams, toUpdateGameParams, toUpdateStoreParams, toStore, toId, toUpdateEnchantmentParams } from '../utils/parsers'
+import { toLoginRequest, toNewGameRequest, toNewStoreRequest, toNewItemRequest, getUser, toName, toUpdateItemParams, toUpdateGameParams, toUpdateStoreParams, toStore, toId, toUpdateEnchantmentParams, toNewEnchantmentRequest } from '../utils/parsers'
 import dao from '../utils/dao'
 
 export const Mutation = {
@@ -37,7 +37,7 @@ export const Mutation = {
   },
   addEnchantment: async (_root:unknown, args: unknown, context: unknown) => {
     // Parse params
-    const newEnchant = toNewItemRequest(args)
+    const newEnchant = toNewEnchantmentRequest(args)
     const user = await getUser(context)
     const enchantment = await dao.addEnchantment(newEnchant, user?.id as string)
     return enchantment

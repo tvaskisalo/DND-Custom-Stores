@@ -23,8 +23,8 @@ export type CompleteItem = {
   properties?: string,
   damage?: string,
   damageTypes?: string[],
-  baseItem?: boolean,
-  unique?: boolean,
+  baseItem: boolean,
+  unique: boolean,
   weapon: boolean,
   weaponType?: string,
   armor: boolean,
@@ -40,7 +40,11 @@ export type CompleteEnchantment = {
   tier: number,
   damage?: string
   damageTypes?: string[],
-  description: string
+  description: string,
+  weapon: boolean,
+  armor: boolean,
+  strength?: string,
+  stealth?: string
 }
 export type NewGameRequest = {
   name: string,
@@ -49,7 +53,7 @@ export type NewGameRequest = {
 }
 export type NewStoreRequest = {
   name: string,
-  itemTypeProbabilities: ItemTypeProbability[],
+  itemRarityProbabilities: itemRarityProbability[],
   games?: string[]
 }
 export type NewItemRequest = {
@@ -78,7 +82,11 @@ export type NewEnchantRequest = {
   tier?: number,
   damage?: string
   damageTypes?: string[],
-  description?: string
+  description?: string,
+  weapon?: boolean,
+  armor?: boolean,
+  strength?: string,
+  stealth?: string
 }
 export type UpdateGameParams = {
   id: string,
@@ -89,7 +97,7 @@ export type UpdateGameParams = {
 export type UpdateStoreParams = {
   id: string,
   name?: string,
-  itemTypeProbabilities?: ItemTypeProbability[],
+  itemRarityProbabilities?: itemRarityProbability[],
   games?: string[]
 }
 export type UpdateItemParams = {
@@ -120,7 +128,11 @@ export type UpdateEnchantParams = {
   tier?: number,
   damage?: string
   damageTypes?: string[],
-  description?: string
+  description?: string,
+  weapon?: boolean,
+  armor?: boolean,
+  strength?: string,
+  stealth?: string
 }
 
 export type GetStoresParams = {
@@ -133,11 +145,11 @@ export type GetEnchantmentsParams = {
   game: string
 }
 
-export type ItemTypeProbability = {
+export type itemRarityProbability = {
   rarity: string,
   probability: number
 }
-export type ItemTypeRange = {
+export type ItemRarityRange = {
   min: number,
   max: number,
   rarity: string

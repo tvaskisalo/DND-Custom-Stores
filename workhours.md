@@ -32,4 +32,5 @@
 7.11.2022 | 1.5 | Added the rest of the forms to the frontend
 7.11.2022 | 2 | Added pages to view Stores, Items and Games
 9.11.2022 | 2.5 | Made the first version of the itempool generator
-Total time | 56 | updated 7.11.2022
+11.11.2022 | 2 | Added support for enchanted armor and uniques in the itempool generator
+Total time | 58 | updated 11.11.2022

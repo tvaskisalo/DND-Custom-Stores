@@ -11,9 +11,9 @@ const StoresView = () => {
       stores.data.getStores.map(store => {
         let iTP = <div/>
         let games = <div/>
-        if (store.itemTypeProbabilities) {
+        if (store.itemRarityProbabilities) {
           iTP = <div>Itemtype Probabilities: {
-            store.itemTypeProbabilities.map(itp => {
+            store.itemRarityProbabilities.map(itp => {
               return(
                 <div key={itp.rarity}>
                   <div>Rarity: {itp.rarity}</div>

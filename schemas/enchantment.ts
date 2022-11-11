@@ -13,7 +13,11 @@ const enchantmentSchema = new mongoose.Schema({
   tier: Number,
   damage: String,
   damageTypes: [String],
-  description: String
+  description: String,
+  weapon: Boolean,
+  armor: Boolean,
+  strength: String,
+  stealth: String
 })
 
 enchantmentSchema.set('toJSON', {

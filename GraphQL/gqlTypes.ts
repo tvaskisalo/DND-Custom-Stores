@@ -15,7 +15,11 @@ type Enchantment {
   tier: Int,
   damage: String,
   damageTypes: [String],
-  description: String
+  description: String,
+  weapon: Boolean,
+  armor: Boolean,
+  strength: String,
+  stealth: String
 }
 type Username {
   value: String!
@@ -34,18 +38,18 @@ type Game {
   rarities: [RarityDefinition]
   id: ID!
 }
-type ItemTypeProbability {
+type itemRarityProbability {
   rarity: String!,
   probability: Int!
 }
-input ItemTypeProbabilityInput {
+input itemRarityProbabilityInput {
   rarity: String!,
   probability: Int!
 }
 type Store {
   name: String!,
   id: ID!,
-  itemTypeProbabilities: [ItemTypeProbability],
+  itemRarityProbabilities: [itemRarityProbability],
   games: [String]
 }
 type Item {
@@ -94,7 +98,7 @@ type Mutation {
   ): Game,
   addStore(
     name: String!,
-    itemTypeProbabilities: [ItemTypeProbabilityInput],
+    itemRarityProbabilities: [itemRarityProbabilityInput],
     games: [String]
   ): Store,
   addItem(
@@ -123,7 +127,11 @@ type Mutation {
     tier: Int,
     damage: String,
     damageTypes: [String],
-    description: String
+    description: String,
+    weapon: Boolean,
+    armor: Boolean,
+    strength: String,
+    stealth: String
   ): Enchantment,
   removeGame(
     name: String!
@@ -146,7 +154,7 @@ type Mutation {
   updateStore(
     id: String!,
     name: String,
-    itemTypeProbabilities: [ItemTypeProbabilityInput],
+    itemRarityProbabilities: [itemRarityProbabilityInput],
     games: [String]
   ): Store,
   updateItem(
@@ -177,7 +185,11 @@ type Mutation {
     tier: Int,
     damage: String,
     damageTypes: [String],
-    description: String
+    description: String,
+    weapon: Boolean,
+    armor: Boolean,
+    strength: String,
+    stealth: String
   ): Enchantment
   generateItempool(
     name: String!

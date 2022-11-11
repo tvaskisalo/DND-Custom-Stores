@@ -13,7 +13,7 @@ const storeSchema = new mongoose.Schema({
   }],
   //For now it is up to the user to make sure that the rarities exist in the game
   // This SHOULD be a subset of all raritities that exist in the game
-  itemTypeProbabilities: [
+  itemRarityProbabilities: [
     {
       rarity: {
         type: String

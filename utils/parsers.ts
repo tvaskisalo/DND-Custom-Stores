@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AuthenticationError } from 'apollo-server-express'
 import { User } from '../schemas/user'
-import { GetItemsParams, GetStoresParams, ItemTypeProbability, UpdateGameParams, UpdateItemParams, UpdateStoreParams, LoginRequest, NewGameRequest, NewItemRequest, NewStoreRequest, Token, RarityDefinition, GetEnchantmentsParams, UpdateEnchantParams } from './types'
+import { GetItemsParams, GetStoresParams, itemRarityProbability, UpdateGameParams, UpdateItemParams, UpdateStoreParams, LoginRequest, NewGameRequest, NewItemRequest, NewStoreRequest, Token, RarityDefinition, GetEnchantmentsParams, UpdateEnchantParams, NewEnchantRequest } from './types'
 
 const isString = (str: unknown): str is string => {
   return typeof str === 'string' || str instanceof String
@@ -67,7 +67,7 @@ export const toUpdateStoreParams = (reqData: any): UpdateStoreParams => {
   const updateRequest: UpdateStoreParams = {
     id: parseString(reqData.id),
     name: reqData.name ? parseString(reqData.name): undefined,
-    itemTypeProbabilities: reqData.itemTypeProbabilities ? parseItemTypeProbabilities(reqData.itemTypeProbabilities) : undefined,
+    itemRarityProbabilities: reqData.itemRarityProbabilities ? parseitemRarityProbabilities(reqData.itemRarityProbabilities) : undefined,
     games: reqData.games ? parseStringArray(reqData.games) : undefined
   }
   return updateRequest
@@ -106,9 +106,29 @@ export const toUpdateEnchantmentParams = (reqData: any): UpdateEnchantParams => 
     tier: reqData.tier ? parseNumber(reqData.tier) : undefined,
     damage: reqData.damage ? parseString(reqData.damage) : undefined,
     damageTypes: reqData.damageTypes ? parseStringArray(reqData.damageTypes) : undefined,
-    description: reqData.description ? parseString(reqData.description) : undefined
+    description: reqData.description ? parseString(reqData.description) : undefined,
+    weapon: reqData.weapon !== undefined ? parseBoolean(reqData.weapon): undefined,
+    armor: reqData.armor !== undefined ? parseBoolean(reqData.armor) : undefined,
+    stealth: reqData.stealth ? parseString(reqData.stealth) : undefined,
+    strength: reqData.strength ? parseString(reqData.strength) : undefined,
   }
   return updateRequest
+}
+
+export const toNewEnchantmentRequest = (reqData: any): NewEnchantRequest => {
+  const request: NewEnchantRequest = {
+    games: reqData.games ? parseStringArray(reqData.games) : undefined,
+    name: parseString(reqData.name),
+    tier: reqData.tier ? parseNumber(reqData.tier) : undefined,
+    damage: reqData.damage ? parseString(reqData.damage) : undefined,
+    damageTypes: reqData.damageTypes ? parseStringArray(reqData.damageTypes) : undefined,
+    description: reqData.description ? parseString(reqData.description) : undefined,
+    weapon: reqData.weapon !== undefined ? parseBoolean(reqData.weapon): undefined,
+    armor: reqData.armor !== undefined ? parseBoolean(reqData.armor) : undefined,
+    stealth: reqData.stealth ? parseString(reqData.stealth) : undefined,
+    strength: reqData.strength ? parseString(reqData.strength) : undefined,
+  }
+  return request
 }
 
 export const toNewGameRequest = (reqData: any): NewGameRequest => {
@@ -205,19 +225,19 @@ export const toNewItemRequest = (reqData: any): NewItemRequest => {
 export const toNewStoreRequest = (reqData: any): NewStoreRequest => {
   const newStoreRequest: NewStoreRequest = {
     name: parseString(reqData.name),
-    itemTypeProbabilities: parseItemTypeProbabilities(reqData.itemTypeProbabilities),
+    itemRarityProbabilities: parseitemRarityProbabilities(reqData.itemRarityProbabilities),
     games: reqData.games ? parseStringArray(reqData.games) : undefined
   }
   return newStoreRequest
 }
 
-export const parseItemTypeProbabilities = (data: unknown): ItemTypeProbability[] => {
+export const parseitemRarityProbabilities = (data: unknown): itemRarityProbability[] => {
   if (!data || !Array.isArray(data)) {
-    throw new Error('Incorrect or missing ItemTypeProbabilities')
+    throw new Error('Incorrect or missing itemRarityProbabilities')
   }
-  const returnValue: ItemTypeProbability[] = data.map((itemT: unknown) => parseItemTypeProbability(itemT))
+  const returnValue: itemRarityProbability[] = data.map((itemT: unknown) => parseitemRarityProbability(itemT))
   if (!returnValue) {
-    throw new Error('Incorrect or missing ItemTypeProbabilities')
+    throw new Error('Incorrect or missing itemRarityProbabilities')
   }
   let sum = 0
   returnValue.forEach(({ probability }) => {
@@ -229,9 +249,9 @@ export const parseItemTypeProbabilities = (data: unknown): ItemTypeProbability[]
   return returnValue
 }
 
-export const parseItemTypeProbability = (reqData: any): ItemTypeProbability => {
+export const parseitemRarityProbability = (reqData: any): itemRarityProbability => {
   if (!reqData || !reqData.rarity || !isString(reqData.rarity) || !reqData.probability || !isNumber(reqData.probability)) {
-    throw new Error('Incorrect or missing ItemTypeProbability '+reqData)
+    throw new Error('Incorrect or missing itemRarityProbability '+reqData)
   }
   return {
     rarity: parseString(reqData.rarity),
@@ -239,22 +259,23 @@ export const parseItemTypeProbability = (reqData: any): ItemTypeProbability => {
   }
 }
 export const parseRarityDef = (data: any): RarityDefinition => {
-  if (!data || !data.rarity || !data.enchantmentTiers ||!Array.isArray(data.enchantmentTiers)) {
+  if (!data || !data.rarity || !data.enchantmentTiers ||!Array.isArray(data.enchantmentTiers) || !data.enchantmentCount) {
     throw new Error('Invalid or missing rarityDefinition')
   }
   return {
     rarity: parseString(data.rarity),
-    enchantmentTiers: parseNumberArray(data.enchantmentTiers)
+    enchantmentTiers: parseNumberArray(data.enchantmentTiers),
+    enchantmentCount: parseNumber(data.enchantmentCount)
   }
 }
 
 export const  parseRarityDefinitions = (data: unknown): RarityDefinition[] => {
   if (!data || !Array.isArray(data)) {
-    throw new Error('Incorrect or missing ItemTypeProbabilities')
+    throw new Error('Incorrect or missing itemRarityProbabilities')
   }
   const returnValue: RarityDefinition[] = data.map((itemT: unknown) => parseRarityDef(itemT))
   if (!returnValue) {
-    throw new Error('Incorrect or missing ItemTypeProbabilities')
+    throw new Error('Incorrect or missing itemRarityProbabilities')
   }
   return returnValue
 }

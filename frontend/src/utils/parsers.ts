@@ -1,12 +1,12 @@
-import { ItemTypeProbability, RarityDefinition } from './types'
+import { itemRarityProbability, RarityDefinition } from './types'
 
 //This assumes that the itemtype probabilities are seperated by comma and a space and rarity and probability are seperated by a space
-export const toItemTypeProbabilities = (str: string | undefined): ItemTypeProbability[] => {
+export const toitemRarityProbabilities = (str: string | undefined): itemRarityProbability[] => {
   if (!str) {
     throw new Error('Cannot give empty string')
   }
   const strArr = str.split(', ')
-  const rarities: ItemTypeProbability[] = []
+  const rarities: itemRarityProbability[] = []
   strArr.forEach(s => {
     const [rarity, probability] = s.split(' ')
     rarities.push({ rarity, probability: Number(probability) })
