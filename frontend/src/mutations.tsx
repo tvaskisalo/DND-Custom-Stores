@@ -46,11 +46,13 @@ export const ADDGAME = gql`mutation addGame (
 export const ADDSTORE = gql`mutation addStore (
   $name: String!
   $itemRarityProbabilities: [itemRarityProbabilityInput]
-  $games: [String]){
+  $games: [String],
+  $capacity: Int){
     addStore(
       name: $name
       itemRarityProbabilities: $itemRarityProbabilities
       games: $games
+      capacity: $capacity
     ){
       name
       id
@@ -59,6 +61,7 @@ export const ADDSTORE = gql`mutation addStore (
         probability
       }
       games
+      capacity
     }
   }`
 
@@ -224,12 +227,14 @@ export const UPDATESTORE = gql`mutation updateStore (
   $id: String!
   $name: String
   $itemRarityProbabilities: [itemRarityProbabilityInput]
-  $games: [String]){
+  $games: [String],
+  $capacity: Int){
     updateStore(
       id: $id
       name: $name
       itemRarityProbabilities: $itemRarityProbabilities
-      games: $games
+      games: $games,
+      capacity: $capacity
     ){
       id
       name
@@ -239,6 +244,7 @@ export const UPDATESTORE = gql`mutation updateStore (
         probability
       }
       games
+      capacity
     }
   }`
 

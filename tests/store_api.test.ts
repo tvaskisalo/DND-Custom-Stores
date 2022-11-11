@@ -19,7 +19,8 @@ const initTest = async () => {
         rarity: 'Common',
         probability: 100
       }
-    ]
+    ],
+    capacity: 10
   }
   const store2 = {
     name: 'testName2',
@@ -28,7 +29,8 @@ const initTest = async () => {
         rarity: 'Common',
         probability: 100
       }
-    ]
+    ],
+    capacity: 0
   }
   const store3 = {
     name: 'testName3',
@@ -68,7 +70,8 @@ describe('Store addition', () => {
           rarity: 'Common',
           probability: 100
         }
-      ]
+      ],
+      capacity: 100
     }
     const result = await server.executeOperation(
       {
@@ -79,6 +82,10 @@ describe('Store addition', () => {
     expect(result.errors).toBeUndefined()
     expect(result.data).toBeDefined()
     expect(result.data?.addStore).toBeDefined()
+    const addedStore = await Store.findOne({})
+    expect(addedStore).not.toBe(null)
+    expect(addedStore?.name).toBe('testName')
+    expect(addedStore?.capacity).toBe(100)
   })
 
   test('Valid store can be added, test 2', async () => {
@@ -104,6 +111,9 @@ describe('Store addition', () => {
     expect(result.errors).toBeUndefined()
     expect(result.data).toBeDefined()
     expect(result.data?.addStore).toBeDefined()
+    const addedStore = await Store.findOne({})
+    expect(addedStore).not.toBe(null)
+    expect(addedStore?.name).toBe('testName')
   })
 
   test('Store name must be defined', async () => {

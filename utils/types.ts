@@ -54,7 +54,8 @@ export type NewGameRequest = {
 export type NewStoreRequest = {
   name: string,
   itemRarityProbabilities: itemRarityProbability[],
-  games?: string[]
+  games?: string[],
+  capacity?: number
 }
 export type NewItemRequest = {
   name: string,
@@ -98,7 +99,8 @@ export type UpdateStoreParams = {
   id: string,
   name?: string,
   itemRarityProbabilities?: itemRarityProbability[],
-  games?: string[]
+  games?: string[],
+  capacity?: number,
 }
 export type UpdateItemParams = {
   id: string,

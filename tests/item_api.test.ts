@@ -70,6 +70,9 @@ describe('Item addition', () => {
     expect(result.errors).toBeUndefined()
     expect(result.data).toBeDefined()
     expect(result.data?.addItem).toBeDefined()
+    const addedItem = await Item.findOne({})
+    expect(addedItem).not.toBe(null)
+    expect(addedItem?.name).toBe('testName')
   })
 
   test('Some fields can be empty', async () => {
@@ -87,6 +90,9 @@ describe('Item addition', () => {
     expect(result.errors).toBeUndefined()
     expect(result.data).toBeDefined()
     expect(result.data?.addItem).toBeDefined()
+    const addedItem = await Item.findOne({})
+    expect(addedItem).not.toBe(null)
+    expect(addedItem?.name).toBe('testName')
   })
 
   test('Name can not be empty', async () => {

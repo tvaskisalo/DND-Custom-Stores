@@ -68,7 +68,8 @@ export const toUpdateStoreParams = (reqData: any): UpdateStoreParams => {
     id: parseString(reqData.id),
     name: reqData.name ? parseString(reqData.name): undefined,
     itemRarityProbabilities: reqData.itemRarityProbabilities ? parseitemRarityProbabilities(reqData.itemRarityProbabilities) : undefined,
-    games: reqData.games ? parseStringArray(reqData.games) : undefined
+    games: reqData.games ? parseStringArray(reqData.games) : undefined,
+    capacity: reqData.capacity ? parseNumber(reqData.capacity): undefined,
   }
   return updateRequest
 }
@@ -226,7 +227,8 @@ export const toNewStoreRequest = (reqData: any): NewStoreRequest => {
   const newStoreRequest: NewStoreRequest = {
     name: parseString(reqData.name),
     itemRarityProbabilities: parseitemRarityProbabilities(reqData.itemRarityProbabilities),
-    games: reqData.games ? parseStringArray(reqData.games) : undefined
+    games: reqData.games ? parseStringArray(reqData.games) : undefined,
+    capacity: reqData.capacity ? parseNumber(reqData.capacity) : undefined
   }
   return newStoreRequest
 }

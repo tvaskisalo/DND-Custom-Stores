@@ -41,6 +41,7 @@ export const GETSTOREINFO = gql`
         probability
       }
       games
+      capacity
     }
   }
 `
@@ -84,6 +85,7 @@ export const GETSTORES = gql`
         probability
       }
       games
+      capacity
     }
   }
 `

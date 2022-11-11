@@ -50,7 +50,8 @@ type Store {
   name: String!,
   id: ID!,
   itemRarityProbabilities: [itemRarityProbability],
-  games: [String]
+  games: [String],
+  capacity: Int
 }
 type Item {
   name: String!,
@@ -99,7 +100,8 @@ type Mutation {
   addStore(
     name: String!,
     itemRarityProbabilities: [itemRarityProbabilityInput],
-    games: [String]
+    games: [String],
+    capacity: Int
   ): Store,
   addItem(
     name: String!,
@@ -155,7 +157,8 @@ type Mutation {
     id: String!,
     name: String,
     itemRarityProbabilities: [itemRarityProbabilityInput],
-    games: [String]
+    games: [String],
+    capacity: Int
   ): Store,
   updateItem(
     id: String!,

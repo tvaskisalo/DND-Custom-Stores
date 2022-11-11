@@ -10,6 +10,7 @@ const AddStore = () => {
   const name = useField('text','Name')
   const games = useField('text','Games')
   const itemRarityProbabilities = useField('text','itemRarityProbabilities')
+  const capacity = useField('number', 'Capacity')
   const [ addStore, result ] = useMutation(ADDSTORE)
 
   useEffect(() => {
@@ -23,7 +24,8 @@ const AddStore = () => {
         variables: {
           name: name.value,
           games: games.value?.split(' '),
-          itemRarityProbabilities: toitemRarityProbabilities(itemRarityProbabilities?.value)
+          itemRarityProbabilities: toitemRarityProbabilities(itemRarityProbabilities?.value),
+          capacity: Number(capacity.value)
         }
       })
     } catch (err) {
@@ -35,7 +37,8 @@ const AddStore = () => {
     [
       name,
       games,
-      itemRarityProbabilities
+      itemRarityProbabilities,
+      capacity
     ],
     'Add game')
   return form

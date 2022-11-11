@@ -34,7 +34,7 @@ const items: CompleteItem[] = [
     weapon: false,
     armor: true,
     strength: '1d4',
-    stealth: '1d6',
+    stealth: '1d4',
     baseItem: true,
     unique: false
   },
@@ -43,7 +43,7 @@ const items: CompleteItem[] = [
     weapon: false,
     armor: true,
     strength: '1d4',
-    stealth: '1d6',
+    stealth: '1d4',
     baseItem: true,
     unique: false
   },
@@ -54,7 +54,7 @@ const items: CompleteItem[] = [
     weapon: true,
     armor: true,
     strength: '1d4',
-    stealth: '1d6',
+    stealth: '1d4',
     baseItem: true,
     unique: false
   },
@@ -105,7 +105,105 @@ const enchantments: CompleteEnchantment[] = [
     weapon: true,
     armor: false
   },
+  {
+    name: 'Sturdy',
+    tier: 1,
+    description: 'Makes armor sturdier',
+    strength: '1d6',
+    weapon: false,
+    armor: true
+  },
+  {
+    name: 'Vigilant',
+    tier: 1,
+    description: 'Makes armor stealthier',
+    stealth: '1d6',
+    weapon: false,
+    armor: true
+  },
+  {
+    name: 'Unbreakable',
+    tier: 2,
+    description: 'Makes armor very strong',
+    strength: '1d8',
+    weapon: false,
+    armor: true
+  },
+  {
+    name: 'Hidden',
+    tier: 2,
+    description: 'Makes armor very stealthy',
+    stealth: '1d8',
+    weapon: false,
+    armor: true
+  },
+  {
+    name: 'Streamlined',
+    tier: 3,
+    description: 'Makes armor sturdy and stealthy',
+    stealth: '1d4',
+    strength: '1d4',
+    weapon: false,
+    armor: true
+  },
+  {
+    name: 'Well-made',
+    tier: 5,
+    weapon: true,
+    armor: true,
+    description: 'Item is well-made'
+  }
 ]
+const itemRarityProbabilities: itemRarityProbability[] = [
+  {
+    rarity: 'Common',
+    probability: 25
+  },
+  {
+    rarity: 'Uncommon',
+    probability: 25
+  },
+  {
+    rarity: 'Rare',
+    probability: 20
+  },
+  {
+    rarity: 'Very Rare',
+    probability: 15
+  },
+  {
+    rarity: 'Legendary',
+    probability: 15
+  }
+]
+const rarityDefinitions: RarityDefinition[] = [
+  {
+    rarity: 'Common',
+    enchantmentTiers: [0],
+    enchantmentCount: 0
+  },
+  {
+    rarity: 'Uncommon',
+    enchantmentTiers: [1],
+    enchantmentCount: 1
+  },
+  {
+    rarity: 'Rare',
+    enchantmentTiers: [1],
+    enchantmentCount: 2
+  },
+  {
+    rarity: 'Very Rare',
+    enchantmentTiers: [2],
+    enchantmentCount: 1
+  },
+  {
+    rarity: 'Legendary',
+    enchantmentTiers: [2],
+    enchantmentCount: 2
+  }
+]
+
 describe('Generating item rarities', () => {
   test('Capacity 1, itemrarities 1', () => {
     const capacity = 1
@@ -228,12 +326,14 @@ describe('Generating item rarities', () => {
 })
 
 describe('Enchanting items', () => {
+  //Note: generateEnchantedItem assumes that you give it correct items and enchantments
+  //It is up to the developer to ensure that no armor enchantments are given with a weapon to the function.
   test('Enchanting a weapon with one enchantment, test 1', () => {
     const n = 1
     const item = items[0]
-    const enchantment = enchantments.slice(0,1)
+    const enchantmentList = enchantments.slice(0,1)
     const seed = 'test'
-    const generatedItem = itemGenerator.generateEnchantedItem(n, item, enchantment, seed)
+    const generatedItem = itemGenerator.generateEnchantedItem(n, item, enchantmentList, seed)
     expect(generatedItem.name).toBe('Fire Dagger')
     expect(generatedItem.damage).toContain('1d4')
     expect(generatedItem.damage).toContain('1d6')
@@ -246,9 +346,9 @@ describe('Enchanting items', () => {
   test('Enchanting a weapon with one enchantment, test 2', () => {
     const n = 1
     const item = items[0]
-    const enchantment = enchantments.slice(0,2)
+    const enchantmentList = enchantments.slice(0,2)
     const seed = 'test'
-    const generatedItem = itemGenerator.generateEnchantedItem(n, item, enchantment, seed)
+    const generatedItem = itemGenerator.generateEnchantedItem(n, item, enchantmentList, seed)
     expect(generatedItem.name).toBe('Fire Dagger')
     expect(generatedItem.damage).toContain('1d4')
     expect(generatedItem.damage).toContain('1d6')
@@ -261,9 +361,9 @@ describe('Enchanting items', () => {
   test('Enchanting a weapon with two enchantments', () => {
     const n = 2
     const item = items[1]
-    const enchantment = enchantments.slice(0,3)
+    const enchantmentList = enchantments.slice(0,3)
     const seed = 'test'
-    const generatedItem = itemGenerator.generateEnchantedItem(n, item, enchantment, seed)
+    const generatedItem = itemGenerator.generateEnchantedItem(n, item, enchantmentList, seed)
     expect(generatedItem.name).toBe('Frost Fire Long Sword')
     expect(generatedItem.damage).toContain('1d8')
     expect(generatedItem.damage).toContain('1d6')
@@ -274,86 +374,280 @@ describe('Enchanting items', () => {
     expect(generatedItem.properties).toContain('Adds fire damage to a weapon')
     expect(generatedItem.properties).toContain('Adds frost damage to a weapon')
   })
+
+  test('Enchanting an armor with one enchantment', () => {
+    const n = 1
+    const item = items[3]
+    const enchantmentList = enchantments.slice(4,5)
+    const seed = 'test'
+    const generatedItem = itemGenerator.generateEnchantedItem(n, item, enchantmentList, seed)
+    expect(generatedItem.name).toBe('Sturdy Chestplate')
+    expect(generatedItem.stealth).toContain('1d4')
+    expect(generatedItem.strength).toContain('1d4')
+    expect(generatedItem.strength).toContain('1d6')
+    expect(generatedItem.properties).toContain('Sturdy')
+    expect(generatedItem.properties).toContain('Makes armor sturdier')
+  })
+
+  test('Enchanting an armor with two enchantments', () => {
+    const n = 2
+    const item = items[4]
+    const enchantmentList = enchantments.slice(4,6)
+    const seed = 'test'
+    const generatedItem = itemGenerator.generateEnchantedItem(n, item, enchantmentList, seed)
+    expect(generatedItem.name).toBe('Vigilant Sturdy Shoulderguards')
+    expect(generatedItem.stealth).toContain('1d4')
+    expect(generatedItem.stealth).toContain('1d6')
+    expect(generatedItem.strength).toContain('1d4')
+    expect(generatedItem.strength).toContain('1d6')
+    expect(generatedItem.properties).toContain('Sturdy')
+    expect(generatedItem.properties).toContain('Vigilant')
+    expect(generatedItem.properties).toContain('Makes armor sturdier')
+    expect(generatedItem.properties).toContain('Makes armor stealthier')
+  })
+
+  test('Generator handles trying to add too many enchantments properly', () => {
+    const n = 10
+    const item = items[0]
+    const enchantmentList = enchantments.slice(0,1)
+    const seed = 'test'
+    const generatedItem = itemGenerator.generateEnchantedItem(n, item, enchantmentList, seed)
+    expect(generatedItem.name).toBe('Fire Dagger')
+    expect(generatedItem.damage).toContain('1d4')
+    expect(generatedItem.damage).toContain('1d6')
+    expect(generatedItem.damageTypes).toContain('Fire')
+    expect(generatedItem.damageTypes).toContain('Puncture')
+    expect(generatedItem.properties).toContain('Basic dagger')
+    expect(generatedItem.properties).toContain('Adds fire damage to a weapon')
+  })
+
+  test('If generator is given no enchantments, it does nothing to the item', () => {
+    const n = 1
+    const item = items[0]
+    const enchantmentList = enchantments.slice(0,0)
+    const seed = 'test'
+    const generatedItem = itemGenerator.generateEnchantedItem(n, item, enchantmentList, seed)
+    expect(generatedItem).toBe(item)
+  })
+  test('Enchanting an item which is armor and weapon with 10 enchantments', () => {
+    const n = 10
+    const item = items[5]
+    const generatedItem = itemGenerator.generateEnchantedItem(n, item, enchantments, undefined)
+    expect(generatedItem.damageTypes?.length).toBe(5)
+    expect(generatedItem.properties?.split('/n').length).toBe(10)
+  })
 })
 
-test('Itempool generation', () => {
-  const capacity = 10
-  const itemRarityProbabilities: itemRarityProbability[] = [
-    {
-      rarity: 'Common',
-      probability: 25
-    },
-    {
-      rarity: 'Uncommon',
-      probability: 25
-    },
-    {
-      rarity: 'Rare',
-      probability: 20
-    },
-    {
-      rarity: 'Very Rare',
-      probability: 15
-    },
-    {
-      rarity: 'Legendary',
-      probability: 15
-    }
-  ]
-  const rarityDefinitions: RarityDefinition[] = [
-    {
-      rarity: 'Common',
-      enchantmentTiers: [0],
-      enchantmentCount: 0
-    },
-    {
-      rarity: 'Uncommon',
-      enchantmentTiers: [1],
-      enchantmentCount: 1
-    },
-    {
-      rarity: 'Rare',
-      enchantmentTiers: [1],
-      enchantmentCount: 2
-    },
-    {
-      rarity: 'Very Rare',
-      enchantmentTiers: [2],
-      enchantmentCount: 1
-    },
-    {
-      rarity: 'Legendary',
-      enchantmentTiers: [2],
-      enchantmentCount: 2
-    }
-  ]
-  const seed = undefined
-  const itempool = itemGenerator.generateItemPool(capacity, items, itemRarityProbabilities, enchantments, rarityDefinitions, seed)
-  console.log(itempool)
-  expect(false)
-})
+describe('Itempool generator', () => {
+  test('Generator generates itempool with correct size, without uniques', () => {
+    const capacity = 100
+    const seed = 'test'
+    const itempool = itemGenerator.generateItemPool(capacity, items, itemRarityProbabilities, enchantments, rarityDefinitions, seed)
+    expect(itempool.length).toBe(100)
+  })
+  test('Generator generates itempool with correct size, with uniques', () => {
+    const capacity = 100
+    const seed = 'test'
+    const iRP: itemRarityProbability[] = [
+      {
+        rarity: 'Common',
+        probability: 25
+      },
+      {
+        rarity: 'Uncommon',
+        probability: 25
+      },
+      {
+        rarity: 'Rare',
+        probability: 20
+      },
+      {
+        rarity: 'Very Rare',
+        probability: 15
+      },
+      {
+        rarity: 'Legendary',
+        probability: 10
+      },
+      {
+        rarity: 'Unique',
+        probability: 5
+      }
+    ]
+    const itempool = itemGenerator.generateItemPool(capacity, items, iRP, enchantments, rarityDefinitions, seed)
+    expect(itempool.length).toBe(100)
+  })
+  //This might fail due to variance, but it should be REALLY unlikely. If it fails check your code to be sure
+  test('Generator generates itempool with correct amount of rarities', () => {
+    const capacity = 100000
+    const iRP: itemRarityProbability[] = [
+      {
+        rarity: 'Common',
+        probability: 25
+      },
+      {
+        rarity: 'Uncommon',
+        probability: 25
+      },
+      {
+        rarity: 'Rare',
+        probability: 20
+      },
+      {
+        rarity: 'Very Rare',
+        probability: 15
+      },
+      {
+        rarity: 'Legendary',
+        probability: 10
+      },
+      {
+        rarity: 'Unique',
+        probability: 5
+      }
+    ]
+    const seed = undefined
+    const itempool = itemGenerator.generateItemPool(capacity, items, iRP, enchantments, rarityDefinitions, seed)
+    const commons = itempool.filter(r => r.rarity==='Common')
+    expect(Math.round((commons.length/capacity)*100)).toBe(25)
 
-test('itempool generation with uniques', () => {
-  const capacity = 4
-  const itemRarityProbabilities: itemRarityProbability[] = [
-    {
-      rarity: 'Common',
-      probability: 50
-    },
-    {
-      rarity: 'Unique',
-      probability: 50
-    }
-  ]
-  const rarityDefs: RarityDefinition[] = [
-    {
-      rarity: 'Common',
-      enchantmentTiers: [1],
-      enchantmentCount: 2
-    }
-  ]
-  const seed = 'test'
-  const itempool = itemGenerator.generateItemPool(capacity, items, itemRarityProbabilities, enchantments, rarityDefs, seed)
-  console.log(itempool)
-  expect(false)
+    const uncommons = itempool.filter(r => r.rarity==='Uncommon',)
+    expect(Math.round((uncommons.length/capacity)*100)).toBe(25)
+
+    const rares = itempool.filter(r => r.rarity==='Rare',)
+    expect(Math.round((rares.length/capacity)*100)).toBe(20)
+
+    const veryRares = itempool.filter(r => r.rarity==='Very Rare')
+    expect(Math.round((veryRares.length/capacity)*100)).toBe(15)
+
+    const legendaries = itempool.filter(r => r.rarity==='Legendary')
+    expect(Math.round((legendaries.length/capacity)*100)).toBe(10)
+
+    const uniques = itempool.filter(r => r.rarity==='Unique')
+    expect(Math.round((uniques.length/capacity)*100)).toBe(5)
+  })
+  test('If generator is given only weapons and armor enchantments, it gives weapons rarity, but no enchantments', () => {
+    const capacity = 2
+    const seed = 'test'
+    const weapons = items.slice(0,3)
+    const enchantmentList = enchantments.slice(4,9)
+    const itempool = itemGenerator.generateItemPool(capacity, weapons, itemRarityProbabilities, enchantmentList, rarityDefinitions, seed)
+    expect(itempool[0].name).toBe('Legendary Staff')
+    expect(itempool[1].name).toBe('Uncommon Long Sword')
+    expect(itempool[0].properties).toBeUndefined()
+    expect(itempool[1].properties).toBeUndefined()
+    expect(itempool[0].rarity).toBe('Legendary')
+    expect(itempool[1].rarity).toBe('Uncommon')
+  })
+  test('If generator is given only armor and weapon enchantments, it gives armor rarity, but no enchantments', () => {
+    const capacity = 2
+    const seed = 'test'
+    const armor = items.slice(3,5)
+    const enchantmentList = enchantments.slice(0,4)
+    const itempool = itemGenerator.generateItemPool(capacity, armor, itemRarityProbabilities, enchantmentList, rarityDefinitions, seed)
+    expect(itempool[0].name).toBe('Legendary Shoulderguards')
+    expect(itempool[1].name).toBe('Uncommon Chestplate')
+    expect(itempool[0].properties).toBeUndefined()
+    expect(itempool[1].properties).toBeUndefined()
+    expect(itempool[0].rarity).toBe('Legendary')
+    expect(itempool[1].rarity).toBe('Uncommon')
+  })
+  test('Unique items are not enchanted', () => {
+    const capacity = 1
+    const uniqueRarityProbability: itemRarityProbability[] = [
+      {
+        rarity: 'Unique',
+        probability: 100
+      }
+    ]
+    const seed = 'test'
+    const weapon = items.slice(6,7)
+    const itempool = itemGenerator.generateItemPool(capacity, weapon, uniqueRarityProbability, enchantments, rarityDefinitions, seed)
+    expect(itempool[0].name).toBe('Master Sword')
+    expect(itempool[0].properties).toBeUndefined()
+    expect(itempool[0].rarity).toBe('Unique')
+  })
+  test('Enchanted Items are given correct amount of enchantments, test 1', () => {
+    const capacity = 1
+    const seed = 'test'
+    const itemList = items.slice(0,1)
+    const iRP: itemRarityProbability[] = [
+      {
+        rarity: 'Common',
+        probability: 100
+      }
+    ]
+    const rD: RarityDefinition[] = [
+      {
+        rarity: 'Common',
+        enchantmentTiers: [1],
+        enchantmentCount: 0
+      }
+    ]
+    const itempool = itemGenerator.generateItemPool(capacity, itemList, iRP, enchantments,  rD, seed)
+    expect(itempool[0].name).toBe('Common Dagger')
+    expect(itempool[0].properties).toBe('Basic dagger')
+  })
+  test('Enchanted Items are given correct amount of enchantments, test 2', () => {
+    const capacity = 1
+    const seed = 'test'
+    const itemList = items.slice(0,1)
+    const iRP: itemRarityProbability[] = [
+      {
+        rarity: 'Common',
+        probability: 100
+      }
+    ]
+    const rD: RarityDefinition[] = [
+      {
+        rarity: 'Common',
+        enchantmentTiers: [1],
+        enchantmentCount: 2
+      }
+    ]
+    const itempool = itemGenerator.generateItemPool(capacity, itemList, iRP, enchantments,  rD,  seed)
+    expect(itempool[0].name).toBe('Frost Fire Common Dagger')
+    expect(itempool[0].properties?.split('/n').length).toBe(3)
+  })
+  test('Enchantments are given correcty based on tier and rarityDefinitions, test 1', () => {
+    const seed = 'test'
+    const capacity = 1
+    const itemList = items.slice(0,1)
+    const iRP: itemRarityProbability[] = [
+      {
+        rarity: 'Common',
+        probability: 100
+      }
+    ]
+    const rD: RarityDefinition[] = [
+      {
+        rarity: 'Common',
+        enchantmentTiers: [2],
+        enchantmentCount: 2
+      }
+    ]
+    const enchantmentList = enchantments.slice(0,1)
+    const itempool = itemGenerator.generateItemPool(capacity, itemList, iRP, enchantmentList,  rD,  seed)
+    expect(itempool[0].name).toBe('Common Dagger')
+  })
+  test('Enchantments are given correcty based on tier and rarityDefinitions, test 2', () => {
+    const seed = 'test'
+    const capacity = 1
+    const itemList = items.slice(0,1)
+    const iRP: itemRarityProbability[] = [
+      {
+        rarity: 'Common',
+        probability: 100
+      }
+    ]
+    const rD: RarityDefinition[] = [
+      {
+        rarity: 'Common',
+        enchantmentTiers: [1,5],
+        enchantmentCount: 6
+      }
+    ]
+    const itempool = itemGenerator.generateItemPool(capacity, itemList, iRP, enchantments,  rD,  seed)
+    expect(itempool[0].name).toBe('Well-made Frost Fire Common Dagger')
+  })
 })
