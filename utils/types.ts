@@ -11,6 +11,17 @@ export type RarityDefinition = {
   enchantmentTiers: number[],
   enchantmentCount: number
 }
+export type CompleteGame = {
+  name: string,
+  enchantments?: string[]
+  rarities: RarityDefinition[]
+}
+export type CompleteStore = {
+  name: string,
+  itemRarityProbabilities: itemRarityProbability[],
+  games: string[],
+  capacity: number
+}
 //This is an item that has certain fields defined. Used for item generation
 export type CompleteItem = {
   name: string,
@@ -135,6 +146,12 @@ export type UpdateEnchantParams = {
   armor?: boolean,
   strength?: string,
   stealth?: string
+}
+
+export type GenerateItempoolArgs = {
+  game: string,
+  store: string,
+  seed: string | undefined
 }
 
 export type GetStoresParams = {

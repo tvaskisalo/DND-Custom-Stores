@@ -1,5 +1,7 @@
 import seedrandom from 'seedrandom'
-import { CompleteItem, CompleteEnchantment, itemRarityProbability, ItemRarityRange, RarityDefinition, } from './types'
+import dao from './dao'
+import { toCompleteEnchantment, toCompleteGame, toCompleteItem, toCompleteStore } from './parsers'
+import { CompleteItem, CompleteEnchantment, itemRarityProbability, ItemRarityRange, RarityDefinition, CompleteStore, CompleteGame, } from './types'
 
 //Filter function to filter all the correct enchantments.
 const enchantmentFilter = (item: CompleteItem, enchantment: CompleteEnchantment, tiers: number[]) => {
@@ -113,7 +115,7 @@ const addEnchantedItemsToItempool = (
 
 //Generates an itempool. Nonunique items are randomly enchanted according to given rarity definitions and enchantements.
 //The count of different rarity items is determined by the itemRarityProbability
-const generateItemPool = (
+const generateItems = (
   capacity: number,
   items: CompleteItem[],
   itemRarityProbabilities: itemRarityProbability[],
@@ -146,10 +148,59 @@ const generateItemPool = (
   return itempool
 }
 
+//This fetches all needed data from dao, validates and generates the itempool for the store
+//This needs to be heavily tested to ensure correct behaviour.
+const generateItempool = async (gameName: string, storeName: string, userId: string, seed: string | undefined) => {
+  const store = await dao.getStoreInfo(storeName, userId)
+  const game = await dao.getGameInfo(gameName, userId)
+  const enchantments = await dao.getEnchantments({ game: gameName }, userId)
+  if (!store || !game || !enchantments || !userId) {
+    throw new Error('Invalid args')
+  }
+  const items = await dao.getItems({ name: storeName }, userId)
+  if (!items || items.length === 0)  {
+    return []
+  }
+  //These might throw an errer if store or game are not complete.
+  //TODO: Add error handling
+  const completeStore: CompleteStore = toCompleteStore(store)
+  const completeGame: CompleteGame = toCompleteGame(game)
+  const completeEnchantments: CompleteEnchantment[] = []
+  const completeItems: CompleteItem[] = []
+  //Parse items and enchantments to complete items and enchantments.
+  //If it is not complete, it is ignored
+  enchantments.forEach(e => {
+    try {
+      const enchantment = toCompleteEnchantment(e)
+      completeEnchantments.push(enchantment)
+    } catch (err) {
+      () => undefined
+    }
+  })
+  items.forEach(i => {
+    try {
+      const item = toCompleteItem(i)
+      completeItems.push(item)
+    } catch (err) {
+      () => undefined
+    }
+  })
+  const finishedItems = generateItems(
+    completeStore.capacity,
+    completeItems,
+    completeStore.itemRarityProbabilities,
+    completeEnchantments,
+    completeGame.rarities,
+    seed
+  )
+  return finishedItems
+}
+
 export default {
   generateItemRarities,
   generateEnchantedItem,
-  generateItemPool
+  generateItems,
+  generateItempool
 }
 
 

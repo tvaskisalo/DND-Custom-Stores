@@ -86,7 +86,6 @@ export const getStoreInfoQuery = `query getStoreInfo(
     }
   }`
 
-
 export const addItemMutation = `mutation addItem(
   $name: String!, 
   $games: [String],
@@ -228,6 +227,7 @@ export const getItemsQuery = `query getItems(
     ) {
       id,
       name,
+      games
       storepool,
       material,
       baseCost,
@@ -236,7 +236,14 @@ export const getItemsQuery = `query getItems(
       damage,
       damageTypes,
       baseItem,
-      unique
+      unique,
+      weapon,
+      weaponType,
+      armor,
+      armorType,
+      armorClass,
+      strength,
+      stealth
     }
   }`
 
@@ -247,6 +254,7 @@ export const getItemInfoQuery = `query getItemInfo(
     ) {
       id,
       name,
+      games
       storepool,
       material,
       baseCost,
@@ -255,7 +263,14 @@ export const getItemInfoQuery = `query getItemInfo(
       damage,
       damageTypes,
       baseItem,
-      unique
+      unique,
+      weapon,
+      weaponType,
+      armor,
+      armorType,
+      armorClass,
+      strength,
+      stealth
     }
   }`
 
@@ -434,3 +449,31 @@ export const login = `mutation login(
       } 
     }`
 
+
+export const generateItempool = `mutation generateItempool(
+  $game: String!,
+  $store: String!,
+  $seed: String) {
+    generateItempool(
+      game: $game,
+      store: $store,
+      seed: $seed
+    ) {
+      name,
+      material,
+      baseCost,
+      weight,
+      properties,
+      damage,
+      damageTypes,
+      baseItem,
+      unique,
+      weapon,
+      weaponType,
+      armor,
+      armorType,
+      armorClass,
+      strength,
+      stealth
+    }
+  }`

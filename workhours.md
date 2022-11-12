@@ -34,4 +34,5 @@
 9.11.2022 | 2.5 | Made the first version of the itempool generator
 11.11.2022 | 2 | Added support for enchanted armor and uniques in the itempool generator. Renamed itemTypeProbability to itemRarityProbability.
 11.11.2022 | 2 | Added tests for itempool generator. Added capacity to store schema and updated everything relating to it.
-Total time | 60 | updated 11.11.2022
+12.11.2022 | 2 | Made a mutation for itempool generator. Started testing the mutation
+Total time | 62 | updated 12.11.2022

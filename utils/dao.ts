@@ -369,25 +369,13 @@ const getEnchantments = async (args: GetEnchantmentsParams | undefined, userId: 
     if (!game) {
       throw new UserInputError('Game not found')
     }
+  } else {
+    throw new UserInputError('Invalid arguments')
   }
   return await Enchantment.find({
     user: userId,
     games: args.game
   })
-}
-const generateItempool = async (name: string, userId: string) => {
-  //This function does not work currently, it is under development
-  const store = await Store.findOne({ name, user: userId })
-  if (!store) {
-    throw new UserInputError('Store not found')
-  }
-  const items = await getItems({ name }, userId)
-  return items
-  // This will be implemented later on in the store schema
-  //const storeCapacity = 10
-  // Now we have a list of rarities that will be in the store.
-  // E.g. if itemRarities is ['Common','Common', 'Rare'] the store will have two common items and one rare item
-  //const itemRarities = generateItemRarities(storeCapacity, store.itemRarityProbabilities)
 }
 export default {
   addUser,
@@ -410,6 +398,5 @@ export default {
   getStoreInfo,
   getItems,
   getItemInfo,
-  getEnchantments,
-  generateItempool
+  getEnchantments
 }

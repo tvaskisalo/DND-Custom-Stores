@@ -442,7 +442,7 @@ describe('Itempool generator', () => {
   test('Generator generates itempool with correct size, without uniques', () => {
     const capacity = 100
     const seed = 'test'
-    const itempool = itemGenerator.generateItemPool(capacity, items, itemRarityProbabilities, enchantments, rarityDefinitions, seed)
+    const itempool = itemGenerator.generateItems(capacity, items, itemRarityProbabilities, enchantments, rarityDefinitions, seed)
     expect(itempool.length).toBe(100)
   })
   test('Generator generates itempool with correct size, with uniques', () => {
@@ -474,7 +474,7 @@ describe('Itempool generator', () => {
         probability: 5
       }
     ]
-    const itempool = itemGenerator.generateItemPool(capacity, items, iRP, enchantments, rarityDefinitions, seed)
+    const itempool = itemGenerator.generateItems(capacity, items, iRP, enchantments, rarityDefinitions, seed)
     expect(itempool.length).toBe(100)
   })
   //This might fail due to variance, but it should be REALLY unlikely. If it fails check your code to be sure
@@ -507,7 +507,7 @@ describe('Itempool generator', () => {
       }
     ]
     const seed = undefined
-    const itempool = itemGenerator.generateItemPool(capacity, items, iRP, enchantments, rarityDefinitions, seed)
+    const itempool = itemGenerator.generateItems(capacity, items, iRP, enchantments, rarityDefinitions, seed)
     const commons = itempool.filter(r => r.rarity==='Common')
     expect(Math.round((commons.length/capacity)*100)).toBe(25)
 
@@ -531,7 +531,7 @@ describe('Itempool generator', () => {
     const seed = 'test'
     const weapons = items.slice(0,3)
     const enchantmentList = enchantments.slice(4,9)
-    const itempool = itemGenerator.generateItemPool(capacity, weapons, itemRarityProbabilities, enchantmentList, rarityDefinitions, seed)
+    const itempool = itemGenerator.generateItems(capacity, weapons, itemRarityProbabilities, enchantmentList, rarityDefinitions, seed)
     expect(itempool[0].name).toBe('Legendary Staff')
     expect(itempool[1].name).toBe('Uncommon Long Sword')
     expect(itempool[0].properties).toBeUndefined()
@@ -544,7 +544,7 @@ describe('Itempool generator', () => {
     const seed = 'test'
     const armor = items.slice(3,5)
     const enchantmentList = enchantments.slice(0,4)
-    const itempool = itemGenerator.generateItemPool(capacity, armor, itemRarityProbabilities, enchantmentList, rarityDefinitions, seed)
+    const itempool = itemGenerator.generateItems(capacity, armor, itemRarityProbabilities, enchantmentList, rarityDefinitions, seed)
     expect(itempool[0].name).toBe('Legendary Shoulderguards')
     expect(itempool[1].name).toBe('Uncommon Chestplate')
     expect(itempool[0].properties).toBeUndefined()
@@ -562,7 +562,7 @@ describe('Itempool generator', () => {
     ]
     const seed = 'test'
     const weapon = items.slice(6,7)
-    const itempool = itemGenerator.generateItemPool(capacity, weapon, uniqueRarityProbability, enchantments, rarityDefinitions, seed)
+    const itempool = itemGenerator.generateItems(capacity, weapon, uniqueRarityProbability, enchantments, rarityDefinitions, seed)
     expect(itempool[0].name).toBe('Master Sword')
     expect(itempool[0].properties).toBeUndefined()
     expect(itempool[0].rarity).toBe('Unique')
@@ -584,7 +584,7 @@ describe('Itempool generator', () => {
         enchantmentCount: 0
       }
     ]
-    const itempool = itemGenerator.generateItemPool(capacity, itemList, iRP, enchantments,  rD, seed)
+    const itempool = itemGenerator.generateItems(capacity, itemList, iRP, enchantments,  rD, seed)
     expect(itempool[0].name).toBe('Common Dagger')
     expect(itempool[0].properties).toBe('Basic dagger')
   })
@@ -605,7 +605,7 @@ describe('Itempool generator', () => {
         enchantmentCount: 2
       }
     ]
-    const itempool = itemGenerator.generateItemPool(capacity, itemList, iRP, enchantments,  rD,  seed)
+    const itempool = itemGenerator.generateItems(capacity, itemList, iRP, enchantments,  rD,  seed)
     expect(itempool[0].name).toBe('Frost Fire Common Dagger')
     expect(itempool[0].properties?.split('/n').length).toBe(3)
   })
@@ -627,7 +627,7 @@ describe('Itempool generator', () => {
       }
     ]
     const enchantmentList = enchantments.slice(0,1)
-    const itempool = itemGenerator.generateItemPool(capacity, itemList, iRP, enchantmentList,  rD,  seed)
+    const itempool = itemGenerator.generateItems(capacity, itemList, iRP, enchantmentList,  rD,  seed)
     expect(itempool[0].name).toBe('Common Dagger')
   })
   test('Enchantments are given correcty based on tier and rarityDefinitions, test 2', () => {
@@ -647,7 +647,7 @@ describe('Itempool generator', () => {
         enchantmentCount: 6
       }
     ]
-    const itempool = itemGenerator.generateItemPool(capacity, itemList, iRP, enchantments,  rD,  seed)
+    const itempool = itemGenerator.generateItems(capacity, itemList, iRP, enchantments,  rD,  seed)
     expect(itempool[0].name).toBe('Well-made Frost Fire Common Dagger')
   })
 })

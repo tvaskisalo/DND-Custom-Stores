@@ -195,7 +195,9 @@ type Mutation {
     stealth: String
   ): Enchantment
   generateItempool(
-    name: String!
+    store: String!,
+    game: String!,
+    seed: String
   ): [Item]
 }
 `

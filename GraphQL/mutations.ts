@@ -1,5 +1,6 @@
-import { toLoginRequest, toNewGameRequest, toNewStoreRequest, toNewItemRequest, getUser, toName, toUpdateItemParams, toUpdateGameParams, toUpdateStoreParams, toStore, toId, toUpdateEnchantmentParams, toNewEnchantmentRequest } from '../utils/parsers'
+import { toLoginRequest, toNewGameRequest, toNewStoreRequest, toNewItemRequest, getUser, toName, toUpdateItemParams, toUpdateGameParams, toUpdateStoreParams, toGenerateItempoolArgs, toId, toUpdateEnchantmentParams, toNewEnchantmentRequest } from '../utils/parsers'
 import dao from '../utils/dao'
+import itemGenerator from '../utils/itemGenerator'
 
 export const Mutation = {
   addUser: async (_root: unknown, args: unknown) => {
@@ -101,8 +102,8 @@ export const Mutation = {
   generateItempool: async (_root: unknown, args: unknown, context: unknown) => {
     const user = await getUser(context)
     // Parse params
-    const storeName = toStore(args)
-    const itemPool = await dao.generateItempool(storeName, user?.id as string)
+    const { store, game, seed } = toGenerateItempoolArgs(args)
+    const itemPool = await itemGenerator.generateItempool(game, store, user?.id as string, seed)
     return itemPool
   }
 }

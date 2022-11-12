@@ -13,7 +13,8 @@ const gameSchema = new mongoose.Schema({
   rarities: [
     {
       rarity: String,
-      enchantmentTiers: [Number]
+      enchantmentTiers: [Number],
+      enchantmentCount: Number
     }
   ]
 })
