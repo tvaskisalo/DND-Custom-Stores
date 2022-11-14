@@ -10,6 +10,7 @@ type Token {
   value: String!
 }
 type Enchantment {
+  id: ID!
   name: String!,
   games: [String],
   tier: Int,
@@ -72,7 +73,8 @@ type Item {
   armorType: String,
   armorClass: String,
   strength: String,
-  stealth: String
+  stealth: String,
+  rarity: String,
 }
 type Query {
   getGames: [Game],

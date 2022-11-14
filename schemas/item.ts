@@ -34,7 +34,8 @@ const itemSchema = new mongoose.Schema({
   armorType: String,
   armorClass: String,
   strength: String,
-  stealth: String
+  stealth: String,
+  raririty: String
 })
 
 itemSchema.set('toJSON', {

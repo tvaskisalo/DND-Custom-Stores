@@ -1,3 +1,4 @@
+//TODO: More validations for the data. e.g. test that wrong items and enchantments are not returned and that they are correct.
 import { ApolloServer } from 'apollo-server-express'
 import { User } from '../schemas/user'
 import { Item } from '../schemas/item'
@@ -540,23 +541,104 @@ const initTest = async () => {
   }
 }
 
-describe('Simple case', () => {
+describe('Api returns correct data', () => {
   beforeEach(async() => {
     await initTest()
   })
 
-  test('Simple case', async () => {
+  test('Correct call returns correct amount of items', async () => {
     const result = await server.executeOperation(
       {
         query: generateItempool,
         variables: {
           store: 'testStore1',
-          game: 'testGame1',
-          seed: 'test'
+          game: 'testGame1'
         }
       }
     )
-    console.log(result.data?.generateItempool)
-    expect(true).toBe(false)
+    expect(result.errors).toBeUndefined()
+    expect(result.data?.generateItempool.length).toBe(10)
   })
+  //This is a basic check that items go through the item generator.
+  //It is a poor test because it doesn't account for other parsers, but currently they do not exist, so this will do
+  test('All returned items are given a rarity', async () => {
+    const result = await server.executeOperation(
+      {
+        query: generateItempool,
+        variables: {
+          store: 'testStore1',
+          game: 'testGame1'
+        }
+      }
+    )
+    expect(result.errors).toBeUndefined()
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    result.data?.generateItempool.forEach((i: { rarity: string, name: string }) => {
+      expect(i.rarity).toBeDefined()
+      //Rarity should be in front of the name, so all items should have names longer than 1 word
+      expect(i.name.split(' ').length).toBeGreaterThan(1)
+    })
+  })
+  test('There are not any items from other user', async () => {
+    const result = await server.executeOperation(
+      {
+        query: generateItempool,
+        variables: {
+          store: 'testStore1',
+          game: 'testGame1'
+        }
+      }
+    )
+    expect(result.errors).toBeUndefined()
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    result.data?.generateItempool.forEach((i: { name: string }) => {
+      i.name.split(' ').forEach(w => {
+        //All items that have 'Fake' in the name belong to the other user
+        expect(w).not.toBe('Fake')
+      })
+    })
+  })
+})
+
+describe('User cant get other users data', () => {
+  beforeEach(async () => {
+    await initTest()
+  })
+  test('Query on other users store', async () => {
+    const result = await server.executeOperation(
+      {
+        query: generateItempool,
+        variables: {
+          store: 'testStore3',
+          game: 'testGame1'
+        }
+      }
+    )
+    //Should throw an error since testStore3 doesn't exist
+    expect(result.errors).toBeDefined()
+    expect(result.data?.generateItempool).toBe(null)
+  })
+  test('Query on other users games', async () => {
+    const result = await server.executeOperation(
+      {
+        query: generateItempool,
+        variables: {
+          store: 'testStore1',
+          game: 'testGame3'
+        }
+      }
+    )
+    //Should throw an error since testGame3 doesn't exist
+    expect(result.errors).toBeDefined()
+    expect(result.data?.generateItempool).toBe(null)
+  })
+})
+
+afterAll(async () => {
+  await server.stop()
+  await Game.deleteMany()
+  await User.deleteMany()
+  await Store.deleteMany()
+  await Enchantment.deleteMany()
+  await Item.deleteMany()
 })

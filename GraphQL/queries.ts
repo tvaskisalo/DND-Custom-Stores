@@ -1,3 +1,4 @@
+//TODO: Getter for individual enchantments
 import { toName, getUser, toGetItemsParams, toGetStoresParams, toGetEnchantmentsParams } from '../utils/parsers'
 import dao from '../utils/dao'
 

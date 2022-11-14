@@ -474,6 +474,7 @@ export const generateItempool = `mutation generateItempool(
       armorType,
       armorClass,
       strength,
-      stealth
+      stealth,
+      rarity
     }
   }`
