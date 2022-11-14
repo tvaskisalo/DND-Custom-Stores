@@ -1,6 +1,7 @@
 //TODO: Getter for individual enchantments
-import { toName, getUser, toGetItemsParams, toGetStoresParams, toGetEnchantmentsParams } from '../utils/parsers'
+import { toName, getUser, toGetItemsParams, toGetStoresParams, toGetEnchantmentsParams, toGenerateItempoolArgs } from '../utils/parsers'
 import dao from '../utils/dao'
+import itemGenerator from '../utils/itemGenerator'
 
 export const Query = {
   getGames: async (_root: unknown, _args: unknown, context: unknown) => {
@@ -75,5 +76,12 @@ export const Query = {
     const params = toGetEnchantmentsParams(args)
     const enchantments = await dao.getEnchantments(params, user?.id as string)
     return enchantments
+  },
+  generateItempool: async (_root: unknown, args: unknown, context: unknown) => {
+    const user = await getUser(context)
+    // Parse params
+    const { store, game, seed } = toGenerateItempoolArgs(args)
+    const itemPool = await itemGenerator.generateItempool(game, store, user?.id as string, seed)
+    return itemPool
   }
 }

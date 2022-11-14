@@ -132,3 +132,33 @@ export const GETENCHANTMENTS = gql`
     }
   }  
 `
+
+export const GENERATEITEMPOOL = gql`query generateItempool(
+  $game: String!,
+  $store: String!,
+  $seed: String
+  ) {
+    generateItempool(
+      game: $game,
+      store: $store,
+      seed: $seed
+    ) {
+      name
+      material
+      baseCost
+      weight
+      properties
+      damage
+      damageTypes
+      baseItem
+      unique
+      weapon
+      weaponType
+      armor
+      armorType
+      armorClass
+      strength
+      stealth
+      rarity
+    }
+  }`

@@ -12,6 +12,7 @@ import AddEnchantment from './components/forms/AddEnchantment'
 import AddStore from './components/forms/AddStore'
 import StoresView from './components/StoresView'
 import ItemsView from './components/ItemsView'
+import ItempoolView from './components/ItempoolView'
 
 const App = () => {
   const [token, setToken] = useState('')
@@ -43,6 +44,7 @@ const App = () => {
         <Route path="/games" element={token ? <GamesView /> : <Navigate replace to='/login'/>} />
         <Route path="/stores" element={<StoresView />}/>
         <Route path="/items" element={<ItemsView />}/>
+        <Route path="/generateItempool" element={<ItempoolView store='testStore' game='testGame' />} />
       </Routes>
     </div>
   )

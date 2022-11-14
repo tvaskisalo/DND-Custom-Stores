@@ -36,4 +36,5 @@
 11.11.2022 | 2 | Added tests for itempool generator. Added capacity to store schema and updated everything relating to it.
 12.11.2022 | 2 | Made a mutation for itempool generator. Started testing the mutation
 14.11.2022 | 1.5 | Added more tests for itempool generator api and added test for enchantment api
-Total time | 63.5 | updated 14.11.2022
+14.11.2022 | 1 | Added support for itempool view in the frontend and fixed item generator bug.
+Total time | 64.5 | updated 14.11.2022

@@ -39,6 +39,7 @@ export const ADDGAME = gql`mutation addGame (
       rarities {
         rarity
         enchantmentTiers
+        enhantmentCount
       }
     }
   }`
@@ -219,6 +220,7 @@ export const UPDATEGAME = gql`mutation updateGame (
       rarities {
         rarity
         enchantmentTiers
+        enchantmentCount
       }
     }
   }`
@@ -267,7 +269,8 @@ export const UPDATEITEM = gql`mutation updateItem(
   $armorType: String
   $armorClass: String
   $strength: String
-  $stealth: String) { 
+  $stealth: String
+  $rarity: String) { 
     updateItem (
       id: $id
       name: $name 
@@ -288,6 +291,7 @@ export const UPDATEITEM = gql`mutation updateItem(
       armorClass: $armorClass
       strength: $strength
       stealth: $stealth
+      rarity: $rarity
     ) {
       id
       name
@@ -308,6 +312,7 @@ export const UPDATEITEM = gql`mutation updateItem(
       armorClass
       strength
       stealth
+      rarity
     }
   }`
 

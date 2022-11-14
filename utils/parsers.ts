@@ -308,8 +308,8 @@ export const parseitemRarityProbabilities = (data: unknown): itemRarityProbabili
     throw new Error('Incorrect or missing itemRarityProbabilities')
   }
   let sum = 0
-  returnValue.forEach(({ probability }) => {
-    sum += probability
+  returnValue.forEach((r) => {
+    sum += r.probability
   })
   if (sum !== 100) {
     throw new Error('The sum of probablities is incorrect ' + sum)

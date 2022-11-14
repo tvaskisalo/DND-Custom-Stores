@@ -133,12 +133,16 @@ const generateItems = (
   const nonUniqueItems = items.filter(item => !item.unique)
   //Clone items and enchantments
   const enchantableItems: CompleteItem[] = []
-  for (let i = 0; i < capacity-uniqueCount; i++) {
-    const itemIndex = Math.floor(random()*nonUniqueItems.length)
-    enchantableItems.push(nonUniqueItems[itemIndex])
+  if (nonUniqueItems.length > 0) {
+    for (let i = 0; i < capacity-uniqueCount; i++) {
+      const itemIndex = Math.floor(random()*nonUniqueItems.length)
+      enchantableItems.push(nonUniqueItems[itemIndex])
+    }
   }
   // Add a rarity and enchantments to all items
-  addEnchantedItemsToItempool(enchantableItems, nonUniqueItemRarities, rarityDefinitions, enchantments, itempool, seed)
+  if (enchantableItems.length > 0) {
+    addEnchantedItemsToItempool(enchantableItems, nonUniqueItemRarities, rarityDefinitions, enchantments, itempool, seed)
+  }
   //Add uniques to the itempool
   for (let i = 0; i < uniqueCount; i++) {
     const item = uniques[Math.floor(random()*uniques.length)]

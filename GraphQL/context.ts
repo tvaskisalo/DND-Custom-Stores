@@ -9,12 +9,10 @@ export const context = (request: ExpressContext) => {
   const auth = request ? request.req.headers.authorization : null
   //Checking if authorization header exists and is valid
   if (auth && auth.toLowerCase().startsWith('bearer ')) {
-    console.log(auth.substring(7))
     try {
       const decodedToken = jwt.verify(
         auth.split(' ')[1], SECRET
       )
-      console.log(auth)
       const token = toToken(decodedToken)
       //If authorization was correct, current user can be found in context
       return { username: token.username, id: token.id }

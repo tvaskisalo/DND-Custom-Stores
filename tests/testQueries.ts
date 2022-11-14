@@ -450,7 +450,7 @@ export const login = `mutation login(
     }`
 
 
-export const generateItempool = `mutation generateItempool(
+export const generateItempool = `query generateItempool(
   $game: String!,
   $store: String!,
   $seed: String) {

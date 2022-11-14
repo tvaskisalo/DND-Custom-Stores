@@ -83,7 +83,12 @@ type Query {
   getStoreInfo(name: String!): Store
   getItems(store: String): [Item]
   getItemInfo(name: String!): Item,
-  getEnchantments(game: String): [Enchantment]
+  getEnchantments(game: String): [Enchantment],
+  generateItempool(
+    store: String!,
+    game: String!,
+    seed: String
+  ): [Item]
 }
 type Mutation {
   login(
@@ -196,10 +201,5 @@ type Mutation {
     strength: String,
     stealth: String
   ): Enchantment
-  generateItempool(
-    store: String!,
-    game: String!,
-    seed: String
-  ): [Item]
 }
 `
