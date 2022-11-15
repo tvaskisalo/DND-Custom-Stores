@@ -1,51 +1,48 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Proptypes from 'prop-types'
 
 const Navigationbar = ({ token, logout }) => {
   const navigate = useNavigate()
+  const [collapse, setCollapse] = useState(true)
+  const liClassName = 'inline-block px-2 py-2'
+  const buttonClassName = 'inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs rounded'
   return (
-    <nav className='bg-white border-gray-200 rounded'>
-      <ul className='flex flex-row justify-between mx-auto w-full'>
-        <li>
-          DnD-custom stores
-        </li>
-        <li>
-          <ul className='flex flex-row md:space-x-4'>
-            <li>
-              <button onClick={() => navigate('/')}>
-                Home
-              </button>
-            </li>
-            <li>
-              <button onClick={() => navigate('/login')}>
-                Login
-              </button>
-            </li>
-            <li>
-              <button onClick={() => navigate('/addUser')}>
-                Sign Up
-              </button>
-            </li>
-            <li>
-              <button onClick={() => navigate('/addGame')}>
-                New Game
-              </button>
-            </li>
-            <li>
-              <button onClick={() => navigate('/games')} disabled={!token}>
-                Games
-              </button>
-            </li>
-            <li>
-              <button onClick={logout}>
-                Logout
-              </button>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </nav>
+    <div className='bg-slate-900  rounded w-fit'>
+      <button className='inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs rounded' onClick={() => setCollapse(!collapse)}>
+        Show menu
+      </button>
+      {
+        collapse
+          ? <div></div>
+          : <nav >
+            <ul className='flex-row justify-between mx-auto left-5 inline-block px-2 py-2'>
+              <li>
+                <ul className='flex flex-col'>
+                  <li className={ liClassName }>
+                    <button className = { buttonClassName } onClick={() => navigate('/')}>Home</button>
+                  </li>
+                  <li className={ liClassName }>
+                    <button className = { buttonClassName } onClick={() => navigate('/login')}>Login</button>
+                  </li>
+                  <li className={ liClassName }>
+                    <button className = { buttonClassName } onClick={() => navigate('/addUser')}>Sign Up</button>
+                  </li>
+                  <li className={ liClassName }>
+                    <button className = { buttonClassName } onClick={() => navigate('/addGame')}>New Game</button>
+                  </li>
+                  <li className={ liClassName }>
+                    <button className = { buttonClassName } onClick={() => navigate('/games')} disabled={!token}>Games</button>
+                  </li>
+                  <li className={ liClassName }>
+                    <button className = { buttonClassName } onClick={logout}>Logout</button>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </nav>
+      }
+    </div>
   )
 }
 

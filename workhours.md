@@ -37,4 +37,5 @@
 12.11.2022 | 2 | Made a mutation for itempool generator. Started testing the mutation
 14.11.2022 | 1.5 | Added more tests for itempool generator api and added test for enchantment api
 14.11.2022 | 1 | Added support for itempool view in the frontend and fixed item generator bug.
-Total time | 64.5 | updated 14.11.2022
+15.11.2022 | 2 | Updated esling and fixed eslint errors. Added styling to frontend and refactored item from ItemsView and ItemPoolView
+Total time | 66.5 | updated 14.11.2022

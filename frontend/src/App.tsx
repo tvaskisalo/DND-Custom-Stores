@@ -29,7 +29,7 @@ const App = () => {
     client.resetStore()
   }
   return (
-    <div>
+    <div className = 'flex items-start'>
       <Navigationbar token = { token } logout = { logout }/>
       <Routes>
         <Route path = "/" element = { <Home /> } />
