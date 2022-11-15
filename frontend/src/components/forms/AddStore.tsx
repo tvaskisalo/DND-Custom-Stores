@@ -7,9 +7,9 @@ import { toitemRarityProbabilities } from '../../utils/parsers'
 
 
 const AddStore = () => {
-  const name = useField('text','Name')
-  const games = useField('text','Games')
-  const itemRarityProbabilities = useField('text','itemRarityProbabilities')
+  const name = useField('text', 'Name')
+  const games = useField('text', 'Games')
+  const itemRarityProbabilities = useField('text', 'itemRarityProbabilities')
   const capacity = useField('number', 'Capacity')
   const [ addStore, result ] = useMutation(ADDSTORE)
 

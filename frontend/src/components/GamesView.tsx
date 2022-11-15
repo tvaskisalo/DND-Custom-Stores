@@ -14,14 +14,14 @@ const GamesView = () => {
         let RarityDefs = <div/>
         if (game.enchantments) {
           const enchants = ''
-          Enchantments=<div>Enchantments: {enchants.concat(game.enchantments, ', ')}</div>
+          Enchantments = <div>Enchantments: {enchants.concat(game.enchantments, ', ')}</div>
         }
         if (game.rarities) {
           RarityDefs = game.rarities.map(r => {
             let tiers = ''
-            r.enchantmentTiers.forEach(e => tiers=tiers.concat(e as string, ', '))
+            r.enchantmentTiers.forEach(e => tiers = tiers.concat(e as string, ', '))
             tiers = tiers.substring(0, tiers.length - 2)
-            return(<div key={r.rarity}>
+            return (<div key={r.rarity}>
               <div>{r.rarity}: {tiers}</div>
             </div>)
           })

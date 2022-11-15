@@ -29,9 +29,9 @@ const parseEnchantedItem = (item: CompleteItem, enchantment: CompleteEnchantment
   }
   // Add enchantment descriptions to the item properties
   if (!item.properties) {
-    item.properties = enchantment.name + ': ' +enchantment.description
+    item.properties = enchantment.name + ': ' + enchantment.description
   } else {
-    item.properties = item.properties + ' /n ' + enchantment.name + ': ' +enchantment.description
+    item.properties = item.properties + ' /n ' + enchantment.name + ': ' + enchantment.description
   }
 }
 
@@ -45,13 +45,13 @@ const generateItemRarities = (capacity: number, itemRarityProbabilities: itemRar
   itemRarityProbabilities.forEach(itemRarity => {
     //Adding ranges such that the next rarity's minimum is equal to last range's maximum.
     //Here minimum is inclusive but maximum is exclusive
-    ranges.push({ min, max:min+itemRarity.probability, rarity: itemRarity.rarity })
-    min = min+itemRarity.probability
+    ranges.push({ min, max: min + itemRarity.probability, rarity: itemRarity.rarity })
+    min = min + itemRarity.probability
   })
   const itemRarities: string[] = []
-  for (let i = 0; i<capacity; i++) {
+  for (let i = 0; i < capacity; i++) {
     //Generate random number between [0,100[
-    const randomInt = Math.floor(random()*100)
+    const randomInt = Math.floor(random() * 100)
     ranges.forEach(range => {
       //If the random number is in the range of this rarity, add the rarity to the list
       if (range.min <= randomInt && randomInt < range.max) {
@@ -83,7 +83,7 @@ const generateEnchantedItem = (n: number, item: CompleteItem, enchantments: Comp
   // That solution easily becomes inefficient when the list size and n are large.
   const itemEnchantments = randomizedCopy.slice(0, n)
   // Sort enchantments alphabetically by name
-  itemEnchantments.sort((a,b) => a.name.localeCompare(b.name))
+  itemEnchantments.sort((a, b) => a.name.localeCompare(b.name))
   itemEnchantments.forEach(enchantment => parseEnchantedItem(itemCopy, enchantment))
   return itemCopy
 }
@@ -125,7 +125,7 @@ const generateItems = (
   const random = seedrandom(seed)
   const itempool: CompleteItem[] = []
   //Generate the rarities for the items
-  const itemRarities = generateItemRarities(capacity, itemRarityProbabilities, seed).sort((a,b) => a.localeCompare(b))
+  const itemRarities = generateItemRarities(capacity, itemRarityProbabilities, seed).sort((a, b) => a.localeCompare(b))
   //Count the number of uniques and nonUniques and seperate them since they are handled differently
   const uniqueCount = itemRarities.filter(r => r.toLowerCase() === 'unique').length
   const nonUniqueItemRarities = itemRarities.filter(r => r.toLowerCase() !== 'unique')
@@ -134,8 +134,8 @@ const generateItems = (
   //Clone items and enchantments
   const enchantableItems: CompleteItem[] = []
   if (nonUniqueItems.length > 0) {
-    for (let i = 0; i < capacity-uniqueCount; i++) {
-      const itemIndex = Math.floor(random()*nonUniqueItems.length)
+    for (let i = 0; i < capacity - uniqueCount; i++) {
+      const itemIndex = Math.floor(random() * nonUniqueItems.length)
       enchantableItems.push(nonUniqueItems[itemIndex])
     }
   }
@@ -145,7 +145,7 @@ const generateItems = (
   }
   //Add uniques to the itempool
   for (let i = 0; i < uniqueCount; i++) {
-    const item = uniques[Math.floor(random()*uniques.length)]
+    const item = uniques[Math.floor(random() * uniques.length)]
     item.rarity = 'Unique'
     itempool.push(item)
   }

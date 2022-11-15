@@ -225,9 +225,9 @@ describe('Getting stores with game name', () => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const data = result.data?.getStores
     expect(data.length).toBe(3)
-    expect(['Store1','Store2','Store3']).toContain(data[0].name)
-    expect(['Store1','Store2','Store3']).toContain(data[1].name)
-    expect(['Store1','Store2','Store3']).toContain(data[2].name)
+    expect(['Store1', 'Store2', 'Store3']).toContain(data[0].name)
+    expect(['Store1', 'Store2', 'Store3']).toContain(data[1].name)
+    expect(['Store1', 'Store2', 'Store3']).toContain(data[2].name)
   })
   test('User cant get other users stores', async () => {
     // This should return all logged in user's stores, not otherUser's stores that refrence Game3

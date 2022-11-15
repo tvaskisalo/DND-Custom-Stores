@@ -30,21 +30,21 @@ const App = () => {
   }
   return (
     <div>
-      <Navigationbar token={ token } logout={logout}/>
+      <Navigationbar token = { token } logout = { logout }/>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login setToken={setToken}/>} />
+        <Route path = "/" element = { <Home /> } />
+        <Route path = "/login" element = { <Login setToken = { setToken }/> } />
 
-        <Route path="/adduser" element={<AddUser />} />
-        <Route path="/addgame" element={<AddGame />} />
-        <Route path="/addItem" element={<AddItem />} />
-        <Route path="/addStore" element={<AddStore />} />
-        <Route path='/addEnchantment' element={<AddEnchantment/>} />
+        <Route path = "/adduser" element = { <AddUser /> } />
+        <Route path = "/addgame" element = { <AddGame /> } />
+        <Route path = "/addItem" element = { <AddItem /> } />
+        <Route path = "/addStore" element = { <AddStore /> } />
+        <Route path = '/addEnchantment' element = { <AddEnchantment/> } />
 
-        <Route path="/games" element={token ? <GamesView /> : <Navigate replace to='/login'/>} />
-        <Route path="/stores" element={<StoresView />}/>
-        <Route path="/items" element={<ItemsView />}/>
-        <Route path="/generateItempool" element={<ItempoolView store='testStore' game='testGame' />} />
+        <Route path = "/games" element = { token ? <GamesView /> : <Navigate replace to = '/login'/> } />
+        <Route path = "/stores" element = { <StoresView /> }/>
+        <Route path = "/items" element = { <ItemsView /> }/>
+        <Route path = "/generateItempool" element = { <ItempoolView store = 'testStore' game = 'testGame' /> } />
       </Routes>
     </div>
   )

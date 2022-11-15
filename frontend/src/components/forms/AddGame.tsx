@@ -7,9 +7,9 @@ import { toRarityDefinitions } from '../../utils/parsers'
 
 
 const AddGame = () => {
-  const name = useField('text','Name')
+  const name = useField('text', 'Name')
   // Enchantments should be added later into the game. Currently not supported.
-  const rarities = useField('text','Rarities')
+  const rarities = useField('text', 'Rarities')
   const [ addGame, result ] = useMutation(ADDGAME)
 
   useEffect(() => {

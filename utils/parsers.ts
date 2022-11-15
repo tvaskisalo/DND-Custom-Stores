@@ -56,7 +56,7 @@ export const toToken = (reqData: any): Token => {
 export const toUpdateGameParams = (reqData: any): UpdateGameParams => {
   const updateRequest: UpdateGameParams =  {
     id: parseString(reqData.id),
-    name: reqData.name ? parseString(reqData.name): undefined,
+    name: reqData.name ? parseString(reqData.name) : undefined,
     enchantments: reqData.enchantments ? parseStringArray(reqData.enchantments) : undefined,
     rarities: reqData.rarities ? parseRarityDefinitions(reqData.rarities) : undefined
   }
@@ -66,10 +66,10 @@ export const toUpdateGameParams = (reqData: any): UpdateGameParams => {
 export const toUpdateStoreParams = (reqData: any): UpdateStoreParams => {
   const updateRequest: UpdateStoreParams = {
     id: parseString(reqData.id),
-    name: reqData.name ? parseString(reqData.name): undefined,
+    name: reqData.name ? parseString(reqData.name) : undefined,
     itemRarityProbabilities: reqData.itemRarityProbabilities ? parseitemRarityProbabilities(reqData.itemRarityProbabilities) : undefined,
     games: reqData.games ? parseStringArray(reqData.games) : undefined,
-    capacity: reqData.capacity ? parseNumber(reqData.capacity): undefined,
+    capacity: reqData.capacity ? parseNumber(reqData.capacity) : undefined,
   }
   return updateRequest
 }
@@ -108,7 +108,7 @@ export const toUpdateEnchantmentParams = (reqData: any): UpdateEnchantParams => 
     damage: reqData.damage ? parseString(reqData.damage) : undefined,
     damageTypes: reqData.damageTypes ? parseStringArray(reqData.damageTypes) : undefined,
     description: reqData.description ? parseString(reqData.description) : undefined,
-    weapon: reqData.weapon !== undefined ? parseBoolean(reqData.weapon): undefined,
+    weapon: reqData.weapon !== undefined ? parseBoolean(reqData.weapon) : undefined,
     armor: reqData.armor !== undefined ? parseBoolean(reqData.armor) : undefined,
     stealth: reqData.stealth ? parseString(reqData.stealth) : undefined,
     strength: reqData.strength ? parseString(reqData.strength) : undefined,
@@ -124,7 +124,7 @@ export const toNewEnchantmentRequest = (reqData: any): NewEnchantRequest => {
     damage: reqData.damage ? parseString(reqData.damage) : undefined,
     damageTypes: reqData.damageTypes ? parseStringArray(reqData.damageTypes) : undefined,
     description: reqData.description ? parseString(reqData.description) : undefined,
-    weapon: reqData.weapon !== undefined ? parseBoolean(reqData.weapon): undefined,
+    weapon: reqData.weapon !== undefined ? parseBoolean(reqData.weapon) : undefined,
     armor: reqData.armor !== undefined ? parseBoolean(reqData.armor) : undefined,
     stealth: reqData.stealth ? parseString(reqData.stealth) : undefined,
     strength: reqData.strength ? parseString(reqData.strength) : undefined,
@@ -143,7 +143,7 @@ export const toNewGameRequest = (reqData: any): NewGameRequest => {
 
 const parseStringArray = (strArr: unknown): string[] => {
   if (!strArr || !Array.isArray(strArr)) {
-    throw new Error('Incorrect or missing string array ' +strArr)
+    throw new Error('Incorrect or missing string array ' + strArr)
   }
   const returnValue: string[] = strArr.map((str) => parseString(str))
   if (!returnValue) {
@@ -154,9 +154,9 @@ const parseStringArray = (strArr: unknown): string[] => {
 
 const parseNumberArray = (numArr: unknown): number[] => {
   if (!numArr || !Array.isArray(numArr)) {
-    throw new Error('Invalid or missing number array '+numArr)
+    throw new Error('Invalid or missing number array ' + numArr)
   }
-  const returnValue: number[] =numArr.map(number => parseNumber(number))
+  const returnValue: number[] = numArr.map(number => parseNumber(number))
   if (!returnValue) {
     throw new Error('Invalid or missing number array')
   }
@@ -319,7 +319,7 @@ export const parseitemRarityProbabilities = (data: unknown): itemRarityProbabili
 
 export const parseitemRarityProbability = (reqData: any): itemRarityProbability => {
   if (!reqData || !reqData.rarity || !isString(reqData.rarity) || !reqData.probability || !isNumber(reqData.probability)) {
-    throw new Error('Incorrect or missing itemRarityProbability '+reqData)
+    throw new Error('Incorrect or missing itemRarityProbability ' + reqData)
   }
   return {
     rarity: parseString(reqData.rarity),
@@ -327,7 +327,7 @@ export const parseitemRarityProbability = (reqData: any): itemRarityProbability 
   }
 }
 export const parseRarityDef = (data: any): RarityDefinition => {
-  if (!data || !data.rarity || !data.enchantmentTiers ||!Array.isArray(data.enchantmentTiers) || data.enchantmentCount === undefined) {
+  if (!data || !data.rarity || !data.enchantmentTiers || !Array.isArray(data.enchantmentTiers) || data.enchantmentCount === undefined) {
     throw new Error('Invalid or missing rarityDefinition')
   }
   return {

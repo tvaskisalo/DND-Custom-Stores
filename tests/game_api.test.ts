@@ -33,7 +33,7 @@ beforeAll( async () => {
   // User that is logged in has the username testUser.
   // There exists another user with the username otherUser that is not logged in
   server = await testServer()
-},100000)
+}, 100000)
 
 
 describe('Game addition', () => {
@@ -134,8 +134,8 @@ describe('Games getter', () => {
     expect(result.errors).toBeUndefined()
     expect(result.data).toBeDefined()
     expect(result.data?.getGames.length).toBe(2)
-    expect(['testGame2','testGame1']).toContain(result.data?.getGames[0].name)
-    expect(['testGame2','testGame1']).toContain(result.data?.getGames[1].name)
+    expect(['testGame2', 'testGame1']).toContain(result.data?.getGames[0].name)
+    expect(['testGame2', 'testGame1']).toContain(result.data?.getGames[1].name)
   })
 
   test('GetGameInfo returns correct info', async () => {

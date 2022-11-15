@@ -6,27 +6,27 @@ import Form from './Form'
 
 
 const AddItem = () => {
-  const name = useField('text','Name')
+  const name = useField('text', 'Name')
   //Currently given a string that will be parsed to an array.
-  const games = useField('text','Games')
+  const games = useField('text', 'Games')
   //Currently given a string that will be parsed to an array.
-  const storePool = useField('text','StorePool')
-  const material = useField('text','Material')
-  const baseCost = useField('number','Basecost')
-  const weight = useField('number','Weight')
-  const properties = useField('text','Properties')
-  const damage = useField('text','Damage')
+  const storePool = useField('text', 'StorePool')
+  const material = useField('text', 'Material')
+  const baseCost = useField('number', 'Basecost')
+  const weight = useField('number', 'Weight')
+  const properties = useField('text', 'Properties')
+  const damage = useField('text', 'Damage')
   //Currently given a string that will be parsed to an array.
-  const damageTypes = useField('text','DamageTypes')
-  const baseItem = useField('boolean','BaseItem')
-  const unique = useField('boolean','Unique')
-  const weapon = useField('boolean','Weapon')
-  const weaponType = useField('text','WeaponType')
-  const armor = useField('boolean','Armor')
-  const armorType = useField('text','ArmorType')
-  const armorClass = useField('text','ArmorClass')
-  const strength = useField('text','Strength')
-  const stealth = useField('text','Stealth')
+  const damageTypes = useField('text', 'DamageTypes')
+  const baseItem = useField('boolean', 'BaseItem')
+  const unique = useField('boolean', 'Unique')
+  const weapon = useField('boolean', 'Weapon')
+  const weaponType = useField('text', 'WeaponType')
+  const armor = useField('boolean', 'Armor')
+  const armorType = useField('text', 'ArmorType')
+  const armorClass = useField('text', 'ArmorClass')
+  const strength = useField('text', 'Strength')
+  const stealth = useField('text', 'Stealth')
   const [ addItem, result ] = useMutation(ADDITEM)
 
   useEffect(() => {

@@ -13,8 +13,8 @@ const ItemsView = () => {
           return (
             <div key={item.id}>
               <div>Item name: {item.name}</div>
-              {item.games && item.games.length !==0? <div>Games: {''.concat(item.games, ' ').trimEnd()}</div> : <div/>}
-              {item.storepool && item.storepool.length !==0 ? <div>Storepool: {''.concat(item.storepool, ' ').trimEnd()}</div> : <div/>}
+              {item.games && item.games.length !== 0 ? <div>Games: {''.concat(item.games, ' ').trimEnd()}</div> : <div/>}
+              {item.storepool && item.storepool.length !== 0 ? <div>Storepool: {''.concat(item.storepool, ' ').trimEnd()}</div> : <div/>}
               {item.material ? <div>Material: {item.material}</div> : <div/>}
               {item.baseCost ? <div>Basecost: {item.baseCost}</div> : <div/>}
               {item.weight ? <div>Weight: {item.weight}</div> : <div/>}

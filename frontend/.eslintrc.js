@@ -1,4 +1,4 @@
-{
+module.exports = {
   "env": {
       "browser": true,
       "es6": true,
@@ -39,7 +39,14 @@
         ],
         "arrow-spacing": [
           "error", { "before": true, "after": true }
-        ]
+        ],
+        "keyword-spacing": "error",
+        "comma-spacing": ["error", { "before": false, "after": true }],
+        "space-infix-ops": ["error", { "int32Hint": false }]
   },
-  "root" : true
+  "root" : true,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": __dirname + "/tsconfig.json"
+  }
 }

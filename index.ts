@@ -31,7 +31,7 @@ mongoose.connect(MONGODB)
     app.use(cors())
     app.use(express.static('build'))
     //Gives built frontend, index.html is given to fix a current bug with react router
-    app.get('/*', function(req,res) {
+    app.get('/*', function(req, res) {
       res.sendFile(path.join(__dirname, 'build', 'index.html'))
     })
     const httpServer = http.createServer(app)

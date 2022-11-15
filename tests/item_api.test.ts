@@ -41,7 +41,7 @@ beforeAll( async () => {
   // User that is logged in has the username testUser.
   // There exists another user with the username otherUser that is not logged in
   server = await testServer()
-},100000)
+}, 100000)
 
 describe('Item addition', () => {
   beforeEach(async () => {

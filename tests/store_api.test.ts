@@ -53,7 +53,7 @@ const initTest = async () => {
 
 beforeAll( async () => {
   server = await testServer()
-},100000)
+}, 100000)
 
 describe('Store addition', () => {
   beforeEach( async () => {

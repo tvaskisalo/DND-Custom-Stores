@@ -14,7 +14,7 @@ const StoresView = () => {
         if (store.itemRarityProbabilities) {
           iTP = <div>Itemtype Probabilities: {
             store.itemRarityProbabilities.map(itp => {
-              return(
+              return (
                 <div key={itp.rarity}>
                   <div>Rarity: {itp.rarity}</div>
                   <div>Probability: {itp.probability}</div>

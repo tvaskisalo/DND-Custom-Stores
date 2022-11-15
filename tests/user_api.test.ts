@@ -25,7 +25,7 @@ const testServer = new ApolloServer({
 
 beforeAll( async () => {
   await mongoose.connect(MONGODB)
-},100000)
+}, 100000)
 
 describe('Test for user addition', () => {
   beforeEach(async () => {

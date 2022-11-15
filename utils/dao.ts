@@ -46,7 +46,7 @@ const validateGamepool = async (gamepool: string[] | undefined, userId: string):
 }
 
 const validateStorepool = async (storepool: string[] | undefined, userId: string): Promise<boolean> => {
-  if (!storepool)return true
+  if (!storepool) return true
   const stores = await Store.find({ name: storepool, user: userId  })
   if (stores.length !== storepool.length) {
     return false
@@ -94,7 +94,7 @@ const addGame = async (newGame: NewGameRequest, userId: string) => {
   const game = new Game({ ...newGame, user: userId })
   try {
     const savedGame = await game.save()
-    return(savedGame)
+    return (savedGame)
   } catch (e) {
     throw new UserInputError('Invalid game Info')
   }
@@ -113,7 +113,7 @@ const addStore = async (newStore: NewStoreRequest, userId: string) => {
   try {
     const savedStore = await store.save()
     return savedStore
-  } catch(e){
+  } catch (e){
     throw new UserInputError('Invalid Store Information')
   }
 }
@@ -121,7 +121,7 @@ const addItem = async (newItem: NewItemRequest, userId: string) => {
   const storepool = newItem.storepool
   const gamepool = newItem.games
   // Checking if the name is already in use by other user's item
-  if(!await validateName(newItem.name, 'Item', userId)) {
+  if (!await validateName(newItem.name, 'Item', userId)) {
     throw new ValidationError('Name is in use')
   }
   // Check if all given stores exist, assuming that no duplicate stores exist
@@ -136,7 +136,7 @@ const addItem = async (newItem: NewItemRequest, userId: string) => {
   try {
     const savedItem = await item.save()
     return savedItem
-  } catch(e) {
+  } catch (e) {
     throw new UserInputError('Invalid Item Information')
   }
 }
@@ -232,7 +232,7 @@ const removeEnchantment = async (id: string, userId: string) => {
 }
 const updateGame = async (game: UpdateGameParams, userId: string) => {
   // Checking if the name is already in use by other user's game
-  if(!await validateName(game.name, 'Game', userId)) {
+  if (!await validateName(game.name, 'Game', userId)) {
     throw new ValidationError('Name is in use')
   }
   const updatedGame = await Game.findOneAndUpdate({
@@ -245,7 +245,7 @@ const updateGame = async (game: UpdateGameParams, userId: string) => {
 }
 const updateStore = async (store: UpdateStoreParams, userId: string) => {
   // Checking if the name is already in use by other user's store
-  if(!await validateName(store.name, 'Store', userId)) {
+  if (!await validateName(store.name, 'Store', userId)) {
     throw new ValidationError('Name is in use')
   }
   // Checking if all given games exist, assuming no duplicate games exist
@@ -305,7 +305,7 @@ const getGameInfo = async (name: string, userId: string) => {
   return game
 }
 const getStores = async (stores: GetStoresParams | undefined, userId: string) => {
-  if(!stores) {
+  if (!stores) {
     return await Store.find({ user: userId })
   }
   // Check if the user has the game

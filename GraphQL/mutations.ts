@@ -6,13 +6,13 @@ export const Mutation = {
     //Parse params
     const { username, password } = toLoginRequest(args)
     const newUsername = await dao.addUser(username, password)
-    return({ value: newUsername })
+    return ({ value: newUsername })
   },
   login: async (_root: unknown, args: unknown) => {
     // Parse params
     const { username, password } = toLoginRequest(args)
     const token = await dao.login(username, password)
-    return({ value: token })
+    return ({ value: token })
   },
   addGame: async (_root:unknown, args: unknown, context: unknown) => {
     //Parse params

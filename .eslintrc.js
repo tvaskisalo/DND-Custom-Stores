@@ -40,7 +40,10 @@ module.exports =  {
       'error',
       { 'argsIgnorePattern': '^_' }
     ],
-    'no-case-declarations': 'off'
+    'no-case-declarations': 'off',
+    "keyword-spacing": "error",
+    "comma-spacing": ["error", { "before": false, "after": true }],
+    "space-infix-ops": ["error", { "int32Hint": false }]
   },
   'parser': '@typescript-eslint/parser',
   'parserOptions': {
