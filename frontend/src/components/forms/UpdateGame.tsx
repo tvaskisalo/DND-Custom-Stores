@@ -1,16 +1,21 @@
 import React, { useEffect } from 'react'
-import { ADDGAME } from '../../mutations'
+import { useSearchParams } from 'react-router-dom'
+import { UPDATEGAME } from '../../mutations'
 import { useField } from '../../utils/utils'
-import { useMutation } from '@apollo/client'
 import Form from './Form'
+import { useMutation } from '@apollo/client'
 import { toRarityDefinitions } from '../../utils/parsers'
 
-
-const AddGame = () => {
+const UpdateGame = () => {
+  const [queryParameters] = useSearchParams()
+  const id = queryParameters.get('id')
+  if (!id) {
+    return <div>No id specified</div>
+  }
   const name = useField('text', 'Name', undefined)
   // Enchantments should be added later into the game. Currently not supported.
   const rarities = useField('text', 'Rarities', 'Syntax: Common 1, Uncommon 1 2 ')
-  const [ addGame, result ] = useMutation(ADDGAME)
+  const [ updateGame, result ] = useMutation(UPDATEGAME)
 
   useEffect(() => {
     console.log(result.data)
@@ -19,10 +24,11 @@ const AddGame = () => {
   const submit = async (event: React.SyntheticEvent) => {
     event.preventDefault()
     try {
-      await addGame({
+      await updateGame({
         variables: {
-          name: name.value,
-          rarities: toRarityDefinitions(rarities.value)
+          id,
+          name: name.value ? name.value : undefined,
+          rarities: rarities.value ? toRarityDefinitions(rarities.value) : undefined
         }
       })
     } catch (err) {
@@ -35,10 +41,9 @@ const AddGame = () => {
       name,
       rarities
     ],
-    'Add game'
+    'Update game'
   )
   return form
 }
 
-
-export default AddGame
+export default UpdateGame

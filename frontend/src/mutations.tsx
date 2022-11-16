@@ -251,68 +251,65 @@ export const UPDATESTORE = gql`mutation updateStore (
   }`
 
 export const UPDATEITEM = gql`mutation updateItem(
-  $id: String!
-  $name: String 
-  $games: [String]
-  $storepool: [String] 
-  $material: String 
-  $baseCost: Int 
-  $weight: Int 
-  $properties: String 
-  $damage: String 
-  $damageTypes: [String] 
-  $baseItem: Boolean 
-  $unique: Boolean
-  $weapon: Boolean
-  $weaponType: String
-  $armor: Boolean
-  $armorType: String
+  $id: String!,
+  $name: String,
+  $games: [String],
+  $storepool: [String], 
+  $material: String, 
+  $baseCost: Int, 
+  $weight: Int, 
+  $properties: String, 
+  $damage: String, 
+  $damageTypes: [String], 
+  $baseItem: Boolean, 
+  $unique: Boolean,
+  $weapon: Boolean,
+  $weaponType: String,
+  $armor: Boolean,
+  $armorType: String,
   $armorClass: String
-  $strength: String
-  $stealth: String
-  $rarity: String) { 
+  $strength: String,
+  $stealth: String) { 
     updateItem (
-      id: $id
-      name: $name 
-      games: $games
-      storepool: $storepool 
-      material: $material 
-      baseCost: $baseCost 
-      weight: $weight 
-      properties: $properties 
-      damage: $damage 
-      damageTypes: $damageTypes 
-      baseItem: $baseItem 
-      unique: $unique
-      weapon: $weapon
-      weaponType: $weaponType
-      armor: $armor
-      armorType: $armorType
-      armorClass: $armorClass
-      strength: $strength
+      id: $id,
+      name: $name, 
+      games: $games,
+      storepool: $storepool, 
+      material: $material, 
+      baseCost: $baseCost, 
+      weight: $weight, 
+      properties: $properties, 
+      damage: $damage, 
+      damageTypes: $damageTypes, 
+      baseItem: $baseItem, 
+      unique: $unique,
+      weapon: $weapon,
+      weaponType: $weaponType,
+      armor: $armor,
+      armorType: $armorType,
+      armorClass: $armorClass,
+      strength: $strength,
       stealth: $stealth
-      rarity: $rarity
-    ) {
-      id
-      name
-      games
-      storepool
-      material
-      baseCost
-      weight
-      properties
-      damage
-      damageTypes
-      baseItem
-      unique
-      weapon
-      weaponType
-      armor
-      armorType
-      armorClass
-      strength
-      stealth
-      rarity
+      ) {
+        id,
+        name,
+        games
+        storepool,
+        material,
+        baseCost,
+        weight,
+        properties,
+        damage,
+        damageTypes,
+        baseItem,
+        unique,
+        weapon,
+        weaponType,
+        armor,
+        armorType,
+        armorClass,
+        strength,
+        stealth
     }
   }`
 

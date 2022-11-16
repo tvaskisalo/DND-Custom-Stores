@@ -7,8 +7,8 @@ import Form from './Form'
 
 
 const AddUser = () => {
-  const username = useField('text', 'Username')
-  const password = useField('password', 'Password')
+  const username = useField('text', 'Username', undefined)
+  const password = useField('password', 'Password', undefined)
   const [ addUser, result ] = useMutation(ADDUSER)
 
   useEffect(() => {

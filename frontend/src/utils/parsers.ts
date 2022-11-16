@@ -83,6 +83,7 @@ export const toRarityDefinitions = (str: string | undefined): RarityDefinition[]
 
 export const toItem = (data: any): Item => {
   const item: Item = {
+    id: parseString(data.id),
     name: parseString(data.name),
     games: data.games ? parseStringArray(data.games) : undefined,
     storepool: data.storepool ? parseStringArray(data.storepool) : undefined,

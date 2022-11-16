@@ -1,11 +1,17 @@
 import React, { useEffect } from 'react'
-import { ADDITEM } from '../../mutations'
+import { useSearchParams } from 'react-router-dom'
+import { UPDATEITEM } from '../../mutations'
 import { useField } from '../../utils/utils'
-import { useMutation } from '@apollo/client'
 import Form from './Form'
+import { useMutation } from '@apollo/client'
 
 
-const AddItem = () => {
+const UpdateItem = () => {
+  const [queryParameters] = useSearchParams()
+  const id = queryParameters.get('id')
+  if (!id) {
+    return <div>No id specified</div>
+  }
   const name = useField('text', 'Name', undefined)
   //Currently given a string that will be parsed to an array.
   const games = useField('text', 'Games', 'Syntax: game1 game2')
@@ -27,7 +33,7 @@ const AddItem = () => {
   const armorClass = useField('text', 'ArmorClass', undefined)
   const strength = useField('text', 'Strength', undefined)
   const stealth = useField('text', 'Stealth', undefined)
-  const [ addItem, result ] = useMutation(ADDITEM)
+  const [ updateItem, result ] = useMutation(UPDATEITEM)
 
   useEffect(() => {
     console.log(result.data)
@@ -36,26 +42,27 @@ const AddItem = () => {
   const submit = async (event: React.SyntheticEvent) => {
     event.preventDefault()
     try {
-      await addItem({
+      await updateItem({
         variables: {
-          name: name.value,
-          games: games.value?.split(' '),
-          storePool: storePool.value?.split(' '),
-          material: material.value,
-          baseCost: Number(baseCost.value),
-          weight: Number(weight.value),
-          properties: properties.value,
-          damage: damage.value,
-          damageTypes: damageTypes.value?.split(' '),
+          id,
+          name: name.value ? name.value : undefined,
+          games: games.value ? games.value.split(' ') : undefined,
+          storePool: storePool.value ? storePool.value.split(' ') : undefined,
+          material: material.value ? material.value : undefined,
+          baseCost: baseCost.value ? Number(baseCost.value) : undefined,
+          weight: weight.value ? Number(weight.value) : undefined,
+          properties: properties.value ? properties.value : undefined,
+          damage: damage.value ? damage.value : undefined,
+          damageTypes: damageTypes.value ? damageTypes.value.split(' ') : undefined,
           baseItem: baseItem.value ? baseItem.value.toLowerCase() === 'true' : undefined,
           unique: unique.value ? unique.value.toLowerCase() === 'true' : undefined,
           weapon: weapon.value ? weapon.value.toLowerCase() === 'true' : undefined,
-          weaponType: weaponType.value,
+          weaponType: weaponType.value ? weaponType.value : undefined,
           armor: armor.value ? armor.value.toLowerCase() === 'true' : undefined,
-          armorType: armorType.value,
-          armorClass: armorClass.value,
-          strength: strength.value,
-          stealth: stealth.value
+          armorType: armorType.value ? armorType.value : undefined,
+          armorClass: armorClass.value ? armorClass.value : undefined,
+          strength: strength.value ? strength.value : undefined,
+          stealth: stealth.value ? stealth.value : undefined
         }
       })
     } catch (err) {
@@ -84,9 +91,8 @@ const AddItem = () => {
       strength,
       stealth
     ],
-    'Add item')
+    'Update item')
   return form
 }
 
-
-export default AddItem
+export default UpdateItem

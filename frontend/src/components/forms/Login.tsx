@@ -7,14 +7,13 @@ import Form from './Form'
 
 
 const Login = ({ setToken }) => {
-  const username = useField('text', 'Username')
-  const password = useField('password', 'Password')
+  const username = useField('text', 'Username', undefined)
+  const password = useField('password', 'Password', undefined)
   const [ login, result ] = useMutation(LOGIN)
 
   useEffect(() => {
     if (result.data) {
       const token = result.data.login.value
-      console.log(token)
       setToken(token)
       localStorage.setItem('DnD-user-token', token)
     }

@@ -24,6 +24,7 @@ export type CompleteStore = {
 }
 //This is an item that has certain fields defined. Used for item generation
 export type CompleteItem = {
+  id: string,
   name: string,
   games?: string[],
   rarity?: string

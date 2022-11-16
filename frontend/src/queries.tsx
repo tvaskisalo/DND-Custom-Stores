@@ -143,6 +143,7 @@ export const GENERATEITEMPOOL = gql`query generateItempool(
       store: $store,
       seed: $seed
     ) {
+      id
       name
       material
       baseCost

@@ -1,0 +1,5 @@
+export const liClassName = 'inline-block px-3 py-3'
+export const buttonClassName = 'inline-block px-7 py-3.5 bg-blue-600 text-white font-medium text-xs rounded'
+export const smallButton = 'inline-block px-2 py-2 bg-blue-600 text-white font-medium text-xs rounded'
+export const disabledButton = 'inline-block px-7 py-3.5 bg-gray-400 text-white font-medium text-xs rounded'
+export const inputClassName = 'block w-full px-3 py-1.5 bg-white bg-clip-padding border border-solid border-gray-300 rounded focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none'

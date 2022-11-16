@@ -3,6 +3,7 @@ export type Field = {
   name: string
   type: string
   value: string | undefined,
+  note: string | undefined,
   onChange: (e: unknown) => void
 }
 export type itemRarityProbability = {
@@ -14,6 +15,7 @@ export type RarityDefinition = {
   enchantmentTiers: number[]
 }
 export type Item = {
+  id: string,
   name: string,
   games?: string[],
   rarity?: string

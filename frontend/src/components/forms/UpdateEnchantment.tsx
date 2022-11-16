@@ -1,11 +1,17 @@
 import React, { useEffect } from 'react'
-import { ADDENCHANTMENT } from '../../mutations'
+import { useSearchParams } from 'react-router-dom'
+import { UPDATEENCHANTMENT } from '../../mutations'
 import { useField } from '../../utils/utils'
-import { useMutation } from '@apollo/client'
 import Form from './Form'
+import { useMutation } from '@apollo/client'
 
 
-const AddEnchantment = () => {
+const UpdateEnchantment = () => {
+  const [queryParameters] = useSearchParams()
+  const id = queryParameters.get('id')
+  if (!id) {
+    return <div>No id specified</div>
+  }
   const name = useField('text', 'Name', undefined)
   //String will be parsed to array
   const games = useField('text', 'Games', 'Syntax: game1 game2')
@@ -14,7 +20,7 @@ const AddEnchantment = () => {
   //String will be parsed to array
   const damageTypes = useField('text', 'DamageTypes', 'Syntax: type1 type2')
   const description = useField('text', 'Description', undefined)
-  const [ addEnchantment, result ] = useMutation(ADDENCHANTMENT)
+  const [ updateEnchantment, result ] = useMutation(UPDATEENCHANTMENT)
 
   useEffect(() => {
     console.log(result.data)
@@ -23,14 +29,15 @@ const AddEnchantment = () => {
   const submit = async (event: React.SyntheticEvent) => {
     event.preventDefault()
     try {
-      await addEnchantment({
+      await updateEnchantment({
         variables: {
-          name: name.value,
-          games: games.value?.split(' '),
-          tier: Number(tier.value),
-          damage: damage.value,
-          damageTypes: damageTypes.value?.split(' '),
-          description: description.value,
+          id,
+          name: name.value ? name.value : undefined,
+          games: games.value ? games.value.split(' ') : undefined,
+          tier: tier.value ? Number(tier.value) : undefined,
+          damage: damage.value ? damage.value : undefined,
+          damageTypes: damageTypes.value ? damageTypes.value.split(' ') : undefined,
+          description: description.value ? description.value : undefined,
         }
       })
     } catch (e) {
@@ -47,9 +54,9 @@ const AddEnchantment = () => {
       damageTypes,
       description
     ],
-    'Add Enchantment'
+    'Update Enchantment'
   )
   return form
 }
 
-export default AddEnchantment
+export default UpdateEnchantment

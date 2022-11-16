@@ -267,6 +267,7 @@ export const toCompleteEnchantment = (reqData: any): CompleteEnchantment =>  {
 
 export const toCompleteItem = (reqData: any): CompleteItem => {
   const item: CompleteItem = {
+    id: parseString(reqData.id),
     name: parseString(reqData.name),
     games: reqData.games ? parseStringArray(reqData.games) : undefined,
     storepool: reqData.storepool ? parseStringArray(reqData.storepool) : undefined,

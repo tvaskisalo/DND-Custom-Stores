@@ -21,10 +21,10 @@ const ItempoolView = ({ store, game }) => {
   if (!items.data) return <div>No items generated</div>
   let id = 0
   return (
-    <div>
+    <div className='grid grid-cols-5 gap-4 px-4 py-4 bg-slate-600'>
       {
         items.data.generateItempool.map(i => {
-          return <div key={id++}>{ItemView(toItem(i))}</div>
+          return <div key={id++}>{ItemView(toItem(i), undefined)}</div>
         })
       }
     </div>

@@ -1,10 +1,12 @@
 import React from 'react'
+import { NavigateFunction } from 'react-router-dom'
+import { smallButton } from '../utils/syling'
 import { Item } from '../utils/types'
 
 
-const ItemView = (item: Item) => {
-  return <div>
-    <div>Item name: {item.name}</div>
+const ItemView = (item: Item, navigate: NavigateFunction | undefined) => {
+  return <div className='inline-block px-2 w-fit bg-slate-500 rounded'>
+    <div className='text-white font-medium'>Item name: {item.name} </div>
     {item.games && item.games.length !== 0 ? <div>Games: {''.concat(item.games.reduce((game, str) => str + ' ' + game, ''), ' ').trimEnd()}</div> : <div/>}
     {item.storepool && item.storepool.length !== 0 ? <div>Storepool: {''.concat(item.storepool.reduce((store, str) => str + ' ' + store, ''), ' ').trimEnd()}</div> : <div/>}
     {item.material ? <div>Material: {item.material}</div> : <div/>}
@@ -22,6 +24,7 @@ const ItemView = (item: Item) => {
     {item.armorClass ? <div>Armorclass: {item.armorClass}</div> : <div/>}
     {item.strength ? <div>Strength: {item.strength}</div> : <div/>}
     {item.stealth ? <div>Stealth: {item.stealth}</div> : <div/>}
+    {navigate ? <button className={smallButton} onClick={() => navigate(`/updateItem/?id=${item.id}`)}>Update</button> : <div/>}
   </div>
 }
 
