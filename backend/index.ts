@@ -24,6 +24,7 @@ mongoose.connect(MONGODB)
       resolvers,
       csrfPrevention: true,
       formatError: errorHandling,
+      cache: 'bounded',
       context
     })
     // Using express to serve static content

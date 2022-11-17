@@ -4,7 +4,7 @@
 // Dao is also responsible for ensuring that only valid data is added
 import bcrypt from 'bcrypt'
 import { User } from '../schemas/user'
-import { SECRET } from '../utils/config'
+import { SECRET } from './config'
 import { Game } from '../schemas/game'
 import { Store } from '../schemas/store'
 import { Item } from '../schemas/item'

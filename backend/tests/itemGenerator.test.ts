@@ -2,6 +2,7 @@ import itemGenerator from '../utils/itemGenerator'
 import { CompleteEnchantment, CompleteItem, itemRarityProbability, RarityDefinition } from '../utils/types'
 const items: CompleteItem[] = [
   {
+    id:'1',
     name: 'Dagger',
     damage: '1d4',
     damageTypes: ['Puncture'],
@@ -12,6 +13,7 @@ const items: CompleteItem[] = [
     unique: false
   },
   {
+    id: '2',
     name: 'Long Sword',
     damage: '1d8',
     damageTypes: ['Piercing'],
@@ -21,6 +23,7 @@ const items: CompleteItem[] = [
     unique: false
   },
   {
+    id: '3',
     name: 'Staff',
     damage: '1d10',
     damageTypes: ['Magical'],
@@ -30,6 +33,7 @@ const items: CompleteItem[] = [
     unique: false
   },
   {
+    id: '3',
     name: 'Chestplate',
     weapon: false,
     armor: true,
@@ -39,6 +43,7 @@ const items: CompleteItem[] = [
     unique: false
   },
   {
+    id: '4',
     name: 'Shoulderguards',
     weapon: false,
     armor: true,
@@ -48,6 +53,7 @@ const items: CompleteItem[] = [
     unique: false
   },
   {
+    id: '5',
     name: 'Spiked Shield',
     damage: '1d4',
     damageTypes: ['Puncture'],
@@ -59,6 +65,7 @@ const items: CompleteItem[] = [
     unique: false
   },
   {
+    id: '6',
     name: 'Master Sword',
     damage: '1d20',
     damageTypes: ['Holy'],

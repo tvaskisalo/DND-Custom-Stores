@@ -39,4 +39,5 @@
 14.11.2022 | 1 | Added support for itempool view in the frontend and fixed item generator bug.
 15.11.2022 | 2 | Updated esling and fixed eslint errors. Added styling to frontend and refactored item from ItemsView and ItemPoolView
 16.11.2022 | 4 | Updated the frontend: Added styling, updated the navigationbar, made it possible to update games, stores, items and enchantments from the frontend.
-Total time | 70.5 | updated 16.11.2022
+17.11.2022 | 2.5 | Updated directory structure. Started better docker support and integration with fly.io
+Total time | 73 | updated 16.11.2022

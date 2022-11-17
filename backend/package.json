@@ -5,7 +5,9 @@
   "main": "index.ts",
   "scripts": {
     "test": "NODE_ENV=test jest --verbose --runInBand --forceExit",
-    "dev": "ts-node-dev index.ts",
+    "dev": "NODE_ENV=development ts-node-dev index.ts",
+    "start": "NODE_ENV=production ts-node ./build/index.js",
+    "build": "tsc --build",
     "lint": "eslint --ext .ts .",
     "tsc": "tsc"
   },
