@@ -2,7 +2,7 @@ FROM node:16 AS build-stage
 
 WORKDIR /usr/src/app
 
-COPY ./frontend .
+COPY . .
 
 RUN npm ci
 
