@@ -10,3 +10,5 @@ Rare | 15%
 Very rare | 10 %
 Legendary | 5 %
 Unique | 1%
+
+Project is currently running [here](https://l685u4-3000.preview.csb.app/)

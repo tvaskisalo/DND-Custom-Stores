@@ -41,4 +41,5 @@
 16.11.2022 | 4 | Updated the frontend: Added styling, updated the navigationbar, made it possible to update games, stores, items and enchantments from the frontend.
 17.11.2022 | 2.5 | Updated directory structure. Started better docker support and integration with fly.io
 20.11.2022 | 2 | Fixed bugs with nginx and docker
-Total time | 75 | updated 16.11.2022
+20.11.2022 | 0.5 | Removed fly.io support, added codesandbox.io support. Now the app is running with docker compose
+Total time | 75.5 | updated 16.11.2022
